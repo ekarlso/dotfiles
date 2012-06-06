@@ -1,0 +1,13 @@
+colander
+deform
+pyramid
+pyramid_handlers
+pyramid_tm
+pyramid_debugtoolbar
+simplejson
+SQLAlchemy
+transaction
+zope.sqlalchemy
+waitress
+decorator
+-e hg+https://bitbucket.org/ergo/ziggurat_foundations#egg=Ziggurat
