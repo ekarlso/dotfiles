@@ -1,0 +1,11 @@
+<%inherit file="/base.html" />
+
+${widget.display()|n}
+
+<%def name="display_block()">
+    <div id="block">
+        <div class="greenbutton"><a href="/cars">All cars</a></div>
+        <br />
+        <div class="greenbutton"><a href="/cars/form">New car</a></div>
+    </div>
+</%def>

@@ -1,0 +1,20 @@
+<%include file="header.html"/>
+
+<body>
+<div id="top">
+  <h1>Rogaland Bilutleie</h1>
+</div>
+
+<%include file="navigation.html"/>
+
+<div id="wrapper">
+    <div id="content">
+    ${next.body()}
+    </div>
+    % if hasattr(next, 'display_block'):
+        ${next.display_block()}
+    % endif
+</div>
+
+</body>
+</html>
