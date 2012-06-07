@@ -41,10 +41,21 @@ def category_dict(names):
 
 def load_samples():
     with transaction.manager:
-        g_admin = GroupPermission(perm_name="admin")
+        g_sadmin = GroupPermission(perm_name="system.admin")
+        g_radmin = GroupPermission(perm_name="retailer.admin")
         g_edit = GroupPermission(perm_name="edit")
         g_view = GroupPermission(perm_name="view")
         g_order = GroupPermission(perm_name="order")
+
+        admin = User(user_name="admin",
+                    status=1, email="endre.karlson@gmail.com",
+                    first_name="Endre", last_name="Karlson")
+        admin.set_password("admin")
+        admin.save()
+
+        group = Group(group_name="System Admins", users=[admin],
+                    permissions=[g_sadmin]).save()
+
 
         # NOTE: First Retailer rents out cars and transport class cars
         customer = Customer(name="WreckRenters Inc", organisation_id=2343,
@@ -52,14 +63,14 @@ def load_samples():
                     phone="+47 xxxxxxxx")
 
         user = User(user_name="booker1", status=1,
-                    email="endre.karlson@gmail.com")
+                    email="booker1@random.com")
         user.set_password("booker1")
         user.save()
 
         group = Group(
             group_name="RentOurWrecks Inc",
             users=[user],
-            permissions=[g_admin],
+            permissions=[g_radmin],
             organisation_id=3232,
             customers=[customer]).save()
 
@@ -92,7 +103,7 @@ def load_samples():
                 phone="+47 xxxxxxxx")
 
         user = User(user_name="booker2", status=1,
-                    email="endre.karlson@bouvet.no").save()
+                    email="booker2@random.com").save()
         user.set_password("admin")
         user.save()
 
@@ -100,7 +111,7 @@ def load_samples():
             group_name="TransportVehicles Inc",
             users=[user],
             organisation_id=3232,
-            permissions=[g_admin],
+            permissions=[g_radmin],
             customers=[customer]).save()
 
         sub_truck = category_dict(["18 m3", "22 m3", "26 m3", "35 m3"])
