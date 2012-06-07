@@ -1,6 +1,10 @@
 colander
 deform
+deform_bootstrap
+plone.i18n
 pyramid
+pyramid_beaker
+pyramid_deform
 pyramid_handlers
 pyramid_tm
 pyramid_debugtoolbar
