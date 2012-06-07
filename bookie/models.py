@@ -36,7 +36,8 @@ class BaseModel(object):
     """
     Base class to make ones life working with models and python easier
     """
-    __display_name__ = None
+    __display_rows__ = None
+    __display_string__ = None
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
 
@@ -91,20 +92,38 @@ class BaseModel(object):
     def to_dict(self):
         return self.__dict__.copy()
 
+    @property
     def display_rows(self):
         copy = self.to_dict()
-        if not self.ROW_DISPLAY:
+        if not self.__display_rows__:
             return copy
         ret = {}
-        for row_name in self.ROW_DISPLAY:
+        for row_name in self.__display__rows__:
             ret[row_name] = copy[row_name]
         return ret
 
     def __unicode__(self):
-        dn = self.__display_name__ or "name"
+        dn = self.__display_string__ or "name"
+        if type(dn) == list:
+            return self.display_string
         if not hasattr(self, dn):
             dn = "id"
         return getattr(self, dn)
+
+    @property
+    def display_string(self):
+        copy = self.to_dict()
+        display = ""
+        if type(self.__display_string__) == list:
+            display = []
+            for i in self.__display_string__:
+                 data = copy.get(i, None)
+                 if data:
+                    display.append(data)
+            display = " ".join(display)
+        else:
+            display = self
+        return unicode(display)
 
 
 Base = declarative_base(cls=BaseModel)
@@ -178,14 +197,12 @@ class UserGroup(Base, UserGroupMixin):
 
 
 class User(Base, UserMixin):
+    __display_string__ = ["first_name", "middle_name", "last_name"]
     __possible_permissions__ = PERMISSIONS
     first_name = Column(UnicodeText)
     middle_name = Column(UnicodeText)
     last_name = Column(UnicodeText)
-
-
-    def __unicode__(self):
-        return unicode(self.user_name)
+    name = Base.display_string
 
 
 class UserPermission(Base, UserPermissionMixin):
