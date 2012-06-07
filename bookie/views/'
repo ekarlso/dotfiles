@@ -1,0 +1,1 @@
+    config.add_view(name='forbidden', renderer='bookie:templates/forbidden.pt')

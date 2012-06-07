@@ -16,6 +16,15 @@ def get_group(user_id, request):
     return groups
 
 
+def authtkt_factory(**settings):
+    return AuthTktAuthenticationPolicy(
+        secret=settings['bookie.secret2'], callback=get_group)
+
+
+def acl_factory(**settings):
+    return ACLAuthorizationPolicy()
+
+
 def add_user_to_request(request):
     user = unauthenticated_userid(request)
     if user:
