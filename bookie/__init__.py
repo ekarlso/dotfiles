@@ -6,7 +6,6 @@ from pyramid.mako_templating import renderer_factory as mako_factory
 from pyramid.threadlocal import get_current_registry
 from pyramid.util import DottedNameResolver
 from pyramid_beaker import session_factory_from_settings
-
 from sqlalchemy import engine_from_config
 
 from . import models, security, utils

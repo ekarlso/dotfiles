@@ -1,1 +1,6 @@
 <%inherit file="base.html" />
+% if form:
+    ${form|n}
+% else:
+    We got our form data: ${formdata}
+% endif

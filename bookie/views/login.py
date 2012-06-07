@@ -23,7 +23,6 @@ LOG = logging.getLogger(__name__)
 def login(context, request):
     login_url = urllib.unquote(request.route_url("login"))
     referrer = request.url
-    print referrer, login_url
     if referrer == login_url:
         referrer = '/' # never use the login form itself as came_from
     came_from = request.params.get("came_from", referrer)
@@ -36,7 +35,6 @@ def login(context, request):
         password = request.params['password']
         user = models.User.by_user_name(login)
 
-        print user.status
         if (user is not None and user.status == 1 and
             user.check_password(password)):
             headers = remember(request, login)
