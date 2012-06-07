@@ -47,14 +47,15 @@ def load_samples():
         g_view = GroupPermission(perm_name="view")
         g_order = GroupPermission(perm_name="order")
 
-        admin = User(user_name="admin",
-                    status=1, email="endre.karlson@gmail.com",
-                    first_name="Endre", last_name="Karlson")
+        group = Group(group_name="System Admins",
+            permissions=[g_sadmin]).save()
+
+        admin = User(user_name="admin", status=1, groups=[group],
+            email="endre.karlson@gmail.com",
+            first_name="Endre", last_name="Karlson")
         admin.set_password("admin")
         admin.save()
 
-        group = Group(group_name="System Admins", users=[admin],
-                    permissions=[g_sadmin]).save()
 
 
         # NOTE: First Retailer rents out cars and transport class cars
@@ -62,17 +63,16 @@ def load_samples():
                     contact="Steffen Soma", email="stefsoma@gmail.com",
                     phone="+47 xxxxxxxx")
 
-        user = User(user_name="booker1", status=1,
-                    email="booker1@random.com")
-        user.set_password("booker1")
-        user.save()
-
         group = Group(
             group_name="RentOurWrecks Inc",
-            users=[user],
             permissions=[g_radmin],
             organisation_id=3232,
             customers=[customer]).save()
+
+        user = User(user_name="booker1", status=1, groups=[group],
+                    email="booker1@random.com")
+        user.set_password("booker1")
+        user.save()
 
         sub_cars = category_dict(["Sedan", "Stationwagon", "SUV", "Coupe",
                             "Pickup", "7 seats", "9 seats"])
@@ -102,17 +102,24 @@ def load_samples():
                 contact="Endre Karlson", email="endre.karlson@gmail.com",
                 phone="+47 xxxxxxxx")
 
-        user = User(user_name="booker2", status=1,
-                    email="booker2@random.com").save()
-        user.set_password("admin")
-        user.save()
-
         group = Group(
             group_name="TransportVehicles Inc",
             users=[user],
             organisation_id=3232,
             permissions=[g_radmin],
             customers=[customer]).save()
+
+        user = User(user_name="booker2", status=1, groups=[group],
+                    email="booker2@random.com").save()
+        user.set_password("booker2")
+        user.save()
+
+        user = User(user_name="steffen", status=1, groups=[group],
+                    first_name="Steffen", middle_name="Tenold",
+                    last_name="Soma",
+                    email="steffen.soma@gmail.com").save()
+        user.set_password("password")
+        user.save()
 
         sub_truck = category_dict(["18 m3", "22 m3", "26 m3", "35 m3"])
         top_truck = Category(name="Truck", categories=sub_truck.values()).save()
