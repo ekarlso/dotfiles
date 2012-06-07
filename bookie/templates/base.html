@@ -2,7 +2,15 @@
 
 <body>
 <div id="top">
-  <h1>Bookie BETA!</h1>
+    <h1>
+    <%
+        try:
+            my_title = page_title
+        except AttributeError:
+            my_title = "Bookie - BETA!"
+    %>
+    ${my_title}
+    </h1>
 </div>
 
 <%include file="navigation.html"/>
