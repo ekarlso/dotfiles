@@ -14,6 +14,9 @@ from pyramid.threadlocal import get_current_registry, get_current_request
 from pyramid.view import render_view_to_response
 
 
+from bookie import get_settings
+
+
 def template_api(context, request, **kwargs):
     return get_settings()['bookie.templates.api'][0](
         context, request, **kwargs)
@@ -32,6 +35,7 @@ def add_renderer_globals(event):
         if api is None and request is not None:
             api = template_api(event['context'], event['request'])
         event['api'] = api
+        event['page_title'] = "TEST"
 
 
 def is_root(context, request):

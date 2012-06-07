@@ -1,35 +1,15 @@
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
+from pyramid.events import BeforeRender
 from pyramid.mako_templating import renderer_factory as mako_factory
+from pyramid.threadlocal import get_current_registry
 from pyramid.util import DottedNameResolver
 from pyramid_beaker import session_factory_from_settings
 
 from sqlalchemy import engine_from_config
 
-from . import models, security
-
-
-ROOT_FACTORY = "bookie.security.RootFactory"
-RESOURCE_FACTORY = "bookie.security.ResourceFactory"
-
-
-conf_defaults = {
-    "bookie.base_includes": " ".join([
-        "bookie", "bookie.views", "bookie.views.login"]),
-    'bookie.root_factory': 'bookie.security.RootFactory',
-    'bookie.authn_policy_factory': 'bookie.authtkt_factory',
-    'bookie.authz_policy_factory': 'bookie.acl_factory',
-    'bookie.session_factory': 'bookie.beaker_session_factory'}
-
-
-conf_dotted = set([
-    'bookie.base_includes',
-    'bookie.root_factory',
-    'bookie.authn_policy_factory',
-    'bookie.authz_policy_factory',
-    'bookie.session_factory',
-    ])
+from . import models, security, utils
 
 
 def authtkt_factory(**settings):
@@ -45,6 +25,46 @@ def beaker_session_factory(**settings):
     return session_factory_from_settings(settings)
 
 
+conf_defaults = {
+    'bookie.templates.api': 'bookie.views.utils.TemplateAPI',
+    "bookie.base_includes": " ".join([
+        "bookie",
+        "bookie.views",
+        "bookie.views.login",
+        "bookie.views.users"]),
+    'bookie.root_factory': 'bookie.security.RootFactory',
+    'bookie.authn_policy_factory': 'bookie.authtkt_factory',
+    'bookie.authz_policy_factory': 'bookie.acl_factory',
+    'bookie.session_factory': 'bookie.beaker_session_factory'}
+
+
+conf_dotted = set([
+    'bookie.templates.api',
+    'bookie.base_includes',
+    'bookie.root_factory',
+    'bookie.authn_policy_factory',
+    'bookie.authz_policy_factory',
+    'bookie.session_factory',
+    ])
+
+
+def get_version():
+    return pkg_resources.require("bookie")[0].version
+
+
+# TODO: Fix me!
+@utils.request_cache(lambda: None)
+def get_settings():
+    #session = DBSession()
+    #db_settings = session.query(Settings).order_by(desc(Settings.id)).first()
+    #if db_settings is not None:
+        #reg_settings = dict(get_current_registry().settings)
+        #reg_settings.update(db_settings.data)
+        #return reg_settings
+    #else:
+    return get_current_registry().settings
+
+
 def _resolve_dotted(d, keys=conf_dotted):
     for key in keys:
         value = d[key]
@@ -52,7 +72,6 @@ def _resolve_dotted(d, keys=conf_dotted):
             continue
         new_value = []
         for dottedname in value.split():
-            print dottedname
             new_value.append(DottedNameResolver(None).resolve(dottedname))
         d[key] = new_value
 
@@ -98,6 +117,7 @@ def base_configure(global_config, **settings):
 def includeme(config):
     settings = config.get_settings()
 
+    # NOTE: Auth settings here
     authentication_policy = settings[
         'bookie.authn_policy_factory'][0](**settings)
     authorization_policy = settings[
@@ -109,10 +129,14 @@ def includeme(config):
         config.set_authorization_policy(authorization_policy)
     config.set_session_factory(session_factory)
 
+    # NOTE: Anything else that's not in base here..
     config.add_translation_dirs('bookie:locale')
     config.set_request_property(security.add_user_to_request, 'user',
                                 reify=True)
     config.add_renderer(".html", mako_factory)
+
+    from .views.utils import add_renderer_globals
+    #config.add_subscriber(add_renderer_globals, BeforeRender)
     return config
 
 
@@ -120,8 +144,5 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     config = base_configure(global_config, **settings)
-
-    #config.add_route('index', '/')
     config.scan()
     return config.make_wsgi_app()
-
