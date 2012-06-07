@@ -8,7 +8,9 @@ from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
 from pyramid.httpexceptions import HTTPFound
 from pyramid.exceptions import Forbidden
 from pyramid.view import view_config
+from webhelpers.html.grid import Grid
 
+from .. import models
 from ..utils import _
 from .form import AddFormView, EditFormView
 from .utils import is_root
@@ -37,7 +39,7 @@ class UserEditFormView(EditFormView):
         return UserSchema()
 
 
-@view_config(route_name="prefs", permission="view", renderer="user_prefs.html")
+@view_config(route_name="user_prefs", permission="view", renderer="user_prefs.html")
 def preferences(request):
     user = request.user
 
@@ -48,6 +50,12 @@ def preferences(request):
     return {"form": form["form"]}
 
 
+@view_config(route_name="user_list", permission="system.admin",
+            renderer="admin/users.html")
+def list(request):
+    return {"grid": Grid(models.User.query.all(), ["user_name"])}
+
+
 def includeme(config):
-    config.add_route("prefs", "@@prefs")
-    pass
+    config.add_route("user_prefs", "@@prefs")
+    config.add_route("user_list", "@@admin/users")
