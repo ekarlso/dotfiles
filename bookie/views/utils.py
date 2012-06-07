@@ -35,7 +35,8 @@ def add_renderer_globals(event):
         if api is None and request is not None:
             api = template_api(event['context'], event['request'])
         event['api'] = api
-        event['page_title'] = "TEST"
+        if not "page_title" in event:
+            event["page_title"] = get_settings()["bookie.site_title"]
 
 
 def is_root(context, request):

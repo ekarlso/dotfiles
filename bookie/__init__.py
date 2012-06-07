@@ -136,7 +136,7 @@ def includeme(config):
     config.add_renderer(".html", mako_factory)
 
     from .views.utils import add_renderer_globals
-    #config.add_subscriber(add_renderer_globals, BeforeRender)
+    config.add_subscriber(add_renderer_globals, BeforeRender)
     return config
 
 
