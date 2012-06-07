@@ -28,8 +28,8 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 zmodels.DBSession = DBSession
 
 
-
-PERMISSIONS = ("add", "view", "edit", "delete", "admin")
+PERMISSIONS = ("add", "view", "edit", "delete", "retailer.admin",
+                "system.admin")
 
 
 class BaseModel(object):
