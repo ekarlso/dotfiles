@@ -166,6 +166,7 @@ class Group(Base, GroupMixin):
     """
     An organisation - typically something with users and customers
     """
+    __display_string__ = "group_name"
     __possible_permissions__ = PERMISSIONS
     organisation_id = Column(Integer)
     customers = relationship("Customer", backref="retailer")
