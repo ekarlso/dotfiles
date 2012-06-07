@@ -1,0 +1,11 @@
+build/
+dist/
+*.egg-info/
+*.db
+*.log*
+*.pid
+*.pyc
+*.swp
+*.csr*
+*.crt*
+*.key*
