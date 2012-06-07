@@ -25,7 +25,7 @@ def beaker_session_factory(**settings):
 
 
 conf_defaults = {
-    'bookie.templates.api': 'bookie.views.utils.TemplateAPI',
+    'bookie.templates.api': 'bookie.views.helpers.TemplateAPI',
     "bookie.base_includes": " ".join([
         "bookie",
         "bookie.views",
@@ -134,7 +134,7 @@ def includeme(config):
                                 reify=True)
     config.add_renderer(".html", mako_factory)
 
-    from .views.utils import add_renderer_globals
+    from .views.helpers import add_renderer_globals
     config.add_subscriber(add_renderer_globals, BeforeRender)
     return config
 
