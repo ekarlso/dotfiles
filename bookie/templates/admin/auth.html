@@ -1,0 +1,19 @@
+<%inherit file="/base.html" />
+
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a href="#add-user-tab" data-toggle="tab">Add user</a>
+    </li>
+    <li>
+        <a href="#add-group-tab" data-toggle="tab" i18n:translate="">Add group</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane ${not request.params.get('add-group') and 'active'}" id="add-user-tab">
+        ${user_addform|n}
+    </div>
+    <div class="tab-pane ${request.params.get('add-group') and 'active'}" id="add-group-tab">
+        ${group_addform|n}
+    </div>
+</div>
