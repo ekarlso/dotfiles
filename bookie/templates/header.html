@@ -1,5 +1,3 @@
-<%namespace name="utils" file="utils.inc.mako" inheritable="True"/>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -10,24 +8,28 @@
 
 <title>Bookie - BETA</title>
 
-${utils.mk_styles([
+${api.css_link([
     "static/css/style.css",
     "static/css/menu.css",
+    "static/bootstrap/css/bootstrap.min.css",
+    "static/bootstrap/css/bootstrap-responsive.min.css",
     "static/css/overcast/jquery-ui-1.8.20.custom.css"
-])}
+])|n}
 
 
-${utils.mk_scripts([
+${api.script_link([
     "static/js/jquery-1.7.2.min.js",
     "static/js/jquery-ui-1.8.20.custom.min.js",
+    "static/js/boostrap/bootstrap/js/boostrap.min.js"
+])|n}
+
+${api.script_link([
     "static/js/jquery.metadata.js",
     "static/js/jquery.hoverIntent.js",
-    "static/js/mbMenu.js"
-])}
-
-
-
-<style type="text/css">
-</style>
+    "static/js/mbMenu.js",
+    "static/js/jquery.form.js",
+    "deform:static/scripts/deform.js",
+    "deform_bootstrap:static/deform_bootstrap.js",
+])|n}
 
 </head>
