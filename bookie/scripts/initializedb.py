@@ -104,7 +104,6 @@ def load_samples():
 
         group = Group(
             group_name="TransportVehicles Inc",
-            users=[user],
             organisation_id=3232,
             permissions=[g_radmin],
             customers=[customer]).save()
@@ -141,4 +140,3 @@ def load_samples():
             identifier="ID-B",
             produced=2011,
             categories=[sub_bus["9 seats"]]).save()
-
