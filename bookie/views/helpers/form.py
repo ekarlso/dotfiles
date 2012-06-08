@@ -1,5 +1,6 @@
 import colander
 import deform
+import logging
 
 import colander
 import deform
@@ -7,9 +8,14 @@ from deform import Button
 from deform.widget import TextAreaWidget
 from deform.widget import Widget
 from pyramid.decorator import reify
+from pyramid.httpexceptions import HTTPFound
 from pyramid_deform import CSRFSchema, FormView
 
 from bookie.utils import _
+from .utils import get_url
+
+
+LOG = logging.getLogger(__name__)
 
 
 def get_appstruct(context, schema):
@@ -54,7 +60,7 @@ class BaseFormView(FormView):
         return result
 
     def cancel_success(self, appstruct):
-        location = self.request.resource_url(self.context)
+        location = get_url(self.request.matched_route)
         return HTTPFound(location=location)
     cancel_failure = cancel_success
 
@@ -79,8 +85,7 @@ class EditFormView(BaseFormView):
         return HTTPFound(location=location)
 
     def edit(self, **appstruct):
-        for key, value in appstruct.items():
-            setattr(self.context, key, value)
+        self.context.update(appstruct)
 
     @reify
     def first_heading(self):
