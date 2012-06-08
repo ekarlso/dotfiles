@@ -4,11 +4,18 @@ from pyramid.i18n import get_localizer, get_locale_name, make_localizer
 from pyramid.interfaces import ITranslationDirectories
 from pyramid.threadlocal import get_current_registry, get_current_request
 from pyramid.view import render_view_to_response
+from pyramid.url import route_url as _url
 from webhelpers.html import grid, tags
 from webhelpers import date
 
 from bookie import get_settings
 from bookie.utils import _
+
+
+def get_url(route, **kw):
+    request = get_current_request()
+    location = "%s" % _url(route, request, **kw)
+    return location
 
 
 def when_normalize(col_num, i, item):
@@ -48,5 +55,5 @@ def translate(*args, **kwargs):
     return localizer.translate(*args, **kwargs)
 
 
-__all__ = ["when_normalize", "render_view",
+__all__ = ["get_url", "when_normalize", "render_view",
             "get_localizer_for_locale_name", "translate"]
