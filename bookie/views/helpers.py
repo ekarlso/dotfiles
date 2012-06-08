@@ -250,6 +250,10 @@ def translate(*args, **kwargs):
     return localizer.translate(*args, **kwargs)
 
 
+CSS_LINK = '<link rel="stylesheet" type="text/css" href="%s"/>'
+SCRIPT_LINK = '<script src="%s"></script>'
+
+
 class TemplateStructure(object):
     def __init__(self, html):
         self.html = html
@@ -260,6 +264,8 @@ class TemplateStructure(object):
 
     def __getattr__(self, key):
         return getattr(self.html, key)
+
+
 class TemplateAPI(object):
     """This implements the 'api' object that's passed to all
     templates.
@@ -267,14 +273,6 @@ class TemplateAPI(object):
     Use dict-access as a shortcut to retrieve template macros from
     templates.
     """
-    # Instead of overriding these, consider using the
-    # 'bookie.overrides' variable.
-    BARE_MASTER = 'bookie:templates/master-bare.pt'
-    VIEW_MASTER = 'bookie:templates/view/master.pt'
-    EDIT_MASTER = 'bookie:templates/edit/master.pt'
-    SITE_SETUP_MASTER = 'bookie:templates/site-setup/master.pt'
-
-    body_css_class = ''
 
     def __init__(self, context, request, bare=None, **kwargs):
         self.context, self.request = context, request
@@ -282,17 +280,33 @@ class TemplateAPI(object):
         if getattr(request, 'template_api', None) is None:
             request.template_api = self
 
-        self.S = get_settings()
+        self.settings = get_settings()
         if request.is_xhr and bare is None:
             bare = True  # use bare template that renders just the content area
         self.bare = bare
         self.__dict__.update(kwargs)
 
-    def macro(self, asset_spec, macro_name='main'):
-        if self.bare and asset_spec in (
-            self.VIEW_MASTER, self.EDIT_MASTER, self.SITE_SETUP_MASTER):
-            asset_spec = self.BARE_MASTER
-        return get_renderer(asset_spec).implementation().macros[macro_name]
+    def _resource(self, resource):
+        has_package = re.search("^\w+:", resource)
+        if not has_package:
+            resource = "%s:%s" % (resource, self.__module__.split(".")[:1])
+        return self.request.static_url(resource)
+
+    def _resource_html(self, format, resource):
+        def _html(p):
+            return format % self._resource(p)
+
+        if type(resource) == list:
+            string = "\n".join([_html(p) for p in resource])
+        else:
+            string = _html(string)
+        return string
+
+    def css_link(self, resource, format=CSS_LINK):
+        return self._resource_html(format, resource)
+
+    def script_link(self, resource, format=SCRIPT_LINK):
+        return self._resource_html(format, resource)
 
     @reify
     def site_title(self):
@@ -380,19 +394,19 @@ class TemplateAPI(object):
 
     def format_date(self, d, format=None):
         if format is None:
-            format = self.S['bookie.date_format']
+            format = self.settings['bookie.date_format']
         return format_date(d, format=format, locale=self.locale_name)
 
     def format_datetime(self, dt, format=None):
         if format is None:
-            format = self.S['bookie.datetime_format']
+            format = self.settings['bookie.datetime_format']
         if not isinstance(dt, datetime):
             dt = datetime.fromtimestamp(dt)
         return format_datetime(dt, format=format, locale=self.locale_name)
 
     def format_time(self, t, format=None):
         if format is None:
-            format = self.S['bookie.time_format']
+            format = self.settings['bookie.time_format']
         return format_time(t, format=format, locale=self.locale_name)
 
     def get_type(self, name):
