@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import datetime
 import hashlib
+import re
 import time
 import urllib
 
@@ -289,7 +290,7 @@ class TemplateAPI(object):
     def _resource(self, resource):
         has_package = re.search("^\w+:", resource)
         if not has_package:
-            resource = "%s:%s" % (resource, self.__module__.split(".")[:1])
+            resource = "%s:%s" % (self.__module__.split(".")[0], resource)
         return self.request.static_url(resource)
 
     def _resource_html(self, format, resource):
