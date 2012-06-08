@@ -25,6 +25,17 @@ def is_root(context, request):
     return context is TemplateAPI(context, request).root
 
 
+def add_renderer_globals(event):
+    if event['renderer_name'] != 'json':
+        request = event['request']
+        api = getattr(request, 'template_api', None)
+        if api is None and request is not None:
+            api = template_api(event['context'], event['request'])
+        event['api'] = api
+        if not "page_title" in event:
+            event["page_title"] = get_settings()["bookie.site_title"]
+
+
 CSS_LINK = '<link rel="stylesheet" type="text/css" href="%s"/>'
 SCRIPT_LINK = '<script src="%s"></script>'
 
@@ -213,4 +224,5 @@ class TemplateAPI(object):
     #            if l.permitted(self.context, self.request)]
 
 
-__all__ = ["template_api", "is_root", "TemplateAPI", "CSS_LINK", "SCRIPT_LINK"]
+__all__ = ["template_api", "add_renderer_globals", "is_root", 
+           "TemplateAPI", "CSS_LINK", "SCRIPT_LINK"]

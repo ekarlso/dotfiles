@@ -33,17 +33,6 @@ def render_view(context, request, name='', secure=True):
         return response.ubody
 
 
-def add_renderer_globals(event):
-    if event['renderer_name'] != 'json':
-        request = event['request']
-        api = getattr(request, 'template_api', None)
-        if api is None and request is not None:
-            api = template_api(event['context'], event['request'])
-        event['api'] = api
-        if not "page_title" in event:
-            event["page_title"] = get_settings()["bookie.site_title"]
-
-
 def get_localizer_for_locale_name(locale_name):
     registry = get_current_registry()
     tdirs = registry.queryUtility(ITranslationDirectories, default=[])
@@ -59,5 +48,5 @@ def translate(*args, **kwargs):
     return localizer.translate(*args, **kwargs)
 
 
-__all__ = ["when_normalize", "render_view", "add_renderer_globals",
+__all__ = ["when_normalize", "render_view",
             "get_localizer_for_locale_name", "translate"]
