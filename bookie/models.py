@@ -3,6 +3,7 @@
 import sys
 import datetime
 import logging
+from UserDict import UserDict
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
@@ -28,8 +29,21 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 zmodels.DBSession = DBSession
 
 
-PERMISSIONS = ("add", "view", "edit", "delete", "retailer.admin",
-                "system.admin")
+PERMISSIONS = {
+    "add": {"title": "Add"},
+    "view": {"title": "View"},
+    "edit": {"title": "Edit"},
+    "delete": {"title": "Delete"},
+    "retailer.admin": {"title": "Retailer Admin"},
+    "system.admin": {"title": "System Admin"}}
+
+
+def permission_names():
+    return PERMISSIONS.keys()
+
+def permission_pairs():
+    perms = [(n, v["title"]) for n, v in PERMISSIONS.items()]
+    return perms
 
 
 class BaseModel(object):
@@ -167,7 +181,7 @@ class Group(Base, GroupMixin):
     An organisation - typically something with users and customers
     """
     __display_string__ = "group_name"
-    __possible_permissions__ = PERMISSIONS
+    __possible_permissions__ = permission_names()
     organisation_id = Column(Integer)
     customers = relationship("Customer", backref="retailer")
 
@@ -199,7 +213,7 @@ class UserGroup(Base, UserGroupMixin):
 
 class User(Base, UserMixin):
     __display_string__ = ["first_name", "middle_name", "last_name"]
-    __possible_permissions__ = PERMISSIONS
+    __possible_permissions__ = permission_names()
     first_name = Column(UnicodeText)
     middle_name = Column(UnicodeText)
     last_name = Column(UnicodeText)
