@@ -59,5 +59,5 @@ def translate(*args, **kwargs):
     return localizer.translate(*args, **kwargs)
 
 
-__all__ = ["when_normalize", "render_view", "get_localizer_for_locale_name",
-            "translate"]
+__all__ = ["when_normalize", "render_view", "add_renderer_globals",
+            "get_localizer_for_locale_name", "translate"]
