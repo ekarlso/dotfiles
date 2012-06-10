@@ -73,3 +73,13 @@ def clear_cache():  # only useful for tests really
     _lru_cache.clear()
 
 
+def title_to_name(title, blacklist=()):
+    request = get_current_request()
+    if request is not None:
+        locale_name = get_locale_name(request)
+    else:
+        locale_name = 'en'
+    name = unicode(urlnormalizer.normalize(title, locale_name, max_length=40))
+    while name in blacklist:
+        name = disambiguate_name(name)
+    return name
