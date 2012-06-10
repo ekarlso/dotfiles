@@ -24,6 +24,8 @@ from ziggurat_foundations import ziggurat_model_init, models as zmodels
 _ENGINE = None
 _MAKER = None
 
+LOG = logging.getLogger(__name__)
+
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 zmodels.DBSession = DBSession
@@ -44,6 +46,20 @@ def permission_names():
 def permission_pairs():
     perms = [(n, v["title"]) for n, v in PERMISSIONS.items()]
     return perms
+
+
+def permission_create(perm_type, perm_name, perm_receiver):
+    if perm_type == "user":
+        model = UserPermission
+    elif perm_type == "group":
+        model = GroupPermission
+    else:
+        raise ValueError("Invalid permission type requested")
+
+    data = {perm_type + "_name": perm_receiver, "perm_name": perm_name}
+    LOG.debug("PDATA %s" % data)
+    return model(**data).save()
+
 
 
 class BaseModel(object):
@@ -68,6 +84,7 @@ class BaseModel(object):
 
     def update(self, values):
         for k, v in values.items():
+            LOG.debug("Key %s - %s" % (k, v))
             self[k] = v
 
     def __contains__(self, key):
@@ -139,6 +156,8 @@ class BaseModel(object):
             display = self
         return unicode(display)
 
+    title = display_string
+
 
 Base = declarative_base(cls=BaseModel)
 Base.query = DBSession.query_property()
@@ -154,14 +173,10 @@ def unregister_models(engine):
 
 def configure_db(options):
     global _ENGINE
-    global LOG
     if not _ENGINE:
         sql_str = options["sqlalchemy.url"]
         timeout = options.get("sqlalchemy.timeout", None) or 600
         _ENGINE = create_engine(sql_str, pool_recycle=timeout)
-
-        LOG = logging.getLogger("sqlalchemy.engine")
-        LOG.setLevel(logging.DEBUG)
 
         register_models(_ENGINE)
 
