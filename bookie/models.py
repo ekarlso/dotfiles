@@ -86,6 +86,7 @@ class BaseModel(object):
         for k, v in values.items():
             LOG.debug("Key %s - %s" % (k, v))
             self[k] = v
+        return self
 
     def __contains__(self, key):
         if hasattr(self, key):
