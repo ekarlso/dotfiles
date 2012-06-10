@@ -1,6 +1,7 @@
 import colander
 import deform
 import logging
+import pdb
 
 import colander
 import deform
@@ -11,7 +12,8 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid_deform import CSRFSchema, FormView
 
-from bookie.utils import _
+from bookie.utils import _, title_to_name
+from bookie import models
 from .utils import get_url
 
 
@@ -89,7 +91,8 @@ class EditFormView(BaseFormView):
 
     @reify
     def first_heading(self):
-        return _(u'Edit <em>${title}</em>')
+        return _(u'Edit <em>${title}</em>',
+                mapping=dict(title=self.context.title))
 
 
 class AddFormView(BaseFormView):
@@ -114,12 +117,16 @@ class AddFormView(BaseFormView):
 
     @reify
     def first_heading(self):
+        from bookie.views.helpers.utils import translate
         context_title = getattr(self.request.context, 'title', None)
         type_title = self.item_type or self.add.type_info.title
         if context_title:
-            return _(u'Add ${type} to <em>${title}</em>',)
+            return _(
+                    u'Add ${type} to <em>${title}</em>',
+                    mapping=dict(type=translate(type_title),
+                    title=context_title))
         else:
-            return _(u'Add ${type}',)
+            return _(u'Add ${type}', mapping=dict(type=translate(type_title)))
 
 
 class CommaSeparatedListWidget(Widget):
