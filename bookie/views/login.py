@@ -19,7 +19,7 @@ from .. import models
 LOG = logging.getLogger(__name__)
 
 
-@view_config(route_name='login', renderer='login.html')
+@view_config(route_name='login', renderer='bookie:templates/login.pt')
 def login(context, request):
     login_url = urllib.unquote(request.route_url("login"))
     referrer = request.url
