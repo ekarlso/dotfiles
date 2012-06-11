@@ -78,16 +78,28 @@ class Groups(colander.SequenceSchema):
 
 
 class UserSimpleSchema(colander.Schema):
-    user_name = colander.SchemaNode(colander.String())
-    first_name = colander.SchemaNode(colander.String())
-    middle_name = colander.SchemaNode(colander.String(), missing='')
-    last_name = colander.SchemaNode(colander.String())
+    user_name = colander.SchemaNode(
+        colander.String(),
+        title=_(u"Username"))
+    first_name = colander.SchemaNode(
+        colander.String(),
+        title=_(u"First Name"))
+    middle_name = colander.SchemaNode(
+        colander.String(),
+        missing='',
+        title=_(u"Middle Name"))
+    last_name = colander.SchemaNode(
+        colander.String(),
+        title=_(u"Last Name"))
     password = colander.SchemaNode(
         colander.String(),
         validator=colander.Length(min=5, max=100),
         widget=CheckedPasswordWidget(length="20"),
-        description="Enter password...")
-    email = colander.SchemaNode(colander.String())
+        title=_(u"Password"),
+        description=_(u"Enter password..."))
+    email = colander.SchemaNode(
+        colander.String(),
+        title=_(u"E-Mail"))
     status = colander.SchemaNode(
         colander.Boolean(),
         title=_(u'Active'),
@@ -108,12 +120,12 @@ class UserSchema(UserSimpleSchema):
 
 
 class GroupSchema(colander.Schema):
-    group_name = colander.SchemaNode(colander.String())
+    group_name = colander.SchemaNode(colander.String(), title=_(u'Group name'))
     permissions = colander.SchemaNode(
         deform.Set(allow_empty=True),
         validator=roleset_validator,
         missing=[],
-        title=_(u"Global roles"),
+        title=_(u"Permissions"),
         widget=CheckboxChoiceWidget())
 
 

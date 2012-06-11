@@ -89,7 +89,7 @@ class SetPasswordSchema(colander.MappingSchema):
         )
     email = colander.SchemaNode(
         colander.String(),
-        title=_(u'Email'),
+        title=_(u'E-Mail'),
         widget=HiddenWidget(),
         )
     continue_to = colander.SchemaNode(
