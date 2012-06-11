@@ -155,6 +155,6 @@ def forbidden_view(request):
 
 
 def includeme(config):
-    config.add_view(name='forbidden', renderer='forbidden.html')
+    config.add_view(name='forbidden', renderer='bookie:templates/forbidden.pt')
     config.add_route("login", "/@@login")
     config.add_route("logout", "/@@logout")
