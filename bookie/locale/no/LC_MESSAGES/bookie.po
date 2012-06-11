@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-11 21:26+0200\n"
+"POT-Creation-Date: 2012-06-11 23:19+0200\n"
 "PO-Revision-Date: 2012-06-11 20:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: no <LL@li.org>\n"
@@ -45,7 +45,7 @@ msgstr "Legg til gruppe"
 msgid "Users"
 msgstr "Brukere"
 
-#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:99
+#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:111
 msgid "Groups"
 msgstr "Grupper"
 
@@ -79,12 +79,12 @@ msgstr "Ukjent brukernavn eller e-post."
 msgid "You have been logged out."
 msgstr "Du har blitt logget ut."
 
-#: bookie/views/login.py:82
+#: bookie/views/login.py:82 bookie/views/users.py:98
 msgid "Password"
 msgstr "Passord"
 
-#: bookie/views/login.py:92
-msgid "Email"
+#: bookie/views/login.py:92 bookie/views/users.py:102
+msgid "E-Mail"
 msgstr "E-Post"
 
 #: bookie/views/login.py:104
@@ -111,52 +111,72 @@ msgstr "Bytt passordet ditt - ${title}"
 msgid "No such group: ${group}"
 msgstr "Gruppen finnes ikke: ${group}"
 
-#: bookie/views/users.py:74 bookie/views/users.py:154
+#: bookie/views/users.py:74 bookie/views/users.py:166
 msgid "Group"
 msgstr "Gruppe"
 
+#: bookie/views/users.py:83
+msgid "Username"
+msgstr "Brukernavn"
+
+#: bookie/views/users.py:86
+msgid "First Name"
+msgstr "Fornavn"
+
+#: bookie/views/users.py:90
+msgid "Middle Name"
+msgstr "Mellom navn"
+
 #: bookie/views/users.py:93
+msgid "Last Name"
+msgstr "Etternavn"
+
+#: bookie/views/users.py:99
+msgid "Enter password..."
+msgstr "Skriv inn passord"
+
+#: bookie/views/users.py:105
 msgid "Active"
 msgstr "Aktiv"
 
-#: bookie/views/users.py:94
+#: bookie/views/users.py:106
 msgid "Untick this to deactivate the account."
 msgstr "Huk av denne boksen at denne kontoen skal være aktiv."
 
-#: bookie/views/users.py:106
+#: bookie/views/users.py:118 bookie/views/users.py:128
 msgid "Permissions"
 msgstr "Tilganger"
 
-#: bookie/views/users.py:116
-msgid "Global roles"
-msgstr "Global tilganger"
+#: bookie/views/users.py:123
+msgid "Group name"
+msgstr "Gruppe navn"
 
-#: bookie/views/users.py:121
+#: bookie/views/users.py:133
 msgid "User"
 msgstr "Bruker"
 
-#: bookie/views/users.py:122
+#: bookie/views/users.py:134
 msgid "Add User"
 msgstr "Legg til bruker"
 
-#: bookie/views/users.py:123 bookie/views/users.py:156
+#: bookie/views/users.py:135 bookie/views/users.py:168
 #: bookie/views/helpers/form.py:50
 msgid "Cancel"
 msgstr "Kanseller"
 
-#: bookie/views/users.py:131
+#: bookie/views/users.py:143
 msgid "Send password registration link"
 msgstr "Send lenke for å fullføre registrering"
 
-#: bookie/views/users.py:147
+#: bookie/views/users.py:159
 msgid "${title} added."
 msgstr "${title} er nå lagt til."
 
-#: bookie/views/users.py:155
+#: bookie/views/users.py:167
 msgid "Add Group"
 msgstr "Legg til gruppe"
 
-#: bookie/views/users.py:210
+#: bookie/views/users.py:222
 msgid "No changes made."
 msgstr "Ingen endringer gjort."
 
@@ -183,4 +203,7 @@ msgstr "Legg til ${type} til <em>${title}</em>"
 #: bookie/views/helpers/form.py:137
 msgid "Add ${type}"
 msgstr "Legg til ${type}"
+
+#~ msgid "Email"
+#~ msgstr "E-Post"
 
