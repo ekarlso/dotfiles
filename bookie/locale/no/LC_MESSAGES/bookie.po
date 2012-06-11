@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-11 21:10+0200\n"
+"POT-Creation-Date: 2012-06-11 21:26+0200\n"
 "PO-Revision-Date: 2012-06-11 20:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: no <LL@li.org>\n"
@@ -17,35 +17,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: bookie/templates/admin/auth_manage.pt:7
+#: bookie/templates/login.pt:7
+msgid "Please login:"
+msgstr "Vennligst logg på"
+
+#: bookie/templates/login.pt:13
+msgid "Log in"
+msgstr "Logg på"
+
+#: bookie/templates/admin/auth_manage.pt:9
 msgid "List users"
 msgstr "Vis brukere"
 
-#: bookie/templates/admin/auth_manage.pt:10
+#: bookie/templates/admin/auth_manage.pt:12
 msgid "Add user"
 msgstr "Legg til bruker"
 
-#: bookie/templates/admin/auth_manage.pt:13
+#: bookie/templates/admin/auth_manage.pt:15
 msgid "List groups"
 msgstr "Vis grupper"
 
-#: bookie/templates/admin/auth_manage.pt:16
+#: bookie/templates/admin/auth_manage.pt:18
 msgid "Add group"
 msgstr "Legg til gruppe"
 
-#: bookie/templates/admin/auth_manage.pt:23
+#: bookie/templates/admin/auth_manage.pt:25
 msgid "Users"
 msgstr "Brukere"
 
-#: bookie/templates/admin/auth_manage.pt:34 bookie/views/users.py:99
+#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:99
 msgid "Groups"
 msgstr "Grupper"
 
-#: bookie/templates/admin/group_manage.pt:5
+#: bookie/templates/admin/group_manage.pt:8
 msgid "Editing User"
 msgstr "Endre Bruker"
 
-#: bookie/templates/admin/user_manage.pt:5
+#: bookie/templates/admin/user_manage.pt:7
 msgid "Editing Group"
 msgstr "Endre Gruppe"
 
@@ -176,5 +184,3 @@ msgstr "Legg til ${type} til <em>${title}</em>"
 msgid "Add ${type}"
 msgstr "Legg til ${type}"
 
-#~ msgid "Log in"
-#~ msgstr "Logg på"
