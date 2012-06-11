@@ -1,0 +1,148 @@
+# Translations template for bookie.
+# Copyright (C) 2012 ORGANIZATION
+# This file is distributed under the same license as the bookie project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: bookie 0.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2012-06-11 13:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: bookie/views/login.py:42
+msgid "Welcome, ${user}!"
+msgstr ""
+
+#: bookie/views/login.py:47
+msgid "Login failed."
+msgstr ""
+
+#: bookie/views/login.py:56
+msgid "You should receive an email with a link to reset your password momentarily."
+msgstr ""
+
+#: bookie/views/login.py:61
+msgid "That username or email is not known to us."
+msgstr ""
+
+#: bookie/views/login.py:74
+msgid "You have been logged out."
+msgstr ""
+
+#: bookie/views/login.py:82
+msgid "Password"
+msgstr ""
+
+#: bookie/views/login.py:92
+msgid "Email"
+msgstr ""
+
+#: bookie/views/login.py:104
+msgid "You've reset your password successfully."
+msgstr ""
+
+#: bookie/views/login.py:105
+msgid "Submit"
+msgstr ""
+
+#: bookie/views/login.py:112
+msgid "There was an error."
+msgstr ""
+
+#: bookie/views/login.py:133
+msgid "Your password reset token may have expired."
+msgstr ""
+
+#: bookie/views/login.py:138
+msgid "Reset your password - ${title}"
+msgstr ""
+
+#: bookie/views/users.py:34
+msgid "No such group: ${group}"
+msgstr ""
+
+#: bookie/views/users.py:74 bookie/views/users.py:154
+msgid "Group"
+msgstr ""
+
+#: bookie/views/users.py:93
+msgid "Active"
+msgstr ""
+
+#: bookie/views/users.py:94
+msgid "Untick this to deactivate the account."
+msgstr ""
+
+#: bookie/views/users.py:99
+msgid "Groups"
+msgstr ""
+
+#: bookie/views/users.py:106
+msgid "Permissions"
+msgstr ""
+
+#: bookie/views/users.py:116
+msgid "Global roles"
+msgstr ""
+
+#: bookie/views/users.py:121
+msgid "User"
+msgstr ""
+
+#: bookie/views/users.py:122
+msgid "Add User"
+msgstr ""
+
+#: bookie/views/users.py:123 bookie/views/users.py:156
+#: bookie/views/helpers/form.py:50
+msgid "Cancel"
+msgstr ""
+
+#: bookie/views/users.py:131
+msgid "Send password registration link"
+msgstr ""
+
+#: bookie/views/users.py:147
+msgid "${title} added."
+msgstr ""
+
+#: bookie/views/users.py:155
+msgid "Add Group"
+msgstr ""
+
+#: bookie/views/users.py:214
+msgid "No changes made."
+msgstr ""
+
+#: bookie/views/helpers/form.py:50
+msgid "Save"
+msgstr ""
+
+#: bookie/views/helpers/form.py:51
+msgid "Your changes have been saved."
+msgstr ""
+
+#: bookie/views/helpers/form.py:102
+msgid "Edit <em>${title}</em>"
+msgstr ""
+
+#: bookie/views/helpers/form.py:107
+msgid "Successfully added item."
+msgstr ""
+
+#: bookie/views/helpers/form.py:132
+msgid "Add ${type} to <em>${title}</em>"
+msgstr ""
+
+#: bookie/views/helpers/form.py:137
+msgid "Add ${type}"
+msgstr ""
+
