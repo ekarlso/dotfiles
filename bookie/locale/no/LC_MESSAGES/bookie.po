@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-11 21:02+0200\n"
+"POT-Creation-Date: 2012-06-11 21:10+0200\n"
 "PO-Revision-Date: 2012-06-11 20:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: no <LL@li.org>\n"
@@ -16,10 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
-
-#: bookie/templates/login.pt:11
-msgid "Log in"
-msgstr "Logg på"
 
 #: bookie/templates/admin/auth_manage.pt:7
 msgid "List users"
@@ -65,118 +61,120 @@ msgstr "Innlogging feilet."
 msgid ""
 "You should receive an email with a link to reset your password "
 "momentarily."
-msgstr ""
+msgstr "Du har blitt sendt en lenke som du kan bruke til å bytte passord"
 
 #: bookie/views/login.py:61
 msgid "That username or email is not known to us."
-msgstr ""
+msgstr "Ukjent brukernavn eller e-post."
 
 #: bookie/views/login.py:74
 msgid "You have been logged out."
-msgstr ""
+msgstr "Du har blitt logget ut."
 
 #: bookie/views/login.py:82
 msgid "Password"
-msgstr ""
+msgstr "Passord"
 
 #: bookie/views/login.py:92
 msgid "Email"
-msgstr ""
+msgstr "E-Post"
 
 #: bookie/views/login.py:104
 msgid "You've reset your password successfully."
-msgstr ""
+msgstr "Ditt passord har blitt endret."
 
 #: bookie/views/login.py:105
 msgid "Submit"
-msgstr ""
+msgstr "Send"
 
 #: bookie/views/login.py:112
 msgid "There was an error."
-msgstr ""
+msgstr "Det har oppstått en feil."
 
 #: bookie/views/login.py:133
 msgid "Your password reset token may have expired."
-msgstr ""
+msgstr "Nøkkel for å endre passord har utløpt"
 
 #: bookie/views/login.py:138
 msgid "Reset your password - ${title}"
-msgstr ""
+msgstr "Bytt passordet ditt - ${title}"
 
 #: bookie/views/users.py:34
 msgid "No such group: ${group}"
-msgstr ""
+msgstr "Gruppen finnes ikke: ${group}"
 
 #: bookie/views/users.py:74 bookie/views/users.py:154
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: bookie/views/users.py:93
 msgid "Active"
-msgstr ""
+msgstr "Aktiv"
 
 #: bookie/views/users.py:94
 msgid "Untick this to deactivate the account."
-msgstr ""
+msgstr "Huk av denne boksen at denne kontoen skal være aktiv."
 
 #: bookie/views/users.py:106
 msgid "Permissions"
-msgstr ""
+msgstr "Tilganger"
 
 #: bookie/views/users.py:116
 msgid "Global roles"
-msgstr ""
+msgstr "Global tilganger"
 
 #: bookie/views/users.py:121
 msgid "User"
-msgstr ""
+msgstr "Bruker"
 
 #: bookie/views/users.py:122
 msgid "Add User"
-msgstr ""
+msgstr "Legg til bruker"
 
 #: bookie/views/users.py:123 bookie/views/users.py:156
 #: bookie/views/helpers/form.py:50
 msgid "Cancel"
-msgstr ""
+msgstr "Kanseller"
 
 #: bookie/views/users.py:131
 msgid "Send password registration link"
-msgstr ""
+msgstr "Send lenke for å fullføre registrering"
 
 #: bookie/views/users.py:147
 msgid "${title} added."
-msgstr ""
+msgstr "${title} er nå lagt til."
 
 #: bookie/views/users.py:155
 msgid "Add Group"
-msgstr ""
+msgstr "Legg til gruppe"
 
 #: bookie/views/users.py:210
 msgid "No changes made."
-msgstr ""
+msgstr "Ingen endringer gjort."
 
 #: bookie/views/helpers/form.py:50
 msgid "Save"
-msgstr ""
+msgstr "Lagre"
 
 #: bookie/views/helpers/form.py:51
 msgid "Your changes have been saved."
-msgstr ""
+msgstr "Dine endringer ble lagret."
 
 #: bookie/views/helpers/form.py:102
 msgid "Edit <em>${title}</em>"
-msgstr ""
+msgstr "Endre <em>${title}</em>"
 
 #: bookie/views/helpers/form.py:107
 msgid "Successfully added item."
-msgstr ""
+msgstr "Lagret innslag"
 
 #: bookie/views/helpers/form.py:132
 msgid "Add ${type} to <em>${title}</em>"
-msgstr ""
+msgstr "Legg til ${type} til <em>${title}</em>"
 
 #: bookie/views/helpers/form.py:137
 msgid "Add ${type}"
-msgstr ""
+msgstr "Legg til ${type}"
 
+#~ msgid "Log in"
+#~ msgstr "Logg på"

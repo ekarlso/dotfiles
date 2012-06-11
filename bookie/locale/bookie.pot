@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-11 21:02+0200\n"
+"POT-Creation-Date: 2012-06-11 21:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
-
-#: bookie/templates/login.pt:11
-msgid "Log in"
-msgstr ""
 
 #: bookie/templates/admin/auth_manage.pt:7
 msgid "List users"
