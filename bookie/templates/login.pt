@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')">
+<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bookie">
 
 <div metal:fill-slot="content" id="content">
-    Please login:
+    <h1 i18n:translate="">Please login:</h1>
     <form action="${url}" method="post">
         <input type="hidden" name="came_from" value="${came_from}"/>
         <input type="text" name="login" value="${login}"/><br/>
