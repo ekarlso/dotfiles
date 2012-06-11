@@ -1,0 +1,21 @@
+<html metal:define-macro="main">
+
+<header tal:replace="api.render_template('bookie:templates/head.pt')"></header>
+
+<body>
+<div id="top">
+    <h1 metal:define-slot="page-title">${api.page_title | api.site_title}</h1>
+</div>
+
+<div tal:replace="api.render_template('bookie:templates/navigation.pt')"></div>
+
+<div id="wrapper">
+    <div metal:define-slot="content">
+    </div>
+    <div metal:define-slot="content_menu">
+    </div>
+</div>
+
+<!--footer tal:replace="api.render_template('bookie:templates/footer.pt')"></footer-->
+</body>
+</html>

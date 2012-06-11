@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')">
+
+<div metal:fill-slot="content" id="content">
+    <h1 tal:content="structure first_heading | default" i18n:translate="">Editing User</h1>
+    <form tal:replace="structure form" />
+</div>
+
+</html>

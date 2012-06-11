@@ -1,0 +1,51 @@
+<div id="navbar">
+    <div tal:condition="request.user != None" id="navbar_menu">
+        <table class="rootVoices">
+            <tr>
+                <td class="rootVoice {menu: 'empty'}" onclick="window.location = '/'">Overview</td>
+                <td class="rootVoice {menu: 'm_order'}" onclick="window.location = '/w/order/list'">Order</td>
+                <td class="rootVoice {menu: 'm_car'}" onclick="window.location = '/w/car/list'">Cars</td>
+                <td class="rootVoice {menu: 'm_customer'}" onclick="window.location = '/w/customer/list'">Customer</td>
+                <td class="rootVoice {menu: 'm_settings'}" onclick="window.location = '/w/setting'">Settings</td>
+                <!--#% if request.user != None and request.user.view_admin_menu():-->
+            </tr>
+        </table>
+    </div>
+
+    <div id="m_order" class="mbmenu">
+        <a href="/w/order/form">Create</a>
+    </div>
+
+    <div id="m_car" class="mbmenu">
+        <a href="/w/car/form">Add</a>
+    </div>
+
+    <div id="m_customer" class="mbmenu">
+        <a href="/customer/add">Add</a>
+    </div>
+
+
+    <div id="m_settings" class="mbmenu">
+        <a href="/@@prefs">My User</a>
+        <a href="/@@admin/auth">Users & Groups</a>
+        <a class="{menu: 'm_sub_category', img: '24-tag-add.png'}">Categories</a>
+    </div>
+
+    <div id="m_sub_category" class="mbmenu">
+        <a href="/w/category/list">Manage</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(function() {
+        $("#navbar_menu").buildMenu({
+            menuWidth: 150,
+            iconPath: "/static/icons/menu/",
+            openOnRight: false,
+            shadow: true,
+            openOnClick: false,
+            closeOnMouseOut: true
+        });
+    });
+</script>

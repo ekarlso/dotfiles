@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')">
+
+<div metal:fill-slot="content" id="content">
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a href="#list-user-tab" data-toggle="tab" i18n:translate="">List users</a>
+    </li>
+    <li>
+        <a href="#add-user-tab" data-toggle="tab" i18n:translate="">Add user</a>
+    </li>
+    <li>
+        <a href="#list-group-tab" data-toggle="tab" i18n:translate="">List groups</a>
+    </li>
+    <li>
+        <a href="#add-group-tab" data-toggle="tab" i18n:translate="">Add group</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane active" id="list-user-tab">
+        <table class="stylized">
+            <h1 i18n:translate="">Users</h1>
+            <table tal:replace="structure user_grid"/>
+        </table>
+    </div>
+    <div class="tab-pane" id="add-user-tab">
+        <h1 tal:content="user_addform['first_heading']"/>
+        <form tal:replace="structure user_addform['form']"/>
+    </div>
+
+    <div class="tab-pane" id="list-group-tab">
+        <table class="stylized">
+            <h1 i18n:translate="">Groups</h1>
+            <table tal:replace="structure group_grid"/>
+        </table>
+    </div>
+    <div class="tab-pane" id="add-group-tab">
+        <h1 tal:content="group_addform['first_heading']"/>
+        <form tal:replace="structure group_addform['form']"/>
+    </div>
+</div>
+</div>
+
+</html>
