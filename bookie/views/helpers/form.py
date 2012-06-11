@@ -28,6 +28,14 @@ def get_appstruct(context, schema):
     return appstruct
 
 
+def mk_form(form_cls, ctx, request):
+    form = form_cls(ctx, request)()
+    if request.is_response(form):
+        return form
+    return form
+
+
+
 class Form(deform.Form):
     """A deform Form that allows 'appstruct' to be set on the instance.
     """
@@ -141,4 +149,4 @@ class CommaSeparatedListWidget(Widget):
         return [item.strip() for item in pstruct.split(',') if item]
 
 
-__all__ = ["get_appstruct", "EditFormView", "AddFormView"]
+__all__ = ["get_appstruct", "mk_form", "EditFormView", "AddFormView"]
