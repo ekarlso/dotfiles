@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import wraps
 import hashlib
 import re
 import urllib
@@ -13,7 +14,7 @@ from pyramid.url import resource_url
 from bookie import get_settings
 from bookie.utils import _
 
-from .utils import render_view
+from .utils import render_view, translate
 
 
 def template_api(context, request, **kwargs):
@@ -32,8 +33,6 @@ def add_renderer_globals(event):
         if api is None and request is not None:
             api = template_api(event['context'], event['request'])
         event['api'] = api
-        if not "page_title" in event:
-            event["page_title"] = get_settings()["bookie.site_title"]
 
 
 CSS_LINK = '<link rel="stylesheet" type="text/css" href="%s"/>'
@@ -59,7 +58,6 @@ class TemplateAPI(object):
     Use dict-access as a shortcut to retrieve template macros from
     templates.
     """
-
     def __init__(self, context, request, bare=None, **kwargs):
         self.context, self.request = context, request
 
@@ -72,9 +70,12 @@ class TemplateAPI(object):
         self.bare = bare
         self.__dict__.update(kwargs)
 
-    @classmethod
-    def resource_url(cls, resource):
-        get_
+    def macro(self, asset_spec, macro_name='main'):
+        return get_renderer(asset_spec).implementation().macros[macro_name]
+
+    #@classmethod
+    #def resource_url(cls, resource):
+    #    get_
 
     def _resource(self, resource):
         has_package = re.search("^\w+:", resource)
@@ -110,8 +111,10 @@ class TemplateAPI(object):
         view_title = self.request.view_name.replace('_', ' ').title()
         if view_title:
             view_title += u' '
-        view_title += self.context.title
-        return u'%s - %s' % (view_title, self.site_title)
+        view_title += getattr(self.context, "title", "")
+        if view_title == '':
+            view_title = self.site_title
+        return u'%s' % (view_title)
 
     def url(self, context=None, *elements, **kwargs):
         if context is None:
@@ -224,5 +227,5 @@ class TemplateAPI(object):
     #            if l.permitted(self.context, self.request)]
 
 
-__all__ = ["template_api", "add_renderer_globals", "is_root", 
+__all__ = ["template_api", "add_renderer_globals", "is_root",
            "TemplateAPI", "CSS_LINK", "SCRIPT_LINK"]
