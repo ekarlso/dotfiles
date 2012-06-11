@@ -23,7 +23,8 @@
         </table>
     </div>
     <div class="tab-pane" id="add-user-tab">
-        ${user_addform|n}
+        <h1>${user_addform["first_heading"]|n}</h1>
+        ${user_addform["form"]|n}
     </div>
     <div class="tab-pane" id="list-group-tab">
         <table class="stylized">
@@ -32,6 +33,6 @@
         </table>
     </div>
     <div class="tab-pane" id="add-group-tab">
-        ${group_addform|n}
+        ${group_addform["form"]|n}
     </div>
 </div>
