@@ -14,4 +14,6 @@ transaction
 zope.sqlalchemy
 waitress
 decorator
+Babel 
+lingua
 -e hg+https://bitbucket.org/ergo/ziggurat_foundations#egg=Ziggurat
