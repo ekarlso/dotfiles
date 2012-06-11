@@ -34,6 +34,12 @@ setup(name='bookie',
       include_package_data=True,
       zip_safe=False,
       test_suite='bookie',
+      message_extractors  = { ".": [
+        ('**.py',   'lingua_python', None ),
+        ('**.pt',   'lingua_xml', None ),
+        ('**.html',   'mako', None ),
+        ('**.mako',   'mako', None ),
+      ]},
       install_requires=requires,
       entry_points="""\
       [paste.app_factory]
