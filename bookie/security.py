@@ -55,5 +55,3 @@ class RootFactory(object):
         if request.user:
             for perm_user, perm_name in request.user.permissions:
                 self.__acl__.append((Allow, perm_user, perm_name,))
-        pass
-
