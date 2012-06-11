@@ -77,7 +77,7 @@ class Groups(colander.SequenceSchema):
         widget=AutocompleteInputWidget())
 
 
-class UserPreferenceSchema(colander.Schema):
+class UserSimpleSchema(colander.Schema):
     user_name = colander.SchemaNode(colander.String())
     first_name = colander.SchemaNode(colander.String())
     middle_name = colander.SchemaNode(colander.String(), missing='')
@@ -94,7 +94,7 @@ class UserPreferenceSchema(colander.Schema):
         description=_(u"Untick this to deactivate the account."))
 
 
-class UserSchema(UserPreferenceSchema):
+class UserSchema(UserSimpleSchema):
     groups = Groups(
         title=_(u'Groups'),
         missing=[],
@@ -196,24 +196,24 @@ class UserForm(EditFormView):
         return self.request.url
 
     def schema_factory(self):
-        return UserSchema()
+        return UserSimpleSchema()
 
 
 class UserEditForm(UserForm):
     def schema_factory(self):
         schema = UserSchema()
-        del schema["password"]
         _add_from_db(schema)
+        del schema["password"]
         return schema
-
-    def save_success(self, appstruct):
-        _in(appstruct)
-        return super(UserForm, self).save_success(appstruct)
 
     def cancel_success(self, appstruct):
         self.request.session.flash(_(u'No changes made.'), 'info')
         return HTTPFound(location=get_url("auth_manage"))
     cancel_failure = cancel_success
+
+    def save_success(self, appstruct):
+        _in(appstruct)
+        return super(UserForm, self).save_success(appstruct)
 
 
 class GroupEditForm(UserEditForm):
@@ -221,11 +221,6 @@ class GroupEditForm(UserEditForm):
         s = GroupSchema()
         _add_from_db(s)
         return GroupSchema()
-
-    def save_success(self, appstruct):
-        _in(appstruct)
-        return super(UserForm, self).save_success(appstruct)
-
 
 
 @view_config(route_name="user_manage", permission="system.admin",
@@ -243,13 +238,10 @@ def group_edit(request):
 
 
 @view_config(route_name="user_prefs", permission="view",
-            renderer="bookie:templates/admin/user_prefs.pt")
+            renderer="bookie:templates/user_prefs.pt")
 def user_preferences(request):
     user = request.user
-    form = UserForm(user, request)()
-    if request.is_response(form):
-        return form
-    return {"form": form["form"]}
+    return mk_form(UserForm, user, request)
 
 
 def includeme(config):
