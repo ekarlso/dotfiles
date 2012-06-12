@@ -12,7 +12,7 @@ _ = TranslationStringFactory('bookie')
 class DontCache(Exception):
     pass
 
-_CACHE_ATTR = 'kotti_cache'
+_CACHE_ATTR = 'bookie_cache'
 
 
 def request_container():
