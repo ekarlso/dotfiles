@@ -37,14 +37,9 @@ def _initTestingDB():
 
 
 def _populator():
-    from bookie import DBSession
-    from bookie.resources import Document
     from bookie.populate import populate
-
+    print "POPULATE"
     populate()
-    for doc in DBSession.query(Document)[1:]:
-        DBSession.delete(doc)
-    transaction.commit()
 
 
 def _turn_warnings_into_errors():  # pragma: no cover
