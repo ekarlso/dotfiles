@@ -133,4 +133,4 @@ def includeme(config):
 
 
 __all__ = ["authtkt_factory", "acl_factory", "beaker_session_factory", "get_settings",
-          "base_configure"]
+          "_resolve_dotted", "base_configure"]
