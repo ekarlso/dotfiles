@@ -22,7 +22,7 @@ from ziggurat_foundations import ziggurat_model_init, models as zmodels
 
 from colanderalchemy import SQLAlchemyMapping
 
-from .utils import cap_to_us, us_to_cap
+from .utils import camel_to_name, name_to_camel
 
 
 _ENGINE = None
@@ -334,7 +334,7 @@ class Entity(Base):
     _type = Column(Unicode(50))
     @declared_attr
     def __mapper_args__(cls):
-        name = unicode(cap_to_us(cls.__name__))
+        name = unicode(camel_to_name(cls.__name__))
         return {"polymorphic_on": "_type", "polymorphic_identity": name}
     brand = Column(UnicodeText)
     model = Column(UnicodeText)

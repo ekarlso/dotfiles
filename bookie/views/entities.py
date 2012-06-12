@@ -12,7 +12,7 @@ from pyramid.request import Request
 from pyramid.view import view_config
 
 from .. import models
-from ..utils import _, cap_to_us, us_to_cap
+from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
 from .helpers import get_url, create_anchor, wrap_td
 
@@ -41,7 +41,7 @@ def get_model(obj):
     """
     t = get_type(obj)
     try:
-        tm = getattr(models, us_to_cap(t))
+        tm = getattr(models, name_to_camel(t))
     except AttributeError:
         raise HTTPNotFound(_("Invalid type ${type} requested",
             mapping=dict(type=t)))
@@ -71,7 +71,7 @@ class CarAddForm(AddFormView):
     def schema_factory(self):
         schema = CarSchema()
         #schema = models.Car.get_schema()
-        #schema = SQLAlchemyMapping(models.Entity)
+        schema = SQLAlchemyMapping(models.Entity)
         #print "SCHEMA IS", schema
         return schema
 
@@ -119,7 +119,7 @@ def entities_manage(context, request):
         wrap_td(
             create_anchor(
                 item["title"], "entity_manage", type=type_, id=1))
-    return {"entity_grid": grid, "entity_type": us_to_cap(type_)}
+    return {"entity_grid": grid, "entity_type": camel_to_name(type_)}
 
 
 def includeme(config):

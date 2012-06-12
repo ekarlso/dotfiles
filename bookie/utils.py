@@ -73,6 +73,20 @@ def clear_cache():  # only useful for tests really
     _lru_cache.clear()
 
 
+def disambiguate_name(name):
+    parts = name.split(u'-')
+    if len(parts) > 1:
+        try:
+            index = int(parts[-1])
+        except ValueError:
+            parts.append(u'1')
+        else:
+            parts[-1] = unicode(index + 1)
+    else:
+        parts.append(u'1')
+    return u'-'.join(parts)
+
+
 def title_to_name(title, blacklist=()):
     request = get_current_request()
     if request is not None:
@@ -85,15 +99,24 @@ def title_to_name(title, blacklist=()):
     return name
 
 
-def cap_to_us(string):
+def camel_to_name(text):
     """
-    Converts 'TestTest' to 'test_test'
+      >>> camel_case_to_name('FooBar')
+      'foo_bar'
+      >>> camel_case_to_name('TXTFile')
+      'txt_file'
+      >>> camel_case_to_name ('MyTXTFile')
+      'my_txt_file'
+      >>> camel_case_to_name('froBOZ')
+      'fro_boz'
+      >>> camel_case_to_name('f')
+      'f'
     """
-    underscored = "_".join(re.findall('[A-Z][^A-Z]*', string))
-    return underscored.lower()
+    return re.sub(
+        r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r'_\1', text).lower()
 
 
-def us_to_cap(string):
+def name_to_camel(string):
     """
     Convert a string with 'test_test' to 'TestTest'
     """
