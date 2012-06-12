@@ -5,17 +5,25 @@ from pyramid.interfaces import ITranslationDirectories
 from pyramid.threadlocal import get_current_registry, get_current_request
 from pyramid.view import render_view_to_response
 from pyramid.url import route_url as _url
-from webhelpers.html import grid, tags
+from webhelpers.html import grid, HTML, tags
 from webhelpers import date
 
 from bookie import get_settings
 from bookie.utils import _
 
 
-def get_url(route, **kw):
+def get_url(route, *args, **kw):
     request = get_current_request()
-    location = "%s" % _url(route, request, **kw)
+    location = "%s" % _url(route, request, *args, **kw)
     return location
+
+
+def create_anchor(string, route=None, *args, **kw):
+    return '<a href="%s">%s</a>' % (get_url(route, *args, **kw), string)
+
+
+def wrap_td(string):
+    return HTML.td(string)
 
 
 def when_normalize(col_num, i, item):
@@ -32,6 +40,8 @@ def when_normalize(col_num, i, item):
     else:
        return HTML.td(label, title=time.strftime('%Y-%m-%d %H:%M:%S'),
             class_='c%s' % col_num)
+
+
 
 
 def render_view(context, request, name='', secure=True):
@@ -55,5 +65,5 @@ def translate(*args, **kwargs):
     return localizer.translate(*args, **kwargs)
 
 
-__all__ = ["get_url", "when_normalize", "render_view",
+__all__ = ["get_url", "create_anchor", "wrap_td", "when_normalize", "render_view",
             "get_localizer_for_locale_name", "translate"]
