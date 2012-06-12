@@ -29,7 +29,7 @@ def testing_db_url():
 
 def _initTestingDB():
     from sqlalchemy import create_engine
-    from bookie.models import configure_db
+    from bookie.db import configure_db
 
     database_url = testing_db_url()
     session = configure_db({"sqlalchemy.url": database_url})
@@ -38,7 +38,6 @@ def _initTestingDB():
 
 def _populator():
     from bookie.populate import populate
-    print "POPULATE"
     populate()
 
 
@@ -52,8 +51,8 @@ def _turn_warnings_into_errors():  # pragma: no cover
 
 
 def setUp(init_db=True, **kwargs):
-    from bookie import _resolve_dotted
-    from bookie import conf_defaults
+    from bookie.app import _resolve_dotted
+    from bookie.app import conf_defaults
 
     tearDown()
     settings = conf_defaults.copy()
