@@ -5,7 +5,7 @@ import datetime
 import logging
 from UserDict import UserDict
 
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import (
     relationship, backref, exc, object_mapper, synonym, validates,
         sessionmaker, scoped_session)
@@ -21,6 +21,8 @@ from ziggurat_foundations.models import BaseModel, UserMixin, GroupMixin, \
 from ziggurat_foundations import ziggurat_model_init, models as zmodels
 
 from colanderalchemy import SQLAlchemyMapping
+
+from .utils import cap_to_us, us_to_cap
 
 
 _ENGINE = None
@@ -68,7 +70,7 @@ class BaseModel(object):
     """
     Base class to make ones life working with models and python easier
     """
-    __display_rows__ = None
+    __display_colums__ = None
     __display_string__ = None
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
@@ -131,9 +133,9 @@ class BaseModel(object):
         return SQLAlchemyMapping(cls)
 
     @property
-    def display_rows(self):
+    def display_columns(self):
         copy = self.to_dict()
-        if not self.__display_rows__:
+        if not self.__display_columns__:
             return copy
         ret = {}
         for row_name in self.__display__rows__:
@@ -157,14 +159,14 @@ class BaseModel(object):
             for i in self.__display_string__:
                  data = copy.get(i, None)
                  if data:
-                    display.append(data)
+                    display.append(unicode(data))
             display = " ".join(display)
         else:
             display = self
         return unicode(display)
 
     @classmethod
-    def exposed_rows(cls):
+    def exposed_columns(cls):
         return cls.__display_string__
 
     title = display_string
@@ -328,6 +330,12 @@ class Entity(Base):
     """
     __tablename__ = "entity"
     id = Column(Integer, primary_key=True)
+    _type = Column(Unicode(50))
+    @declared_attr
+    def __mapper_args__(cls):
+        name = unicode(cap_to_us(cls.__name__))
+        print "NAME", name
+        return {"polymorphic_on": "_type", "polymorphic_identity": name}
     brand = Column(UnicodeText)
     model = Column(UnicodeText)
     identifier = Column(UnicodeText, unique=True)
