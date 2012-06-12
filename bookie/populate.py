@@ -4,9 +4,9 @@ from pprint import pformat
 from random import choice
 import transaction
 
-from .models import configure_db, \
-    User, UserPermission, Group, GroupPermission, Resource, Customer
-from .models import Category, Entity, Property, DrivableEntity, Car
+from .db.models import User, UserPermission, Group, GroupPermission, \
+    Resource, Customer
+from .db.models import Category, Entity, Property, DrivableEntity, Car
 
 
 def category_dict(names):
