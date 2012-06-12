@@ -1,4 +1,5 @@
 import logging
+import pdb
 
 import colander
 import deform
@@ -94,6 +95,7 @@ class CarEditForm(EditFormView):
 
 @view_config(route_name="entity_add", renderer="bookie:templates/entity/add.pt")
 def entity_add(context, request):
+    type_ = get_type(request)
     s = models.Car.get_schema()
     return mk_form(CarAddForm, context, request)
 
@@ -117,7 +119,7 @@ def entities_manage(context, request):
         wrap_td(
             create_anchor(
                 item["title"], "entity_manage", type=type_, id=1))
-    return {"entity_grid": grid, "entity_type": type_.title()}
+    return {"entity_grid": grid, "entity_type": us_to_cap(type_)}
 
 
 def includeme(config):
