@@ -29,6 +29,7 @@ conf_defaults = {
     "bookie.base_includes": " ".join([
         "bookie",
         "bookie.views",
+        "bookie.views.entities",
         "bookie.views.login",
         "bookie.views.users"]),
     'bookie.root_factory': 'bookie.security.RootFactory',
