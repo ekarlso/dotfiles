@@ -20,6 +20,8 @@ from ziggurat_foundations.models import BaseModel, UserMixin, GroupMixin, \
     ExternalIdentityMixin
 from ziggurat_foundations import ziggurat_model_init, models as zmodels
 
+from colanderalchemy import SQLAlchemyMapping
+
 
 _ENGINE = None
 _MAKER = None
@@ -124,6 +126,10 @@ class BaseModel(object):
     def to_dict(self):
         return self.__dict__.copy()
 
+    @classmethod
+    def get_schema(cls):
+        return SQLAlchemyMapping(cls)
+
     @property
     def display_rows(self):
         copy = self.to_dict()
@@ -156,6 +162,10 @@ class BaseModel(object):
         else:
             display = self
         return unicode(display)
+
+    @classmethod
+    def exposed_rows(cls):
+        return cls.__display_string__
 
     title = display_string
 
@@ -345,7 +355,8 @@ class DrivableEntity(Entity):
         print "gps" in self.properties
 
 
-Car = DrivableEntity
+class Car(DrivableEntity):
+    __display_string__ = ["brand", "model", "produced"]
 
 
 class Order(Base):
