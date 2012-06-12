@@ -13,8 +13,8 @@ from pyramid.security import authenticated_userid, remember, forget
 from pyramid.url import resource_url
 from pyramid.view import view_config
 
+from ..db import models
 from ..utils import _
-from .. import models
 
 LOG = logging.getLogger(__name__)
 

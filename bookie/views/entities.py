@@ -11,7 +11,7 @@ from pyramid.exceptions import Forbidden
 from pyramid.request import Request
 from pyramid.view import view_config
 
-from .. import models
+from ..db import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
 from .helpers import get_url, create_anchor, wrap_td
@@ -21,7 +21,6 @@ LOG = logging.getLogger(__name__)
 
 
 from colanderalchemy import SQLAlchemyMapping
-
 
 
 def get_type(obj):
