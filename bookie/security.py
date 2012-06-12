@@ -3,7 +3,7 @@ from pyramid import httpexceptions as exception
 from pyramid.security import unauthenticated_userid, Authenticated, Allow, \
     Everyone
 
-from . import models
+from .db import models
 
 LOG = logging.getLogger(__name__)
 
