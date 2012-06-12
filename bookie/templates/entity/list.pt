@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bookie">
+
+<div metal:fill-slot="content" id="content">
+    <table class="stylized">
+        <h1 tal:content="structure entity_type | default" i18n:translate="">Entity</h1>
+        <table tal:replace="structure entity_grid"/>
+    </table>
+</div>
+
+</html>
