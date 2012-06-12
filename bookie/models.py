@@ -70,12 +70,10 @@ class BaseModel(object):
     """
     Base class to make ones life working with models and python easier
     """
-    __display_colums__ = None
+    __display_columns__ = None
     __display_string__ = None
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
-
-    ROW_DISPLAY = None
 
     def save(self, session=None):
         session = session or get_session()
@@ -138,7 +136,7 @@ class BaseModel(object):
         if not self.__display_columns__:
             return copy
         ret = {}
-        for row_name in self.__display__rows__:
+        for row_name in self.__display_columns__:
             ret[row_name] = copy[row_name]
         return ret
 
@@ -149,6 +147,10 @@ class BaseModel(object):
         if not hasattr(self, dn):
             dn = "id"
         return getattr(self, dn)
+
+    @classmethod
+    def exposed_columns(cls):
+        return cls.__display_columns__
 
     @property
     def display_string(self):
@@ -165,9 +167,6 @@ class BaseModel(object):
             display = self
         return unicode(display)
 
-    @classmethod
-    def exposed_columns(cls):
-        return cls.__display_string__
 
     title = display_string
 
@@ -329,6 +328,8 @@ class Entity(Base):
     A Entity is a product / thing to be rented out to a customer
     """
     __tablename__ = "entity"
+    __display_string__ = ["brand", "model", "produced", "identifier"]
+    __display_columns__ = []
     id = Column(Integer, primary_key=True)
     _type = Column(Unicode(50))
     @declared_attr
@@ -357,13 +358,15 @@ class DrivableEntity(Entity):
     """
     Represent a drivable entity
     """
+    __display_string__ = ["brand", "model", "produced", "identifier"]
+    __display_columns__ = __display_string__
     @property
     def gps(self, value=None):
         print "gps" in self.properties
 
 
 class Car(DrivableEntity):
-    __display_string__ = ["brand", "model", "produced"]
+    pass
 
 
 class Order(Base):
