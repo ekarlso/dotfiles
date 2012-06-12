@@ -334,7 +334,6 @@ class Entity(Base):
     @declared_attr
     def __mapper_args__(cls):
         name = unicode(cap_to_us(cls.__name__))
-        print "NAME", name
         return {"polymorphic_on": "_type", "polymorphic_identity": name}
     brand = Column(UnicodeText)
     model = Column(UnicodeText)
