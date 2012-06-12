@@ -1,17 +1,19 @@
 import os
 import sys
-import transaction
 from pprint import pformat
-
 from random import choice
-
-from sqlalchemy import engine_from_config
+import transaction
 
 from pyramid.paster import get_appsettings, setup_logging
+from sqlalchemy import engine_from_config
 
 from ..models import (
     configure_db, User, UserPermission, Group, GroupPermission, Resource,
-    Customer, DrivableEntity, Category, Property
+    Customer, Category, Property
+)
+
+from ..models import (
+    Entity, DrivableEntity, Car
 )
 
 
@@ -84,13 +86,13 @@ def load_samples():
             resource_name="Cars", categories=[top_cars, top_transport],
             resource_type="categories").save()
 
-        entity = DrivableEntity(
+        entity = Car(
             brand="Mitsubishi",
             model="Lancer",
             identifier="DL87162",
             produced=2008,
             categories=[sub_cars["SUV"]]).save()
-        entity = DrivableEntity(
+        entity = Car(
             brand="Hyundai",
             model="Elantra",
             identifier="RH73369",
@@ -128,13 +130,13 @@ def load_samples():
             resource_name="Transport", categories=[top_truck, top_bus],
             resource_type="categories").save()
 
-        entity = DrivableEntity(
+        entity = Car(
             brand="Brand-A",
             model="Model-A",
             identifier="ID-A",
             produced=2004,
             categories=[sub_truck["18 m3"]]).save()
-        entity = DrivableEntity(
+        entity = Car(
             brand="Brand-B",
             model="Model-B",
             identifier="ID-B",
