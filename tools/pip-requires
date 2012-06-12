@@ -17,4 +17,5 @@ decorator
 Babel 
 lingua
 -e hg+https://bitbucket.org/ergo/ziggurat_foundations#egg=Ziggurat
--e git+https://github.com/iElectric/ColanderAlchemy.git#egg=ColanderAlchemy
+#-e git+https://github.com/iElectric/ColanderAlchemy.git#egg=ColanderAlchemy
+-e git+https://github.com/stefanofontanelli/ColanderAlchemy.git#egg=ColanderAlchemy
