@@ -32,6 +32,7 @@ conf_defaults = {
         "bookie.views.entities",
         "bookie.views.login",
         "bookie.views.users"]),
+    'bookie.use_tables': '',
     'bookie.root_factory': 'bookie.security.RootFactory',
     'bookie.authn_policy_factory': 'bookie.authtkt_factory',
     'bookie.authz_policy_factory': 'bookie.acl_factory',
@@ -96,7 +97,6 @@ def base_configure(global_config, **settings):
     config = Configurator(settings=settings,
                         root_factory=settings['bookie.root_factory'][0])
     config.begin()
-
     config.registry.settings['pyramid.includes'] = pyramid_includes
 
     # Include modules listed in 'bookie.base_includes':
