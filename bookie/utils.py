@@ -83,3 +83,18 @@ def title_to_name(title, blacklist=()):
     while name in blacklist:
         name = disambiguate_name(name)
     return name
+
+
+def cap_to_us(string):
+    """
+    Converts 'TestTest' to 'test_test'
+    """
+    underscored = "_".join(re.findall('[A-Z][^A-Z]*', string))
+    return underscored.lower()
+
+
+def us_to_cap(string):
+    """
+    Convert a string with 'test_test' to 'TestTest'
+    """
+    return "".join([i.title() for i in string.split("_")])
