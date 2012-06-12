@@ -25,7 +25,7 @@ def acl_factory(**settings):
     return ACLAuthorizationPolicy()
 
 
-def add_user_to_request(request):
+def get_user(request):
     user = unauthenticated_userid(request)
     if user:
         return models.User.by_user_name(user)

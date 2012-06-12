@@ -34,7 +34,9 @@ conf_defaults = {
     'bookie.root_factory': 'bookie.security.RootFactory',
     'bookie.authn_policy_factory': 'bookie.authtkt_factory',
     'bookie.authz_policy_factory': 'bookie.acl_factory',
-    'bookie.session_factory': 'bookie.beaker_session_factory'}
+    'bookie.session_factory': 'bookie.beaker_session_factory',
+    'bookie.caching_policy_chooser': (
+        'bookie.views.cache.default_caching_policy_chooser')}
 
 
 conf_dotted = set([
@@ -125,8 +127,7 @@ def includeme(config):
 
     # NOTE: Anything else that's not in base here..
     config.add_translation_dirs('bookie:locale')
-    config.set_request_property(security.add_user_to_request, 'user',
-                                reify=True)
+    config.set_request_property(security.get_user, 'user', reify=True)
     from .views.helpers import add_renderer_globals
     config.add_subscriber(add_renderer_globals, BeforeRender)
     return config
