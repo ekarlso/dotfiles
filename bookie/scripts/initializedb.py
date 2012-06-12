@@ -6,7 +6,7 @@ import transaction
 
 from pyramid.paster import get_appsettings, setup_logging
 
-from ..models import configure_db
+from ..db import configure_db
 from ..populate import load_samples
 
 
