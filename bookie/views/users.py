@@ -12,7 +12,6 @@ from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
 from pyramid.httpexceptions import HTTPFound
 from pyramid.exceptions import Forbidden
 from pyramid.view import view_config
-from webhelpers.html.grid import Grid
 
 from .. import models
 from ..utils import _
@@ -24,21 +23,33 @@ LOG = logging.getLogger(__name__)
 
 
 def roleset_validator(node, value):
+    """
+    Validate roles
+    """
     oneof = colander.OneOf(models.permission_names())
     [oneof(node, item) for item in value]
 
 
 def group_validator(node, value):
+    """
+    Validate a group
+    """
     group = models.Group.by_group_name(value)
     if not group:
         raise colander.Invalid(node, _(u"No such group: ${group}",
                                 mapping=dict(group=value)))
 
 def _type(keys):
+    """
+    Tells one which type a appstruct is based on contents of keys
+    """
     return "group" if "group_name" in keys else "user"
 
 
 def _add_from_db(schema):
+    """
+    Adds stuff from the database
+    """
     if "groups" in schema:
         schema["groups"]["group"].widget.values = \
             [dict(label=g.group_name, value=g.group_name) \
