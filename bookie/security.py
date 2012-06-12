@@ -31,6 +31,10 @@ def add_user_to_request(request):
         return models.User.by_user_name(user)
 
 
+def reset():
+    pass
+
+
 class ResourceFactory(object):
     def __init__(self, request):
         self.__acl__ = []
