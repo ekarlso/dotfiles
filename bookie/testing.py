@@ -29,10 +29,10 @@ def testing_db_url():
 
 def _initTestingDB():
     from sqlalchemy import create_engine
-    from bookie.resources import initialize_sql
+    from bookie.models import configure_db
 
     database_url = testing_db_url()
-    session = initialize_sql(create_engine(database_url), drop_all=True)
+    session = configure_db({"sqlalchemy.url": database_url})
     return session
 
 
@@ -57,8 +57,6 @@ def _turn_warnings_into_errors():  # pragma: no cover
 
 
 def setUp(init_db=True, **kwargs):
-    #_turn_warnings_into_errors()
-
     from bookie import _resolve_dotted
     from bookie import conf_defaults
 
@@ -82,16 +80,12 @@ def setUp(init_db=True, **kwargs):
 
 
 def tearDown():
-    from bookie import events
     from bookie import security
-    from bookie.message import _inject_mailer
 
     # These should arguable use the configurator, so they don't need
     # to be torn down separately:
-    events.clear()
     security.reset()
 
-    _inject_mailer[:] = []
     transaction.abort()
     testing.tearDown()
 
