@@ -36,11 +36,6 @@ def _initTestingDB():
     return session
 
 
-def _populator():
-    from bookie.populate import populate
-    populate()
-
-
 def _turn_warnings_into_errors():  # pragma: no cover
     # turn all warnings into errors, but let the `ImportWarning`
     # produced by Babel's `localedata.py` vs `localedata/` show up once...
@@ -111,7 +106,7 @@ def setUpFunctional(global_config=None, **settings):
         'sqlalchemy.url': testing_db_url(),
         'bookie.secret': 'secret',
         'bookie.site_title': 'Bookie BETA',  # for mailing
-        'bookie.populators': 'bookie.testing._populator',
+        'bookie.populators': 'bookie.populate.populate_samples',
         'mail.default_sender': 'bookie@localhost',
         }
     _settings.update(settings)
