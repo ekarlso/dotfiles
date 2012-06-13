@@ -15,7 +15,7 @@ def register_models(engine):
 
 def unregister_models(engine):
     Base.metadata.reflect()
-    Base.metata.drop_all(engine)
+    Base.metadata.drop_all(engine)
 
 
 def configure_db(settings=None, drop_all=False):
