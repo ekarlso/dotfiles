@@ -31,8 +31,7 @@ def _initTestingDB():
     from sqlalchemy import create_engine
     from bookie.db import configure_db
 
-    database_url = testing_db_url()
-    session = configure_db({"sqlalchemy.url": database_url})
+    session = configure_db(drop_all=True)
     return session
 
 
@@ -54,6 +53,7 @@ def setUp(init_db=True, **kwargs):
     settings['bookie.secret'] = 'secret'
     settings['bookie.secret2'] = 'secret2'
     settings['bookie.populators'] = 'bookie.populate.populate_samples'
+    settings["sqlalchemy.url"] = testing_db_url()
     settings.update(kwargs.get('settings', {}))
     _resolve_dotted(settings)
     kwargs['settings'] = settings
@@ -64,7 +64,6 @@ def setUp(init_db=True, **kwargs):
     if init_db:
         _initTestingDB()
 
-    transaction.begin()
     return config
 
 
