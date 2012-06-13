@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-11 23:19+0200\n"
+"POT-Creation-Date: 2012-06-13 10:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
+
+#: bookie/templates/booking.pt:8
+msgid "Cars"
+msgstr ""
 
 #: bookie/templates/login.pt:7
 msgid "Please login:"
@@ -45,7 +49,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:111
+#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:122
 msgid "Groups"
 msgstr ""
 
@@ -55,6 +59,43 @@ msgstr ""
 
 #: bookie/templates/admin/user_manage.pt:7
 msgid "Editing Group"
+msgstr ""
+
+#: bookie/templates/entity/list.pt:8
+msgid "Entity"
+msgstr ""
+
+#: bookie/views/entities.py:42
+msgid "Invalid type ${type} requested"
+msgstr ""
+
+#: bookie/views/entities.py:50
+msgid "Car"
+msgstr ""
+
+#: bookie/views/entities.py:53
+msgid "Model"
+msgstr ""
+
+#: bookie/views/entities.py:56
+msgid "Produced"
+msgstr ""
+
+#: bookie/views/entities.py:59
+msgid "Identifier"
+msgstr ""
+
+#: bookie/views/entities.py:64
+msgid "Add Car"
+msgstr ""
+
+#: bookie/views/entities.py:65 bookie/views/users.py:146 bookie/views/users.py:179
+#: bookie/views/helpers/form.py:49
+msgid "Cancel"
+msgstr ""
+
+#: bookie/views/entities.py:74 bookie/views/users.py:170
+msgid "${title} added."
 msgstr ""
 
 #: bookie/views/login.py:42
@@ -77,11 +118,11 @@ msgstr ""
 msgid "You have been logged out."
 msgstr ""
 
-#: bookie/views/login.py:82 bookie/views/users.py:98
+#: bookie/views/login.py:82 bookie/views/users.py:109
 msgid "Password"
 msgstr ""
 
-#: bookie/views/login.py:92 bookie/views/users.py:102
+#: bookie/views/login.py:92 bookie/views/users.py:113
 msgid "E-Mail"
 msgstr ""
 
@@ -105,100 +146,91 @@ msgstr ""
 msgid "Reset your password - ${title}"
 msgstr ""
 
-#: bookie/views/users.py:34
+#: bookie/views/users.py:39
 msgid "No such group: ${group}"
 msgstr ""
 
-#: bookie/views/users.py:74 bookie/views/users.py:166
+#: bookie/views/users.py:85 bookie/views/users.py:177
 msgid "Group"
 msgstr ""
 
-#: bookie/views/users.py:83
+#: bookie/views/users.py:94
 msgid "Username"
 msgstr ""
 
-#: bookie/views/users.py:86
+#: bookie/views/users.py:97
 msgid "First Name"
 msgstr ""
 
-#: bookie/views/users.py:90
+#: bookie/views/users.py:101
 msgid "Middle Name"
 msgstr ""
 
-#: bookie/views/users.py:93
+#: bookie/views/users.py:104
 msgid "Last Name"
 msgstr ""
 
-#: bookie/views/users.py:99
+#: bookie/views/users.py:110
 msgid "Enter password..."
 msgstr ""
 
-#: bookie/views/users.py:105
+#: bookie/views/users.py:116
 msgid "Active"
 msgstr ""
 
-#: bookie/views/users.py:106
+#: bookie/views/users.py:117
 msgid "Untick this to deactivate the account."
 msgstr ""
 
-#: bookie/views/users.py:118 bookie/views/users.py:128
+#: bookie/views/users.py:129 bookie/views/users.py:139
 msgid "Permissions"
 msgstr ""
 
-#: bookie/views/users.py:123
+#: bookie/views/users.py:134
 msgid "Group name"
 msgstr ""
 
-#: bookie/views/users.py:133
+#: bookie/views/users.py:144
 msgid "User"
 msgstr ""
 
-#: bookie/views/users.py:134
+#: bookie/views/users.py:145
 msgid "Add User"
 msgstr ""
 
-#: bookie/views/users.py:135 bookie/views/users.py:168
-#: bookie/views/helpers/form.py:50
-msgid "Cancel"
-msgstr ""
-
-#: bookie/views/users.py:143
+#: bookie/views/users.py:154
 msgid "Send password registration link"
 msgstr ""
 
-#: bookie/views/users.py:159
-msgid "${title} added."
-msgstr ""
-
-#: bookie/views/users.py:167
+#: bookie/views/users.py:178
 msgid "Add Group"
 msgstr ""
 
-#: bookie/views/users.py:222
-msgid "No changes made."
-msgstr ""
-
-#: bookie/views/helpers/form.py:50
+#: bookie/views/helpers/form.py:49
 msgid "Save"
 msgstr ""
 
-#: bookie/views/helpers/form.py:51
+#: bookie/views/helpers/form.py:50
 msgid "Your changes have been saved."
 msgstr ""
 
-#: bookie/views/helpers/form.py:102
+#: bookie/views/helpers/form.py:74
+msgid "No changes made."
+msgstr ""
+
+#: bookie/views/helpers/form.py:103
 msgid "Edit <em>${title}</em>"
 msgstr ""
 
-#: bookie/views/helpers/form.py:107
+#: bookie/views/helpers/form.py:108
 msgid "Successfully added item."
 msgstr ""
 
-#: bookie/views/helpers/form.py:132
+#: bookie/views/helpers/form.py:133
 msgid "Add ${type} to <em>${title}</em>"
 msgstr ""
 
-#: bookie/views/helpers/form.py:137
+#: bookie/views/helpers/form.py:138
 msgid "Add ${type}"
 msgstr ""
 

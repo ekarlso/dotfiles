@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-11 23:19+0200\n"
+"POT-Creation-Date: 2012-06-13 10:46+0200\n"
 "PO-Revision-Date: 2012-06-11 20:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: no <LL@li.org>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
+
+#: bookie/templates/booking.pt:8
+msgid "Cars"
+msgstr "Biler"
 
 #: bookie/templates/login.pt:7
 msgid "Please login:"
@@ -45,7 +49,7 @@ msgstr "Legg til gruppe"
 msgid "Users"
 msgstr "Brukere"
 
-#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:111
+#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:122
 msgid "Groups"
 msgstr "Grupper"
 
@@ -56,6 +60,43 @@ msgstr "Endre Bruker"
 #: bookie/templates/admin/user_manage.pt:7
 msgid "Editing Group"
 msgstr "Endre Gruppe"
+
+#: bookie/templates/entity/list.pt:8
+msgid "Entity"
+msgstr "Entitet"
+
+#: bookie/views/entities.py:42
+msgid "Invalid type ${type} requested"
+msgstr "Ugyldig type ${type}."
+
+#: bookie/views/entities.py:50
+msgid "Car"
+msgstr "Bil"
+
+#: bookie/views/entities.py:53
+msgid "Model"
+msgstr "Modell"
+
+#: bookie/views/entities.py:56
+msgid "Produced"
+msgstr "Årsmodell"
+
+#: bookie/views/entities.py:59
+msgid "Identifier"
+msgstr "Identifikasjons nummer"
+
+#: bookie/views/entities.py:64
+msgid "Add Car"
+msgstr "Legg til Bil"
+
+#: bookie/views/entities.py:65 bookie/views/users.py:146
+#: bookie/views/users.py:179 bookie/views/helpers/form.py:49
+msgid "Cancel"
+msgstr "Kanseller"
+
+#: bookie/views/entities.py:74 bookie/views/users.py:170
+msgid "${title} added."
+msgstr "${title} er nå lagt til."
 
 #: bookie/views/login.py:42
 msgid "Welcome, ${user}!"
@@ -79,11 +120,11 @@ msgstr "Ukjent brukernavn eller e-post."
 msgid "You have been logged out."
 msgstr "Du har blitt logget ut."
 
-#: bookie/views/login.py:82 bookie/views/users.py:98
+#: bookie/views/login.py:82 bookie/views/users.py:109
 msgid "Password"
 msgstr "Passord"
 
-#: bookie/views/login.py:92 bookie/views/users.py:102
+#: bookie/views/login.py:92 bookie/views/users.py:113
 msgid "E-Mail"
 msgstr "E-Post"
 
@@ -107,103 +148,91 @@ msgstr "Nøkkel for å endre passord har utløpt"
 msgid "Reset your password - ${title}"
 msgstr "Bytt passordet ditt - ${title}"
 
-#: bookie/views/users.py:34
+#: bookie/views/users.py:39
 msgid "No such group: ${group}"
 msgstr "Gruppen finnes ikke: ${group}"
 
-#: bookie/views/users.py:74 bookie/views/users.py:166
+#: bookie/views/users.py:85 bookie/views/users.py:177
 msgid "Group"
 msgstr "Gruppe"
 
-#: bookie/views/users.py:83
+#: bookie/views/users.py:94
 msgid "Username"
 msgstr "Brukernavn"
 
-#: bookie/views/users.py:86
+#: bookie/views/users.py:97
 msgid "First Name"
 msgstr "Fornavn"
 
-#: bookie/views/users.py:90
+#: bookie/views/users.py:101
 msgid "Middle Name"
 msgstr "Mellom navn"
 
-#: bookie/views/users.py:93
+#: bookie/views/users.py:104
 msgid "Last Name"
 msgstr "Etternavn"
 
-#: bookie/views/users.py:99
+#: bookie/views/users.py:110
 msgid "Enter password..."
 msgstr "Skriv inn passord"
 
-#: bookie/views/users.py:105
+#: bookie/views/users.py:116
 msgid "Active"
 msgstr "Aktiv"
 
-#: bookie/views/users.py:106
+#: bookie/views/users.py:117
 msgid "Untick this to deactivate the account."
 msgstr "Huk av denne boksen at denne kontoen skal være aktiv."
 
-#: bookie/views/users.py:118 bookie/views/users.py:128
+#: bookie/views/users.py:129 bookie/views/users.py:139
 msgid "Permissions"
 msgstr "Tilganger"
 
-#: bookie/views/users.py:123
+#: bookie/views/users.py:134
 msgid "Group name"
 msgstr "Gruppe navn"
 
-#: bookie/views/users.py:133
+#: bookie/views/users.py:144
 msgid "User"
 msgstr "Bruker"
 
-#: bookie/views/users.py:134
+#: bookie/views/users.py:145
 msgid "Add User"
 msgstr "Legg til bruker"
 
-#: bookie/views/users.py:135 bookie/views/users.py:168
-#: bookie/views/helpers/form.py:50
-msgid "Cancel"
-msgstr "Kanseller"
-
-#: bookie/views/users.py:143
+#: bookie/views/users.py:154
 msgid "Send password registration link"
 msgstr "Send lenke for å fullføre registrering"
 
-#: bookie/views/users.py:159
-msgid "${title} added."
-msgstr "${title} er nå lagt til."
-
-#: bookie/views/users.py:167
+#: bookie/views/users.py:178
 msgid "Add Group"
 msgstr "Legg til gruppe"
 
-#: bookie/views/users.py:222
-msgid "No changes made."
-msgstr "Ingen endringer gjort."
-
-#: bookie/views/helpers/form.py:50
+#: bookie/views/helpers/form.py:49
 msgid "Save"
 msgstr "Lagre"
 
-#: bookie/views/helpers/form.py:51
+#: bookie/views/helpers/form.py:50
 msgid "Your changes have been saved."
 msgstr "Dine endringer ble lagret."
 
-#: bookie/views/helpers/form.py:102
+#: bookie/views/helpers/form.py:74
+msgid "No changes made."
+msgstr "Ingen endringer gjort."
+
+#: bookie/views/helpers/form.py:103
 msgid "Edit <em>${title}</em>"
 msgstr "Endre <em>${title}</em>"
 
-#: bookie/views/helpers/form.py:107
+#: bookie/views/helpers/form.py:108
 msgid "Successfully added item."
 msgstr "Lagret innslag"
 
-#: bookie/views/helpers/form.py:132
+#: bookie/views/helpers/form.py:133
 msgid "Add ${type} to <em>${title}</em>"
 msgstr "Legg til ${type} til <em>${title}</em>"
 
-#: bookie/views/helpers/form.py:137
+#: bookie/views/helpers/form.py:138
 msgid "Add ${type}"
 msgstr "Legg til ${type}"
-
-#~ msgid "Email"
-#~ msgstr "E-Post"
 
