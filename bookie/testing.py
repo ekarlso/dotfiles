@@ -51,11 +51,11 @@ def _turn_warnings_into_errors():  # pragma: no cover
 
 
 def setUp(init_db=True, **kwargs):
-    from bookie.app import _resolve_dotted
-    from bookie.app import conf_defaults
+    from bookie import _resolve_dotted
+    from bookie import CONF_DEFAULTS
 
     tearDown()
-    settings = conf_defaults.copy()
+    settings = CONF_DEFAULTS.copy()
     settings['bookie.secret'] = 'secret'
     settings['bookie.secret2'] = 'secret2'
     settings['bookie.populators'] = 'bookie.testing._populator'
