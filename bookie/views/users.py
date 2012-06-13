@@ -263,7 +263,10 @@ def group_edit(request):
             renderer="bookie:templates/user_prefs.pt")
 def user_preferences(request):
     user = request.user
-    return mk_form(UserForm, user, request)
+    f = mk_form(UserForm, user, request)
+    if type(f) == dict:
+        f["first_heading"] = user.display_string
+    return f
 
 
 def includeme(config):
