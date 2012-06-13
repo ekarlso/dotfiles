@@ -2,7 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')"
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="bookie">
-<div metal:fill-slot="content" id="content">
-    Welcome!
+
+<div metal:fill-slot="content" class="span9">
+    <div class="hero-unit">
+        <h1>Welcome to Bookie!</h1>
+        <p>
+        Bookie is a booking application for Rental companies....
+        </p>
+    </div>
 </div>
 </html>

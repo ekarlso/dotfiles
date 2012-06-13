@@ -6,9 +6,8 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div metal:define-slot="left"/>
+        <div metal:define-slot="sidebar"/>
         <div metal:define-slot="content"/>
-        <div metal:define-slot="right"/>
     </div>
 </div>
 
