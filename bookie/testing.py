@@ -58,7 +58,7 @@ def setUp(init_db=True, **kwargs):
     settings = CONF_DEFAULTS.copy()
     settings['bookie.secret'] = 'secret'
     settings['bookie.secret2'] = 'secret2'
-    settings['bookie.populators'] = 'bookie.testing._populator'
+    settings['bookie.populators'] = 'bookie.populate.populate_samples'
     settings.update(kwargs.get('settings', {}))
     _resolve_dotted(settings)
     kwargs['settings'] = settings
@@ -189,7 +189,7 @@ def setUpFunctionalStrippedDownApp(global_config=None, **settings):
             'bookie bookie.views bookie.views.login bookie.views.site_setup '
             'bookie.views.users'),
         'bookie.use_tables': 'principals',
-        'bookie.populators': 'bookie.populate.populate_users',
+        'bookie.populators': 'bookie.populate.populate_samples',
         'pyramid.includes': 'bookie.testing.include_testing_view',
         'bookie.root_factory': 'bookie.testing.TestingRootFactory',
         'bookie.site_title': 'My Stripped Down bookie',

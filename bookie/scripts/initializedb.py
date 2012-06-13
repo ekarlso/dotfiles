@@ -7,7 +7,6 @@ import transaction
 from pyramid.paster import get_appsettings, setup_logging
 
 from ..db import configure_db
-from ..populate import load_samples
 
 
 def usage(argv):
@@ -23,7 +22,6 @@ def main(argv=sys.argv):
     config_uri = argv[1]
     setup_logging(config_uri)
     settings = get_appsettings(config_uri)
+    settings["bookie.populators"] = "bookie.populate.populate_samples"
 
     configure_db(settings)
-
-    load_samples()

@@ -13,7 +13,11 @@ def category_dict(names):
     return dict([(n, Category(name=n)) for n in names])
 
 
-def load_samples():
+def populate():
+    pass
+
+
+def populate_samples():
     with transaction.manager:
         g_sadmin = GroupPermission(perm_name="system.admin")
         g_radmin = GroupPermission(perm_name="retailer.admin")
@@ -29,7 +33,6 @@ def load_samples():
             first_name="Endre", last_name="Karlson")
         admin.set_password("admin")
         admin.save()
-
 
 
         # NOTE: First Retailer rents out cars and transport class cars

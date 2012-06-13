@@ -20,7 +20,7 @@ CONF_DEFAULTS = {
         "bookie.views.users"]),
     'bookie.use_tables': '',
     'bookie.root_factory': 'bookie.security.RootFactory',
-    'bookie.populators': 'bookie.populate',
+    'bookie.populators': 'bookie.populate.populate',
     'bookie.authn_policy_factory': 'bookie.authtkt_factory',
     'bookie.authz_policy_factory': 'bookie.acl_factory',
     'bookie.session_factory': 'bookie.beaker_session_factory',
