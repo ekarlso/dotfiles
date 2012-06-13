@@ -18,6 +18,7 @@ def populate():
 
 
 def populate_samples():
+    populate()
     with transaction.manager:
         g_sadmin = GroupPermission(perm_name="system.admin")
         g_radmin = GroupPermission(perm_name="retailer.admin")
