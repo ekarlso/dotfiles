@@ -49,6 +49,7 @@ class BaseFormView(FormView):
     buttons = (Button('save', _(u'Save')), Button('cancel', _(u'Cancel')))
     success_message = _(u"Your changes have been saved.")
     success_url = None
+    cancel_url = None
     schema_factory = None
     use_csrf_token = True
     add_template_vars = ()
@@ -69,7 +70,8 @@ class BaseFormView(FormView):
         return result
 
     def cancel_success(self, appstruct):
-        location = get_url(self.request.matched_route)
+        location = self.cancel_url or get_url(self.request.matched_route)
+        self.request.session.flash(_(u'No changes made.'), 'info')
         return HTTPFound(location=location)
     cancel_failure = cancel_success
 

@@ -229,10 +229,9 @@ class UserEditForm(UserForm):
         del schema["password"]
         return schema
 
-    def cancel_success(self, appstruct):
-        self.request.session.flash(_(u'No changes made.'), 'info')
-        return HTTPFound(location=get_url("auth_manage"))
-    cancel_failure = cancel_success
+    @property
+    def cancel_url(self):
+        return get_url("auth_manage")
 
     def save_success(self, appstruct):
         _in(appstruct)
