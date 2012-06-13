@@ -20,9 +20,6 @@ from .helpers import get_url, create_anchor, wrap_td
 LOG = logging.getLogger(__name__)
 
 
-from colanderalchemy import SQLAlchemyMapping
-
-
 def get_type(obj):
     """
     Get a type from a request
@@ -69,9 +66,6 @@ class CarAddForm(AddFormView):
 
     def schema_factory(self):
         schema = CarSchema()
-        #schema = models.Car.get_schema()
-        schema = SQLAlchemyMapping(models.Entity)
-        #print "SCHEMA IS", schema
         return schema
 
     def add_car_success(self, appstruct):
