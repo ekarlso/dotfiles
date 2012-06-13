@@ -4,7 +4,7 @@
     i18n:domain="bookie">
 
 <div metal:fill-slot="content" id="content">
-    <h1 tal:content="structure first_heading"/>
+    <h1 tal:content="structure first_heading | default" i18n:translate="">Editing</h1>
     <form tal:replace="structure form" />
 </div>
 
