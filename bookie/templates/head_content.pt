@@ -2,27 +2,8 @@
     <div class="navbar-inner">
         <div class="container-fluid">
             <a class="brand" href="/">Bookie BETA</a>
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-            <div class="nav-collapse">
-                <ul class="nav">
-                    <li class="active"><a href="/">Home</a></li>
-                    <li><a href="/entity/car">Cars</a></li>
-                </ul>
-            </div><!-- nav-collapse -->
-            <div class="btn-group pull-right">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                    <i class="icon-user"></i> Username
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/@@prefs" i18n:translate="">Preferences</a></li>
-                    <li class="divider"></li>
-                    <li><a href="/@@logout" i18n:translate="">Sign Out</a></li>
-                </ul>
-            </div><!-- User dropdown -->
+            <tal:replace tal:replace="api.render_template('bookie:templates/nav/global.pt')"/>
+            <tal:replace tal:replace="api.render_template('bookie:templates/nav/dropdown_user.pt')"/>
         </div><!-- container -->
     </div><!-- navbar-inner-->
 </div><!-- navbar -->
