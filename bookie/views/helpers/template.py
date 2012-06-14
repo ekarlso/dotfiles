@@ -12,9 +12,9 @@ from pyramid.threadlocal import get_current_registry, get_current_request
 from pyramid.url import resource_url
 
 from bookie import get_settings
-from bookie.utils import _
+from bookie.utils import _, name_to_camel, camel_to_name
 
-from .utils import render_view, translate
+from . import utils
 
 
 def template_api(context, request, **kwargs):
@@ -69,6 +69,8 @@ class TemplateAPI(object):
             bare = True  # use bare template that renders just the content area
         self.bare = bare
         self.__dict__.update(kwargs)
+
+    utils = utils
 
     def macro(self, asset_spec, macro_name='main'):
         return get_renderer(asset_spec).implementation().macros[macro_name]
@@ -148,7 +150,7 @@ class TemplateAPI(object):
         before = self.bare
         try:
             self.bare = bare
-            html = render_view(context, request, name, secure)
+            html = self.utils.render_view(context, request, name, secure)
         finally:
             self.bare = before
         return TemplateStructure(html)
@@ -206,6 +208,12 @@ class TemplateAPI(object):
         for class_ in get_settings()['bookie.available_types']:
             if class_.type_info.name == name:
                 return class_
+
+    def name_to_camel(self, *args, **kw):
+        return name_to_camel(*args, **kw)
+
+    def camel_to_name(self, *args, **kw):
+        return camel_to_name(*args, **kw)
 
     #def find_edit_view(self, item):
     #    view_name = self.request.view_name
