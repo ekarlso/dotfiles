@@ -2,7 +2,7 @@ import logging
 
 from colanderalchemy import SQLAlchemyMapping
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import object_mapper, scoped_session, sessionmaker
 from zope.sqlalchemy import ZopeTransactionExtension
 
 
@@ -22,6 +22,7 @@ class BaseModel(object):
     """
     __display_columns__ = None
     __display_string__ = None
+    __hide_attrs__ = None
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
 
@@ -56,15 +57,23 @@ class BaseModel(object):
         self._i = iter(object_mapper(self).columns)
         return self
 
+    @property
+    def hide_attrs(self):
+        """Protected attributes - shouldn't be exposed"""
+        protected = self.__hide_attrs__ or []
+        protected.append("_sa_instance_state")
+        return protected
+
     def next(self):
         n = self._i.next().name
         return n, getattr(self, n)
 
     def keys(self):
-        return self.__dict__.keys()
+        return [k for k in self.__dict__.keys() \
+            if k not in self.hide_attrs]
 
     def values(self):
-        return self.__dict__.values()
+        return [self.__dict__[k] for k in self.keys()]
 
     def items(self):
         local = dict(self)
