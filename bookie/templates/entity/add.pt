@@ -3,8 +3,15 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="bookie">
 
-<div metal:fill-slot="content" id="content">
-    <h1 tal:content="structure first_heading"/>
+<div metal:fill-slot="left" class="span2">
+    <div tal:replace="api.render_template('bookie:templates/sidebar.pt', navtree=navtree)"/>
+</div>
+
+<div metal:fill-slot="content" class="span9">
+    <div class="page-header">
+        <h1 i18n:translate="">Add</h1>
+        <h2 tal:content="structure first_heading"/>
+    </div>
     <form tal:replace="structure form" />
 </div>
 

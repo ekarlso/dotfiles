@@ -9,9 +9,12 @@
 
 <div metal:fill-slot="content" class="span9">
     <div class="page-header">
-        <h2 tal:content="structure first_heading"/>
+        <h1 i18n:translate="">Overview</h1>
+        <h2 tal:content="structure entity_type"/>
     </div>
-    <form tal:replace="structure form" />
+    <table class="stylized">
+        <table tal:replace="structure entity_grid"/>
+    </table>
 </div>
 
 </html>
