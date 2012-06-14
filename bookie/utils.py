@@ -99,7 +99,7 @@ def title_to_name(title, blacklist=()):
     return name
 
 
-def camel_to_name(text):
+def camel_to_name(text, splitter=""):
     """
       >>> camel_case_to_name('FooBar')
       'foo_bar'
@@ -116,8 +116,8 @@ def camel_to_name(text):
         r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r'_\1', text).lower()
 
 
-def name_to_camel(string):
+def name_to_camel(string, joiner=""):
     """
     Convert a string with 'test_test' to 'TestTest'
     """
-    return "".join([i.title() for i in string.split("_")])
+    return joiner.join([i.title() for i in string.split("_")])
