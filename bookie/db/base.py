@@ -1,6 +1,8 @@
+from datetime import datetime
 import logging
 
 from colanderalchemy import SQLAlchemyMapping
+from sqlalchemy import Column, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import object_mapper, scoped_session, sessionmaker
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -25,6 +27,15 @@ class BaseModel(object):
     __hide_attrs__ = None
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
+    __protected_attributes__ = set([
+        "created_at", "updated_at", "deleted_at", "deleted"])
+
+    created_at = Column(DateTime, default=datetime.utcnow,
+        nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow(),
+        nullable=False, onupdate=datetime.utcnow())
+    deleted_at = Column(DateTime)
+    deleted = Column(Boolean, nullable=False, default=False)
 
     def save(self, session=None):
         session = session or get_session()
