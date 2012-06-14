@@ -18,6 +18,10 @@ def get_url(route, *args, **kw):
     return location
 
 
+def menu_item(title, route, *args, **kw):
+    return {"title": title, "url": get_url(route, *args, **kw)}
+
+
 def create_anchor(string, route=None, *args, **kw):
     return literal('<a href="%s">%s</a>') % \
         (get_url(route, *args, **kw), string)
@@ -64,5 +68,5 @@ def translate(*args, **kwargs):
     return localizer.translate(*args, **kwargs)
 
 
-__all__ = ["get_url", "create_anchor", "wrap_td", "when_normalize", "render_view",
+__all__ = ["get_url", "menu_item", "create_anchor", "wrap_td", "when_normalize", "render_view",
             "get_localizer_for_locale_name", "translate"]
