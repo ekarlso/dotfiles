@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bookie">
+
+<div metal:fill-slot="left" class="span2">
+    <div tal:replace="api.render_template('bookie:templates/sidebar.pt', navtree=navtree)"/>
+</div>
+
+<div metal:fill-slot="content" class="span9">
+    <tal tal:define="deleted request.params.get('do', False) == 'yes'" tal:switch="deleted">
+    <div class="page-header">
+            <h1 tal:case="True">Deleted</h1>
+            <h1 tal:case="False">Confirm Deletion</h1>
+        <h2 tal:content="structure first_heading"/>
+    </div>
+
+    <div tal:case="True">Entity is now deleted.</div>
+    <div class="alert" tal:case="False">
+        WARNING:<br/>
+        The action you are about to perform is undoable, to proceed click on the Delete button below.<br/><br/>
+        <a class="btn btn-danger" id="delete" href="${request.url}?do=yes">Delete</a>
+    </div>
+    </tal>
+</div>
+</html>
