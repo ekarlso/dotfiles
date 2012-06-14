@@ -9,6 +9,11 @@
         <p>
         Bookie is a booking application for Rental companies....
         </p>
+
+        <tal tal:condition="request.user is None">
+            <br />
+            <p>Hi, I can see you are not logged in... Click ${api.utils.create_anchor('here', 'login')} here if you wish to login</p>
+        </tal>
     </div>
 </div>
 </html>
