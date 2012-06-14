@@ -185,11 +185,11 @@ class Entity(Base):
     __display_string__ = ["brand", "model", "produced", "identifier"]
     __display_columns__ = []
     id = Column(Integer, primary_key=True)
-    _type = Column(Unicode(50))
+    type = Column(Unicode(50))
     @declared_attr
     def __mapper_args__(cls):
         name = unicode(camel_to_name(cls.__name__))
-        return {"polymorphic_on": "_type", "polymorphic_identity": name}
+        return {"polymorphic_on": "type", "polymorphic_identity": name}
     brand = Column(UnicodeText)
     model = Column(UnicodeText)
     identifier = Column(UnicodeText, unique=True)
