@@ -44,7 +44,9 @@ class BaseModel(object):
         return self
 
     def delete(self, session=None):
-        session.save(session=session)
+        self.deleted = True
+        self.deleted_at = datetime.utcnow()
+        self.save(session=session)
 
     def update(self, values):
         for k, v in values.items():
