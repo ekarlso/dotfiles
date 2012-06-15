@@ -17,6 +17,7 @@ CONF_DEFAULTS = {
         "bookie.views",
         "bookie.views.entities",
         "bookie.views.login",
+        "bookie.views.help",
         "bookie.views.users"]),
     'bookie.use_tables': '',
     'bookie.root_factory': 'bookie.security.RootFactory',
