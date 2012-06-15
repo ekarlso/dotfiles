@@ -14,7 +14,7 @@ from pyramid.view import view_config
 from ..db import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import get_url, create_anchor, wrap_td
+from .helpers import menu_item, get_url, create_anchor, wrap_td
 
 
 LOG = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def get_type(obj):
 
     :param obj: Get the type from this
     """
-    return obj.matchdict["type"] if isinstance(obj, Request) else obj
+    return obj.matchdict["type"] if isinstance(obj, Request) else obj.type
 
 
 def get_model(obj):
@@ -42,6 +42,20 @@ def get_model(obj):
         raise HTTPNotFound(_("Invalid type ${type} requested",
             mapping=dict(type=t)))
     return tm
+
+
+def entity_actions(obj=None, request=None):
+    return entity_links(obj) + [
+        {"title": _("Entity Actions"), "children": [
+            menu_item(_("View"), "entity_view", id=obj.id),
+            menu_item(_("Edit"), "entity_edit", id=obj.id),
+            menu_item(_("Delete"), "entity_delete", id=obj.id)]}
+        ]
+
+def entity_links(obj=None):
+    return [
+        {"title": _("Navigation"), "children": [
+            menu_item(_("Overview"), "entities_view", type=get_type(obj))]}]
 
 
 class CarSchema(colander.Schema):
@@ -73,7 +87,7 @@ class CarAddForm(AddFormView):
         car = models.Car().update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
-        location = get_url("entities_manage", type=self.item_type.lower())
+        location = get_url("entities_view", type=self.item_type.lower())
         return HTTPFound(location=location)
 
 
@@ -86,36 +100,74 @@ class CarEditForm(EditFormView):
         return CarSchema()
 
 
-@view_config(route_name="entity_add", renderer="bookie:templates/entity/add.pt")
+@view_config(route_name="entity_add", permission="add",
+        renderer="bookie:templates/entity/add.pt")
 def entity_add(context, request):
     type_ = get_type(request)
     s = models.Car.get_schema()
     return mk_form(CarAddForm, context, request)
 
 
-@view_config(route_name="entity_manage",
+@view_config(route_name="entity_edit", permission="edit",
             renderer="bookie:templates/entity/edit.pt")
-def entity_manage(context, request):
+def entity_edit(context, request):
+    obj = models.Entity.query.filter_by(
+        deleted=False, id=request.matchdict["id"]).one()
+    f = mk_form(CarEditForm, obj, request)
+    if type(f) == dict:
+        f["navtree"] = entity_actions(obj=obj, request=request)
+        f["first_heading"] = obj.display_string
+    return f
+
+
+@view_config(route_name="entity_view", permission="view",
+            renderer="bookie:templates/entity/view.pt")
+def entity_view(context, request):
+    deleted = request.params.get("deleted", False)
+    entity = models.Entity.query.filter_by(
+        deleted=deleted, id=request.matchdict["id"]).one()
+
+    return {
+        "navtree": entity_actions(entity, request),
+        "first_heading": entity.display_string,
+        "entity": entity}
+
+
+@view_config(route_name="entity_delete", permission="delete",
+            renderer="bookie:templates/delete.pt")
+def entity_delete(context, request):
+    entity = models.Entity.query.filter_by(
+        deleted=False, id=request.matchdict["id"]).one()
+    if request.params.get("do") == "yes":
+        entity.delete()
+        request.session.flash(_("Delete successful"))
+        return HTTPFound(location=get_url("entities_view", type=entity.type))
+    return {"first_heading": entity.display_string,
+        "navtree": entity_actions(entity, request)}
+
+
+@view_config(route_name="entities_view", permission="view",
+            renderer="bookie:templates/entity/overview.pt")
+def entities_view(context, request):
+    deleted = request.params.get("deleted", False)
     type_ = get_type(request)
-    obj = get_model(request).query.filter_by(id=request.matchdict["id"]).one()
-    return mk_form(CarEditForm, obj, request)
+    type_model = get_model(request)
 
+    entities = type_model.query.filter_by(deleted=deleted).all()
 
-@view_config(route_name="entities_manage", renderer="bookie:templates/entity/list.pt")
-def entities_manage(context, request):
-    type_ = get_type(request)
-    type_model = get_model(type_)
-
-    entities = type_model.query.all()
     grid = PyramidGrid(entities, type_model.exposed_columns())
-    grid.column_formats["brand"] = lambda col_num, i, item: \
-        wrap_td(
-            create_anchor(
-                item["title"], "entity_manage", type=type_, id=1))
-    return {"entity_grid": grid, "entity_type": camel_to_name(type_)}
+    grid.column_formats["brand"] = lambda cn, i, item: wrap_td(
+        create_anchor(item["title"], "entity_view", type=type_, id=item["id"]))
+
+    return {"navtree": entity_links(request),
+        "entity_grid": grid, "entity_type": name_to_camel(type_, joiner=" ")}
+
+
 
 
 def includeme(config):
     config.add_route("entity_add", "/entity/{type}/add")
-    config.add_route("entities_manage", "/entity/{type}")
-    config.add_route("entity_manage", "/entity/{type}/{id}")
+    config.add_route("entity_view", "/entity/{id}/view")
+    config.add_route("entity_edit", "/entity/{id}/edit")
+    config.add_route("entity_delete", "/entity/{id}/delete")
+    config.add_route("entities_view", "/entity/{type}")
