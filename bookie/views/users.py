@@ -265,7 +265,7 @@ def user_preferences(request):
     user = request.user
     f = mk_form(UserForm, user, request)
     if type(f) == dict:
-        f["first_heading"] = user.display_string
+        f["first_heading"] = user.title
     return f
 
 
