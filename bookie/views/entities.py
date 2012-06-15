@@ -120,7 +120,7 @@ def entity_edit(context, request):
     f = mk_form(CarEditForm, obj, request)
     if type(f) == dict:
         f["navtree"] = entity_actions(obj=obj, request=request)
-        f["first_heading"] = obj.display_string
+        f["first_heading"] = obj.title
     return f
 
 
@@ -131,10 +131,14 @@ def entity_view(context, request):
     entity = models.Entity.query.filter_by(
         deleted=deleted, id=request.matchdict["id"]).one()
 
+    ##b_latest = models.Booking.latest(entity=entity)
+    b_grid_latest = PyramidGrid(models.Booking.latest(entity=entity),
+                    models.Booking.exposed_attrs())
     return {
         "navtree": entity_actions(entity, request),
-        "first_heading": entity.display_string,
-        "entity": entity}
+        "first_heading": entity.title,
+        "entity": entity,
+        "bookings_latest": b_grid_latest}
 
 
 @view_config(route_name="entity_delete", permission="delete",
@@ -146,7 +150,7 @@ def entity_delete(context, request):
         entity.delete()
         request.session.flash(_("Delete successful"))
         return HTTPFound(location=get_url("entities_view", type=entity.type))
-    return {"first_heading": entity.display_string,
+    return {"first_heading": entity.title,
         "navtree": entity_actions(entity, request)}
 
 
@@ -159,7 +163,7 @@ def entities_view(context, request):
 
     entities = type_model.query.filter_by(deleted=deleted).all()
 
-    grid = PyramidGrid(entities, type_model.exposed_columns())
+    grid = PyramidGrid(entities, type_model.exposed_attrs())
     grid.column_formats["brand"] = lambda cn, i, item: wrap_td(
         create_anchor(item["title"], "entity_view", type=type_, id=item["id"]))
 
