@@ -31,8 +31,7 @@ def _initTestingDB():
     from sqlalchemy import create_engine
     from bookie.db import configure_db
 
-    session = configure_db(drop_all=True)
-    return session
+    configure_db(drop_all=True)
 
 
 def _turn_warnings_into_errors():  # pragma: no cover
