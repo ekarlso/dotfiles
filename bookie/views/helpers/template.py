@@ -33,6 +33,8 @@ def add_renderer_globals(event):
         if api is None and request is not None:
             api = template_api(event['context'], event['request'])
         event['api'] = api
+        if not "first_heading" in event:
+            event["first_heading"] = None
 
 
 CSS_LINK = '<link rel="stylesheet" type="text/css" href="%s"/>'
