@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import pdb
 
 from colanderalchemy import SQLAlchemyMapping
 from sqlalchemy import Column, Boolean, DateTime
@@ -22,8 +23,8 @@ class BaseModel(object):
     """
     Base class to make ones life working with models and python easier
     """
-    __display_columns__ = None
-    __display_string__ = None
+    __expose_attrs__ = None
+    __title_attrs__ = None
     __hide_attrs__ = None
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
@@ -85,8 +86,9 @@ class BaseModel(object):
         return [k for k in self.__dict__.keys() \
             if k not in self.hide_attrs]
 
-    def values(self):
-        return [self.__dict__[k] for k in self.keys()]
+    def values(self, attrs=None):
+        attrs = attrs or self.keys()
+        return [self.__dict__[k] for k in keys]
 
     def items(self):
         local = dict(self)
@@ -102,44 +104,29 @@ class BaseModel(object):
     def get_schema(cls):
         return SQLAlchemyMapping(cls)
 
+    @classmethod
+    def exposed_attrs(cls, attrs=None):
+        """
+        Returns the either given or attrs set in __exposed_attrs__
+        """
+        attrs = attrs or cls.__expose_attrs__
+        if not attrs and isinstance(cls, BaseModel):
+            attrs = attrs.keys()
+        return attrs
+
+    def format_self(self, format_string=None):
+        """
+        Return a list of expose values
+        """
+        format = format_string or self.__format_string__
+        return format.format(**self)
+
     @property
-    def display_columns(self):
-        copy = self.to_dict()
-        if not self.__display_columns__:
-            return copy
-        ret = {}
-        for row_name in self.__display_columns__:
-            ret[row_name] = copy[row_name]
-        return ret
+    def title(self):
+        return self.format_self()
 
     def __unicode__(self):
-        dn = self.__display_string__ or "name"
-        if type(dn) == list:
-            return self.display_string
-        if not hasattr(self, dn):
-            dn = "id"
-        return getattr(self, dn)
-
-    @classmethod
-    def exposed_columns(cls):
-        return cls.__display_columns__
-
-    @property
-    def display_string(self):
-        copy = self.to_dict()
-        display = ""
-        if type(self.__display_string__) == list:
-            display = []
-            for i in self.__display_string__:
-                 data = copy.get(i, None)
-                 if data:
-                    display.append(unicode(data))
-            display = " ".join(display)
-        else:
-            display = self
-        return unicode(display)
-
-    title = display_string
+        return self.format_self()
 
 
 Base = declarative_base(cls=BaseModel)

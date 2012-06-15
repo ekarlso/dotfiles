@@ -61,7 +61,7 @@ class Group(Base, GroupMixin):
     """
     An organisation - typically something with users and customers
     """
-    __display_string__ = "group_name"
+    __title_attrs__ = ["group_name"]
     __possible_permissions__ = permission_names()
     organisation_id = Column(Integer)
     customers = relationship("Customer", backref="retailer")
@@ -93,12 +93,12 @@ class UserGroup(Base, UserGroupMixin):
 
 
 class User(Base, UserMixin):
-    __display_string__ = ["first_name", "middle_name", "last_name"]
+    __format_string__ = "{first_name} {middle_name} {last_name}"
+    __expose_attrs__ = ["first_name", "middle_name", "last_name"]
     __possible_permissions__ = permission_names()
     first_name = Column(UnicodeText)
     middle_name = Column(UnicodeText)
     last_name = Column(UnicodeText)
-    name = Base.display_string
 
 
 class UserPermission(Base, UserPermissionMixin):
@@ -182,8 +182,8 @@ class Entity(Base):
     A Entity is a product / thing to be rented out to a customer
     """
     __tablename__ = "entity"
-    __display_string__ = ["brand", "model", "produced", "identifier"]
-    __display_columns__ = []
+    __expose_attrs__ = ["brand", "model", "produced", "identifier"]
+    __format_string__ = '{brand} {model} - {produced} {identifier}'
     id = Column(Integer, primary_key=True)
     type = Column(Unicode(50))
     @declared_attr
@@ -194,9 +194,6 @@ class Entity(Base):
     model = Column(UnicodeText)
     identifier = Column(UnicodeText, unique=True)
     produced = Column(Integer)
-
-    def __unicode__(self):
-        return "%s %s (%d)" % (self.brand, self.model, self.produced)
 
 
 class Property(Base):
@@ -212,8 +209,7 @@ class DrivableEntity(Entity):
     """
     Represent a drivable entity
     """
-    __display_string__ = ["brand", "model", "produced", "identifier"]
-    __display_columns__ = __display_string__
+    __title_attrs__ = ["brand", "model", "produced", "identifier"]
     @property
     def gps(self, value=None):
         print "gps" in self.properties
@@ -223,7 +219,9 @@ class Car(DrivableEntity):
     pass
 
 
-class Order(Base):
+class Booking(Base):
+    __format_string__ = "{id}"
+    __expose_attrs__ = ["id"]
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
 
@@ -231,7 +229,8 @@ class Order(Base):
     start_time = Column(Unicode)
     start_location = Column(UnicodeText)
 
-    end_date = Column(Date, default=datetime.datetime.now())
+    end_date = Column(Date, default=(datetime.datetime.now() +
+                        datetime.timedelta(1)))
     end_time = Column(Unicode)
     end_location = Column(UnicodeText)
 
@@ -242,6 +241,15 @@ class Order(Base):
 
     entity_id = Column(Integer, ForeignKey('entity.id'))
     entity = relationship("Entity", backref="orders")
+
+    @classmethod
+    def latest(cls, entity=None, limit=5, time_since=1):
+        time_since = datetime.date.today() - datetime.timedelta(time_since)
+        q = cls.query.filter(cls.created_at > time_since)
+        if entity:
+            q.filter_by(entity=entity)
+        q.limit(limit)
+        return q.all()
 
 
 ziggurat_model_init(User, Group, UserGroup, GroupPermission, UserPermission,
