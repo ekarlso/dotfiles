@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" metal:use-macro="api.macro('bookie:templates/master.pt')"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bookie">
+
+<div metal:fill-slot="content" class="span6">
+    <div class="alert">
+        <div class="page-header">
+            <h1>Ooops... Page not found!</h1>
+            <h2 tal:content="first_header | default"></h2>
+        </div>
+        <div>
+            It looks like you have requested a resource which I can't find for you.
+
+            If you think it should exist please contact ${api.utils.create_anchor('support', 'support_contact')}
+        </div>
+    </div>
+</div>
+</html>
