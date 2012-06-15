@@ -44,12 +44,16 @@ def get_model(obj):
     return tm
 
 
+
+# TODO: Make these better?
 def entity_actions(obj=None, request=None):
     return entity_links(obj) + [
         {"title": _("Entity Actions"), "children": [
             menu_item(_("View"), "entity_view", id=obj.id),
             menu_item(_("Edit"), "entity_edit", id=obj.id),
-            menu_item(_("Delete"), "entity_delete", id=obj.id)]}
+            menu_item(_("Delete"), "entity_delete", id=obj.id),
+            menu_item(_("Book me"), "booking_add",
+                    _query=dict(came_from=request.url))]}
         ]
 
 def entity_links(obj=None):
