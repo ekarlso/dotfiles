@@ -1,11 +1,12 @@
+from datetime import datetime, timedelta
 import os
 import sys
 from pprint import pformat
 from random import choice
 import transaction
 
-from .db.models import User, UserPermission, Group, GroupPermission, \
-    Resource, Customer
+from .db.models import User, UserPermission, Group, GroupPermission, Resource
+from .db.models import Customer, Booking
 from .db.models import Category, Entity, Property, DrivableEntity, Car
 
 
@@ -117,3 +118,10 @@ def populate_samples():
             identifier="ID-B",
             produced=2011,
             categories=[sub_bus["9 seats"]]).save()
+
+        Booking(price=5, customer=customer, entity=entity,
+            created_at=(datetime.now() - timedelta(5)),)
+        Booking(price=5, customer=customer, entity=entity,
+            created_at=(datetime.now() - timedelta(2)),)
+        Booking(price=5, customer=customer, entity=entity)
+        Booking(price=5, customer=customer, entity=entity)
