@@ -120,6 +120,7 @@ class ExternalIdentity(Base, ExternalIdentityMixin):
 
 
 class Customer(Base):
+    __format_string__ = "{name}"
     __tablename__ = "customer"
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText)
@@ -220,18 +221,16 @@ class Car(DrivableEntity):
 
 
 class Booking(Base):
-    __format_string__ = "{id}"
-    __expose_attrs__ = ["id"]
+    __format_string__ = "{customer} - {start_date} > {end_date}"
+    __expose_attrs__ = ["customer", "start", "end"]
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
 
-    start_date = Column(Date, default=datetime.datetime.now())
-    start_time = Column(Unicode)
+    start_date = Column(DateTime, default=datetime.datetime.now())
     start_location = Column(UnicodeText)
 
-    end_date = Column(Date, default=(datetime.datetime.now() +
+    end_date = Column(DateTime, default=(datetime.datetime.now() +
                         datetime.timedelta(1)))
-    end_time = Column(Unicode)
     end_location = Column(UnicodeText)
 
     price = Column(Integer)
@@ -241,6 +240,14 @@ class Booking(Base):
 
     entity_id = Column(Integer, ForeignKey('entity.id'))
     entity = relationship("Entity", backref="orders")
+
+    @property
+    def start(self):
+        return "{start_date} {start_location}".format(**self)
+
+    @property
+    def end(self):
+        return "{end_date} {end_location}".format(**self)
 
     @classmethod
     def latest(cls, entity=None, limit=5, time_since=1):
