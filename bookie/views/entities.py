@@ -138,7 +138,7 @@ def entity_view(context, request):
         "navtree": entity_actions(entity, request),
         "first_heading": entity.title,
         "entity": entity,
-        "bookings_latest": b_grid_latest}
+        "b_grid_latest": b_grid_latest}
 
 
 @view_config(route_name="entity_delete", permission="delete",
