@@ -116,7 +116,8 @@ class BaseModel(object):
     def remote_to_dict(self, attr, deep={}, exclude=[]):
         """
         This is basically a part of "Elixir's" to_dict method.
-        I took it out into get_remote to be able to use it elsewhere as well.
+        I took it out into remote_to_dict to be able to use it elsewhere as
+        well.
         """
         data = {}
         db_data = getattr(self, attr)
@@ -164,7 +165,7 @@ class BaseModel(object):
         local, remote = get_prop_names(self)
         data = self.to_dict()
         for remote_property in remote:
-            remote_data = self.get_remote(remote_property)
+            remote_data = self.remote_to_dict(remote_property)
             for relation_key, relation_value in remote_data.items():
                 if isinstance(relation_value, dict):
                     for k, v in relation_value.items():
