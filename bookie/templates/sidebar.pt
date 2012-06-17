@@ -1,9 +1,9 @@
 <div class="well sidebar-nav">
     <ul class="nav navbar-list">
         <tal:repeat tal:repeat="item navtree">
-            <tal:condition tal:condition="item.get('children')" tal:define="children item.get('children')">
-                <li class="nav-header" tal:content="structure item['title']"/>
-                <li tal:repeat="child children"><a href="${child['url']}">${child['title']}</a></li>
+            <tal:condition tal:condition="item.children" tal:define="children item.children">
+                <li class="nav-header" tal:content="structure item.title"/>
+                <li tal:repeat="child children"><a href="${child.url}">${child.title}</a></li>
             </tal:condition>
         </tal:repeat>
     </ul>
