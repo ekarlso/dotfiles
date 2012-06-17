@@ -3,6 +3,7 @@
 import sys
 import datetime
 import logging
+from pprint import pformat
 from UserDict import UserDict
 
 from sqlalchemy.ext.declarative import declared_attr
@@ -119,18 +120,6 @@ class ExternalIdentity(Base, ExternalIdentityMixin):
     pass
 
 
-class Customer(Base):
-    __format_string__ = "{name}"
-    __tablename__ = "customer"
-    id = Column(Integer, primary_key=True)
-    name = Column(UnicodeText)
-    organisation_id = Column(Integer)
-    contact = Column(UnicodeText)
-    email = Column(UnicodeText)
-    phone = Column(Integer)
-    retailer_id = Column(Integer, ForeignKey('groups.id'))
-
-
 # NOTE: Map categories >< entities
 category_entity_map = Table('category_entity_map', Base.metadata,
     Column('category_id', Integer, ForeignKey('category.id')),
@@ -220,18 +209,58 @@ class Car(DrivableEntity):
     pass
 
 
+class Customer(Base):
+    __format_string__ = "{name}"
+    __tablename__ = "customer"
+    id = Column(Integer, primary_key=True)
+    name = Column(UnicodeText)
+    organisation_id = Column(Integer)
+    contact = Column(UnicodeText)
+    email = Column(UnicodeText)
+    phone = Column(Integer)
+    retailer_id = Column(Integer, ForeignKey('groups.id'))
+
+
+class Location(Base):
+    __expose_attrs__ = ["name", "street_address", "city", "postal_code"]
+    __format_string__ = "{name} {street_name}  {city}"
+    __tablename__ = "location"
+    id = Column(Integer, primary_key=True)
+    name = Column(UnicodeText, nullable=False)
+    street_address = Column(UnicodeText, nullable=False)
+    city = Column(UnicodeText, nullable=False)
+    postal_code = Column(Integer, nullable=False)
+    retailer_id = Column(Integer, ForeignKey("groups.id"))
+    retailer = relationship("Group", backref="locations")
+
+
 class Booking(Base):
-    __format_string__ = "{customer} - {start_date} > {end_date}"
+    __format_string__ = "{customer_name} - {start_date} > {end_date}"
     __expose_attrs__ = ["customer", "start", "end"]
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
 
-    start_date = Column(DateTime, default=datetime.datetime.now())
-    start_location = Column(UnicodeText)
+    start_date = Column(
+        DateTime,
+        default=datetime.datetime.now(),
+        nullable=False)
+    start_location_id = Column(Integer)
+    start_location = relationship(
+        "Location",
+        backref="bookings_start_here",
+        primaryjoin="Booking.start_location_id==Location.id",
+        foreign_keys=[start_location_id])
 
-    end_date = Column(DateTime, default=(datetime.datetime.now() +
-                        datetime.timedelta(1)))
-    end_location = Column(UnicodeText)
+    end_date = Column(
+        DateTime,
+        default=lambda: datetime.datetime.now() + datetime.timedelta(1),
+        nullable=False)
+    end_location_id = Column(Integer)
+    end_location = relationship(
+        "Location",
+        backref="bookings_end_here",
+        primaryjoin="Booking.end_location_id==Location.id",
+        foreign_keys=[end_location_id])
 
     price = Column(Integer)
 
@@ -243,18 +272,17 @@ class Booking(Base):
 
     @property
     def start(self):
-        return "{start_date} {start_location}".format(**self)
+        return "{start_date} {start_location_name}".format(**self.format_data())
 
     @property
     def end(self):
-        return "{end_date} {end_location}".format(**self)
+        return "{end_date} {end_location_name}".format(**self.format_data())
 
     @classmethod
-    def latest(cls, entity=None, limit=5, time_since=1):
+    def latest(cls, limit=5, time_since=1, filter_by={}):
         time_since = datetime.date.today() - datetime.timedelta(time_since)
         q = cls.query.filter(cls.created_at > time_since)
-        if entity:
-            q.filter_by(entity=entity)
+        q.filter_by(**filter_by)
         q.limit(limit)
         return q.all()
 
