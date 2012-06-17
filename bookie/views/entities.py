@@ -132,8 +132,9 @@ def entity_view(context, request):
         deleted=deleted, id=request.matchdict["id"]).one()
 
     ##b_latest = models.Booking.latest(entity=entity)
-    b_grid_latest = PyramidGrid(models.Booking.latest(entity=entity),
-                    models.Booking.exposed_attrs())
+    b_grid_latest = PyramidGrid(
+        models.Booking.latest(filter_by=dict(entity=entity)),
+        models.Booking.exposed_attrs())
     return {
         "navtree": entity_actions(entity, request),
         "first_heading": entity.title,
