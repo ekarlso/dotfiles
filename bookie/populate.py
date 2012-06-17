@@ -6,7 +6,7 @@ from random import choice
 import transaction
 
 from .db.models import User, UserPermission, Group, GroupPermission, Resource
-from .db.models import Customer, Booking
+from .db.models import Customer, Booking, Location
 from .db.models import Category, Entity, Property, DrivableEntity, Car
 
 
@@ -63,6 +63,13 @@ def populate_samples():
             resource_name="Cars", categories=[top_cars, top_transport],
             resource_type="categories").save()
 
+        loc_bryne = Location(name="Bryne",
+            street_address="RoadBryne 1",
+            city="Stavanger", postal_code=4000, retailer=group)
+        loc_stavanger = Location(name="Stavanger",
+            street_address="RoadStavanger 1",
+            city="Stavanger", postal_code=4035, retailer=group)
+
         entity = Car(
             brand="Mitsubishi",
             model="Lancer",
@@ -76,6 +83,17 @@ def populate_samples():
             produced=2000,
             categories=[sub_cars["Stationwagon"]]).save()
 
+        Booking(price=5, customer=customer, entity=entity,
+            created_at=(datetime.now() - timedelta(5)),
+            start_location=loc_stavanger, end_location=loc_bryne)
+        Booking(price=5, customer=customer, entity=entity,
+            start_location=loc_bryne, end_location=loc_stavanger)
+
+        Booking(price=5, customer=customer, entity=entity,
+            created_at=(datetime.now() - timedelta(2)),
+            start_location=loc_bryne, end_location=loc_stavanger)
+        Booking(price=5, customer=customer, entity=entity,
+            start_location=loc_stavanger, end_location=loc_bryne)
         # NOTE: Rents out Trucks and Bus
         customer = Customer(name="WreckLovers Inc", organisation_id=2343,
                 contact="Endre Karlson", email="endre.karlson@gmail.com",
@@ -106,6 +124,13 @@ def populate_samples():
             resource_name="Transport", categories=[top_truck, top_bus],
             resource_type="categories").save()
 
+        loc_bryne = Location(name="Bryne",
+            street_address="RoadBryne 1",
+            city="Stavanger", postal_code=4000, retailer=group)
+        loc_stavanger = Location(name="Stavanger",
+            street_address="RoadStavanger 1",
+            city="Stavanger", postal_code=4035, retailer=group)
+
         entity = Car(
             brand="Brand-A",
             model="Model-A",
@@ -120,8 +145,13 @@ def populate_samples():
             categories=[sub_bus["9 seats"]]).save()
 
         Booking(price=5, customer=customer, entity=entity,
-            created_at=(datetime.now() - timedelta(5)),)
+            created_at=(datetime.now() - timedelta(5)),
+            start_location=loc_stavanger, end_location=loc_bryne)
         Booking(price=5, customer=customer, entity=entity,
-            created_at=(datetime.now() - timedelta(2)),)
-        Booking(price=5, customer=customer, entity=entity)
-        Booking(price=5, customer=customer, entity=entity)
+            start_location=loc_bryne, end_location=loc_stavanger)
+
+        Booking(price=5, customer=customer, entity=entity,
+            created_at=(datetime.now() - timedelta(2)),
+            start_location=loc_bryne, end_location=loc_stavanger)
+        Booking(price=5, customer=customer, entity=entity,
+            start_location=loc_stavanger, end_location=loc_bryne)
