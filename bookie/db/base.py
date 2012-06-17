@@ -67,7 +67,7 @@ class BaseModel(object):
         self._i = iter(object_mapper(self).columns)
         return self
 
-   def save(self, session=None):
+    def save(self, session=None):
         session = session or get_session()
         session.add(self)
         session.flush()
