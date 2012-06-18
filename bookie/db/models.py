@@ -60,12 +60,14 @@ def permission_create(perm_type, perm_name, perm_receiver):
 
 class Group(Base, GroupMixin):
     """
-    An organisation - typically something with users and customers
+    An organization - typically something with users and customers
     """
-    __title_attrs__ = ["group_name"]
+    __format_string__ = "{group_name} ({organization_id})"
     __possible_permissions__ = permission_names()
-    organisation_id = Column(Integer)
+    organization_id = Column(Integer)
+
     customers = relationship("Customer", backref="retailer")
+    entities = relationship("Entity", backref="retailer")
 
 
 class GroupPermission(Base, GroupPermissionMixin):
@@ -176,14 +178,17 @@ class Entity(Base):
     __format_string__ = '{brand} {model} - {produced} {identifier}'
     id = Column(Integer, primary_key=True)
     type = Column(Unicode(50))
-    @declared_attr
-    def __mapper_args__(cls):
-        name = unicode(camel_to_name(cls.__name__))
-        return {"polymorphic_on": "type", "polymorphic_identity": name}
     brand = Column(UnicodeText)
     model = Column(UnicodeText)
     identifier = Column(UnicodeText, unique=True)
     produced = Column(Integer)
+
+    retailer_id = Column(Integer, ForeignKey('groups.id'), nullable=False)
+
+    @declared_attr
+    def __mapper_args__(cls):
+        name = unicode(camel_to_name(cls.__name__))
+        return {"polymorphic_on": "type", "polymorphic_identity": name}
 
 
 class Property(Base):
@@ -191,6 +196,7 @@ class Property(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), index=True, nullable=False)
     value = Column(UnicodeText, nullable=True)
+
     entity_id = Column(Integer, ForeignKey("entity.id"))
     entity = relationship("Entity", backref="properties")
 
@@ -214,10 +220,11 @@ class Customer(Base):
     __tablename__ = "customer"
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText)
-    organisation_id = Column(Integer)
+    organization_id = Column(Integer)
     contact = Column(UnicodeText)
     email = Column(UnicodeText)
     phone = Column(Integer)
+
     retailer_id = Column(Integer, ForeignKey('groups.id'))
 
 
@@ -230,6 +237,7 @@ class Location(Base):
     street_address = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
+
     retailer_id = Column(Integer, ForeignKey("groups.id"))
     retailer = relationship("Group", backref="locations")
 
@@ -239,10 +247,11 @@ class Booking(Base):
     __expose_attrs__ = ["customer", "start", "end"]
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
+    price = Column(Integer)
 
     start_date = Column(
         DateTime,
-        default=datetime.datetime.now(),
+        default=datetime.datetime.utcnow,
         nullable=False)
     start_location_id = Column(Integer)
     start_location = relationship(
@@ -253,7 +262,7 @@ class Booking(Base):
 
     end_date = Column(
         DateTime,
-        default=lambda: datetime.datetime.now() + datetime.timedelta(1),
+        default=lambda: datetime.datetime.utcnow() + datetime.timedelta(1),
         nullable=False)
     end_location_id = Column(Integer)
     end_location = relationship(
@@ -261,8 +270,6 @@ class Booking(Base):
         backref="bookings_end_here",
         primaryjoin="Booking.end_location_id==Location.id",
         foreign_keys=[end_location_id])
-
-    price = Column(Integer)
 
     customer_id = Column(Integer, ForeignKey('customer.id'))
     customer = relationship("Customer", backref="orders")
