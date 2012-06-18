@@ -243,13 +243,13 @@ class Location(Base):
 
 
 class Booking(Base):
-    __format_string__ = "{customer_name} - {start_date} > {end_date}"
+    __format_string__ = "{customer_name} - {start_at} > {end_at}"
     __expose_attrs__ = ["customer", "start", "end"]
     __tablename__ = "order"
     id = Column(Integer, primary_key=True)
     price = Column(Integer)
 
-    start_date = Column(
+    start_at = Column(
         DateTime,
         default=datetime.datetime.utcnow,
         nullable=False)
@@ -260,7 +260,7 @@ class Booking(Base):
         primaryjoin="Booking.start_location_id==Location.id",
         foreign_keys=[start_location_id])
 
-    end_date = Column(
+    end_at = Column(
         DateTime,
         default=lambda: datetime.datetime.utcnow() + datetime.timedelta(1),
         nullable=False)
@@ -279,11 +279,11 @@ class Booking(Base):
 
     @property
     def start(self):
-        return "{start_date} {start_location_name}".format(**self.format_data())
+        return "{start_at} {start_location_name}".format(**self.format_data())
 
     @property
     def end(self):
-        return "{end_date} {end_location_name}".format(**self.format_data())
+        return "{end_at} {end_location_name}".format(**self.format_data())
 
     @classmethod
     def latest(cls, limit=5, time_since=1, filter_by={}):
