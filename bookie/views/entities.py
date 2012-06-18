@@ -108,7 +108,6 @@ class CarEditForm(EditFormView):
         renderer="bookie:templates/entity/add.pt")
 def entity_add(context, request):
     type_ = get_type(request)
-    s = models.Car.get_schema()
     return mk_form(CarAddForm, context, request)
 
 
