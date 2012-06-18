@@ -63,7 +63,7 @@ class Group(Base, GroupMixin):
     An organization - typically something with users and customers
     """
     __format_string__ = "{group_name}"
-    __expose_attrs__ = ["group_name"]
+    __expose_attrs__ = ["group_name", "organization_id"]
     __possible_permissions__ = permission_names()
     organization_id = Column(Integer)
 
@@ -100,9 +100,9 @@ class User(Base, UserMixin):
     __format_string__ = "{first_name} {middle_name} {last_name}"
     __expose_attrs__ = ["first_name", "middle_name", "last_name"]
     __possible_permissions__ = permission_names()
-    first_name = Column(UnicodeText)
-    middle_name = Column(UnicodeText)
-    last_name = Column(UnicodeText)
+    first_name = Column(UnicodeText, default='')
+    middle_name = Column(UnicodeText, default='')
+    last_name = Column(UnicodeText, default='')
 
 
 class UserPermission(Base, UserPermissionMixin):
