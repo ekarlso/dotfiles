@@ -4,8 +4,7 @@
 <title metal:define-slot="page-title">${api.page_title | api.site_title}</title>
 
 ${structure: api.css_link([
-    "static/css/menu.css",
-    "static/bootstrap/css/bootstrap.min.css",
+    "static/bootstrap/css/bootstrap.css",
     "static/bootstrap/css/bootstrap-responsive.min.css",
     "static/css/overcast/jquery-ui-1.8.20.custom.css"
 ])}
