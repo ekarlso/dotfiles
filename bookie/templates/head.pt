@@ -6,7 +6,8 @@
 ${structure: api.css_link([
     "static/bootstrap/css/bootstrap.css",
     "static/bootstrap/css/bootstrap-responsive.min.css",
-    "static/css/overcast/jquery-ui-1.8.20.custom.css"
+    "static/css/overcast/jquery-ui-1.8.20.custom.css",
+    "deform:static/css/jquery-ui-timepicker-addon.css"
 ])}
 
 
@@ -17,12 +18,10 @@ ${structure: api.script_link([
 ])}
 
 ${structure: api.script_link([
-    "static/js/jquery.metadata.js",
-    "static/js/jquery.hoverIntent.js",
-    "static/js/mbMenu.js",
-    "static/js/jquery.form.js",
+    "deform:static/scripts/jquery-ui-timepicker-addon.js",
+    "deform:static/scripts/jquery.form.js",
     "deform:static/scripts/deform.js",
-    "deform_bootstrap:static/deform_bootstrap.js",
+    "deform_bootstrap:static/deform_bootstrap.js"
 ])}
 
 
