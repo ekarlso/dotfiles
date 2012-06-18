@@ -38,14 +38,14 @@ def populate_samples():
 
 
         # NOTE: First Retailer rents out cars and transport class cars
-        customer = Customer(name="WreckRenters Inc", organisation_id=2343,
+        customer = Customer(name="WreckRenters Inc", organization_id=2343,
                     contact="Steffen Soma", email="stefsoma@gmail.com",
                     phone="+47 xxxxxxxx")
 
         group = Group(
             group_name="RentOurWrecks Inc",
             permissions=[g_radmin],
-            organisation_id=3232,
+            organization_id=3232,
             customers=[customer]).save()
 
         user = User(user_name="booker1", status=1, groups=[group],
@@ -75,12 +75,14 @@ def populate_samples():
             model="Lancer",
             identifier="DL87162",
             produced=2008,
+            retailer=group,
             categories=[sub_cars["SUV"]]).save()
         entity = Car(
             brand="Hyundai",
             model="Elantra",
             identifier="RH73369",
             produced=2000,
+            retailer=group,
             categories=[sub_cars["Stationwagon"]]).save()
 
         Booking(price=5, customer=customer, entity=entity,
@@ -95,13 +97,13 @@ def populate_samples():
         Booking(price=5, customer=customer, entity=entity,
             start_location=loc_stavanger, end_location=loc_bryne)
         # NOTE: Rents out Trucks and Bus
-        customer = Customer(name="WreckLovers Inc", organisation_id=2343,
+        customer = Customer(name="WreckLovers Inc", organization_id=2343,
                 contact="Endre Karlson", email="endre.karlson@gmail.com",
                 phone="+47 xxxxxxxx")
 
         group = Group(
             group_name="TransportVehicles Inc",
-            organisation_id=3232,
+            organization_id=3232,
             permissions=[g_radmin],
             customers=[customer]).save()
         user = User(user_name="booker2", status=1, groups=[group],
@@ -136,12 +138,14 @@ def populate_samples():
             model="Model-A",
             identifier="ID-A",
             produced=2004,
+            retailer=group,
             categories=[sub_truck["18 m3"]]).save()
         entity = Car(
             brand="Brand-B",
             model="Model-B",
             identifier="ID-B",
             produced=2011,
+            retailer=group,
             categories=[sub_bus["9 seats"]]).save()
 
         Booking(price=5, customer=customer, entity=entity,
