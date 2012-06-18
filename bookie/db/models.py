@@ -62,7 +62,8 @@ class Group(Base, GroupMixin):
     """
     An organization - typically something with users and customers
     """
-    __format_string__ = "{group_name} ({organization_id})"
+    __format_string__ = "{group_name}"
+    __expose_attrs__ = ["group_name"]
     __possible_permissions__ = permission_names()
     organization_id = Column(Integer)
 
