@@ -46,8 +46,8 @@ class BaseModel(object):
 
     created_at = Column(DateTime, default=datetime.utcnow,
         nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow(),
-        nullable=False, onupdate=datetime.utcnow())
+    updated_at = Column(DateTime, default=datetime.utcnow,
+        nullable=False, onupdate=datetime.utcnow)
     deleted_at = Column(DateTime)
     deleted = Column(Boolean, nullable=False, default=False)
 
