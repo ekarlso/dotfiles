@@ -54,8 +54,7 @@ def permission_create(perm_type, perm_name, perm_receiver):
         raise ValueError("Invalid permission type requested")
 
     data = {perm_type + "_name": perm_receiver, "perm_name": perm_name}
-    LOG.debug("PDATA %s" % data)
-    return model(**data).save()
+    return model(**data)
 
 
 class Group(Base, GroupMixin):
