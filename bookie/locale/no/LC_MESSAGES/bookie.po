@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-13 10:46+0200\n"
+"POT-Creation-Date: 2012-06-18 23:39+0200\n"
 "PO-Revision-Date: 2012-06-11 20:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: no <LL@li.org>\n"
@@ -17,222 +17,352 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: bookie/templates/booking.pt:8
-msgid "Cars"
-msgstr "Biler"
+#: bookie/templates/forbidden.pt:5 build/lib/bookie/templates/forbidden.pt:5
+msgid "You are not allowed to view the request page."
+msgstr ""
 
-#: bookie/templates/login.pt:7
+#: bookie/templates/login.pt:7 build/lib/bookie/templates/login.pt:7
 msgid "Please login:"
 msgstr "Vennligst logg på"
 
-#: bookie/templates/login.pt:13
+#: bookie/templates/login.pt:13 build/lib/bookie/templates/login.pt:13
 msgid "Log in"
 msgstr "Logg på"
 
+#: bookie/templates/user_prefs.pt:9 build/lib/bookie/templates/user_prefs.pt:9
+msgid "My Settings"
+msgstr ""
+
+#: bookie/templates/user_prefs.pt:10 bookie/templates/nav/dropdown_user.pt:8
+#: build/lib/bookie/templates/user_prefs.pt:10
+#: build/lib/bookie/templates/nav/dropdown_user.pt:8
+msgid "Preferences"
+msgstr ""
+
+#: bookie/templates/user_prefs.pt:17
+#: build/lib/bookie/templates/user_prefs.pt:17
+msgid "Your preferences"
+msgstr ""
+
 #: bookie/templates/admin/auth_manage.pt:9
+#: build/lib/bookie/templates/admin/auth_manage.pt:9
 msgid "List users"
 msgstr "Vis brukere"
 
 #: bookie/templates/admin/auth_manage.pt:12
+#: build/lib/bookie/templates/admin/auth_manage.pt:12
 msgid "Add user"
 msgstr "Legg til bruker"
 
 #: bookie/templates/admin/auth_manage.pt:15
+#: build/lib/bookie/templates/admin/auth_manage.pt:15
 msgid "List groups"
 msgstr "Vis grupper"
 
 #: bookie/templates/admin/auth_manage.pt:18
+#: build/lib/bookie/templates/admin/auth_manage.pt:18
 msgid "Add group"
 msgstr "Legg til gruppe"
 
 #: bookie/templates/admin/auth_manage.pt:25
+#: build/lib/bookie/templates/admin/auth_manage.pt:25
 msgid "Users"
 msgstr "Brukere"
 
-#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:122
+#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:127
+#: build/lib/bookie/templates/admin/auth_manage.pt:36
+#: build/lib/bookie/views/users.py:122
 msgid "Groups"
 msgstr "Grupper"
 
 #: bookie/templates/admin/group_manage.pt:8
+#: build/lib/bookie/templates/admin/group_manage.pt:8
 msgid "Editing User"
 msgstr "Endre Bruker"
 
-#: bookie/templates/admin/user_manage.pt:7
-msgid "Editing Group"
-msgstr "Endre Gruppe"
+#: bookie/templates/admin/user_manage.pt:8
+#, fuzzy
+msgid "Editing"
+msgstr "Endre Bruker"
 
-#: bookie/templates/entity/list.pt:8
-msgid "Entity"
-msgstr "Entitet"
+#: bookie/templates/admin/user_manage.pt:9 bookie/views/users.py:149
+#: build/lib/bookie/views/users.py:144
+msgid "User"
+msgstr "Bruker"
 
-#: bookie/views/entities.py:42
-msgid "Invalid type ${type} requested"
-msgstr "Ugyldig type ${type}."
+#: bookie/templates/booking/add.pt:12 bookie/views/bookings.py:53
+#: build/lib/bookie/templates/booking/add.pt:12
+msgid "Booking"
+msgstr ""
 
-#: bookie/views/entities.py:50
-msgid "Car"
-msgstr "Bil"
+#: bookie/templates/booking/overview.pt:12 bookie/views/bookings.py:30
+#: build/lib/bookie/templates/booking/overview.pt:12
+#: build/lib/bookie/views/bookings.py:31
+msgid "Bookings"
+msgstr ""
 
-#: bookie/views/entities.py:53
-msgid "Model"
-msgstr "Modell"
+#: bookie/templates/entity/add.pt:12
+#: build/lib/bookie/templates/entity/add.pt:12
+msgid "Add"
+msgstr ""
 
-#: bookie/views/entities.py:56
-msgid "Produced"
-msgstr "Årsmodell"
+#: bookie/templates/entity/edit.pt:12 bookie/templates/entity/view.pt:13
+#: build/lib/bookie/templates/entity/edit.pt:12
+#: build/lib/bookie/templates/entity/view.pt:13
+msgid "Viewing"
+msgstr ""
 
-#: bookie/views/entities.py:59
-msgid "Identifier"
-msgstr "Identifikasjons nummer"
+#: bookie/templates/entity/overview.pt:12 bookie/views/entities.py:62
+#: build/lib/bookie/templates/entity/overview.pt:12
+#: build/lib/bookie/views/entities.py:62
+msgid "Overview"
+msgstr ""
 
-#: bookie/views/entities.py:64
-msgid "Add Car"
-msgstr "Legg til Bil"
+#: bookie/templates/entity/view.pt:19
+#: build/lib/bookie/templates/entity/view.pt:19
+msgid "Vehicle information"
+msgstr ""
 
-#: bookie/views/entities.py:65 bookie/views/users.py:146
-#: bookie/views/users.py:179 bookie/views/helpers/form.py:49
+#: bookie/templates/entity/view.pt:29
+msgid "Latest bookings"
+msgstr ""
+
+#: bookie/templates/nav/dropdown_user.pt:10
+#: build/lib/bookie/templates/nav/dropdown_user.pt:10
+msgid "Sign Out"
+msgstr ""
+
+#: bookie/views/bookings.py:43
+msgid "Price"
+msgstr ""
+
+#: bookie/views/bookings.py:46
+msgid "Ends At"
+msgstr ""
+
+#: bookie/views/bookings.py:49
+msgid "Starts At"
+msgstr ""
+
+#: bookie/views/bookings.py:54
+msgid "Add Booking"
+msgstr ""
+
+#: bookie/views/bookings.py:55 bookie/views/entities.py:83
+#: bookie/views/users.py:151 bookie/views/users.py:183
+#: bookie/views/helpers/form.py:49 build/lib/bookie/views/entities.py:83
+#: build/lib/bookie/views/users.py:146 build/lib/bookie/views/users.py:179
+#: build/lib/bookie/views/helpers/form.py:49
 msgid "Cancel"
 msgstr "Kanseller"
 
-#: bookie/views/entities.py:74 bookie/views/users.py:170
+#: bookie/views/bookings.py:64 bookie/views/entities.py:92
+#: bookie/views/users.py:174 build/lib/bookie/views/entities.py:92
+#: build/lib/bookie/views/users.py:170
 msgid "${title} added."
 msgstr "${title} er nå lagt til."
 
-#: bookie/views/login.py:42
+#: bookie/views/entities.py:42 build/lib/bookie/views/entities.py:42
+msgid "Invalid type ${type} requested"
+msgstr "Ugyldig type ${type}."
+
+#: bookie/views/entities.py:51 build/lib/bookie/views/entities.py:51
+msgid "Entity Actions"
+msgstr ""
+
+#: bookie/views/entities.py:52 build/lib/bookie/views/entities.py:52
+msgid "View"
+msgstr ""
+
+#: bookie/views/entities.py:53 build/lib/bookie/views/entities.py:53
+msgid "Edit"
+msgstr ""
+
+#: bookie/views/entities.py:54 build/lib/bookie/views/entities.py:54
+msgid "Delete"
+msgstr ""
+
+#: bookie/views/entities.py:55 build/lib/bookie/views/entities.py:55
+msgid "Book me"
+msgstr ""
+
+#: bookie/views/entities.py:61 build/lib/bookie/views/entities.py:61
+msgid "Navigation"
+msgstr ""
+
+#: bookie/views/entities.py:68 build/lib/bookie/views/entities.py:68
+msgid "Car"
+msgstr "Bil"
+
+#: bookie/views/entities.py:71 build/lib/bookie/views/entities.py:71
+msgid "Model"
+msgstr "Modell"
+
+#: bookie/views/entities.py:74 build/lib/bookie/views/entities.py:74
+msgid "Produced"
+msgstr "Årsmodell"
+
+#: bookie/views/entities.py:77 build/lib/bookie/views/entities.py:77
+msgid "Identifier"
+msgstr "Identifikasjons nummer"
+
+#: bookie/views/entities.py:82 build/lib/bookie/views/entities.py:82
+msgid "Add Car"
+msgstr "Legg til Bil"
+
+#: bookie/views/entities.py:151 build/lib/bookie/views/entities.py:147
+msgid "Delete successful"
+msgstr ""
+
+#: bookie/views/login.py:42 build/lib/bookie/views/login.py:42
 msgid "Welcome, ${user}!"
 msgstr "Velkommen, ${user}!"
 
-#: bookie/views/login.py:47
+#: bookie/views/login.py:47 build/lib/bookie/views/login.py:47
 msgid "Login failed."
 msgstr "Innlogging feilet."
 
-#: bookie/views/login.py:56
+#: bookie/views/login.py:56 build/lib/bookie/views/login.py:56
 msgid ""
 "You should receive an email with a link to reset your password "
 "momentarily."
 msgstr "Du har blitt sendt en lenke som du kan bruke til å bytte passord"
 
-#: bookie/views/login.py:61
+#: bookie/views/login.py:61 build/lib/bookie/views/login.py:61
 msgid "That username or email is not known to us."
 msgstr "Ukjent brukernavn eller e-post."
 
-#: bookie/views/login.py:74
+#: bookie/views/login.py:74 build/lib/bookie/views/login.py:74
 msgid "You have been logged out."
 msgstr "Du har blitt logget ut."
 
-#: bookie/views/login.py:82 bookie/views/users.py:109
+#: bookie/views/login.py:82 bookie/views/users.py:114
+#: build/lib/bookie/views/login.py:82 build/lib/bookie/views/users.py:109
 msgid "Password"
 msgstr "Passord"
 
-#: bookie/views/login.py:92 bookie/views/users.py:113
+#: bookie/views/login.py:92 bookie/views/users.py:118
+#: build/lib/bookie/views/login.py:92 build/lib/bookie/views/users.py:113
 msgid "E-Mail"
 msgstr "E-Post"
 
-#: bookie/views/login.py:104
+#: bookie/views/login.py:104 build/lib/bookie/views/login.py:104
 msgid "You've reset your password successfully."
 msgstr "Ditt passord har blitt endret."
 
-#: bookie/views/login.py:105
+#: bookie/views/login.py:105 build/lib/bookie/views/login.py:105
 msgid "Submit"
 msgstr "Send"
 
-#: bookie/views/login.py:112
+#: bookie/views/login.py:112 build/lib/bookie/views/login.py:112
 msgid "There was an error."
 msgstr "Det har oppstått en feil."
 
-#: bookie/views/login.py:133
+#: bookie/views/login.py:133 build/lib/bookie/views/login.py:133
 msgid "Your password reset token may have expired."
 msgstr "Nøkkel for å endre passord har utløpt"
 
-#: bookie/views/login.py:138
+#: bookie/views/login.py:138 build/lib/bookie/views/login.py:138
 msgid "Reset your password - ${title}"
 msgstr "Bytt passordet ditt - ${title}"
 
-#: bookie/views/users.py:39
+#: bookie/views/users.py:39 build/lib/bookie/views/users.py:39
 msgid "No such group: ${group}"
 msgstr "Gruppen finnes ikke: ${group}"
 
-#: bookie/views/users.py:85 bookie/views/users.py:177
+#: bookie/views/users.py:90 bookie/views/users.py:181
+#: build/lib/bookie/views/users.py:85 build/lib/bookie/views/users.py:177
 msgid "Group"
 msgstr "Gruppe"
 
-#: bookie/views/users.py:94
+#: bookie/views/users.py:99 build/lib/bookie/views/users.py:94
 msgid "Username"
 msgstr "Brukernavn"
 
-#: bookie/views/users.py:97
+#: bookie/views/users.py:102 build/lib/bookie/views/users.py:97
 msgid "First Name"
 msgstr "Fornavn"
 
-#: bookie/views/users.py:101
+#: bookie/views/users.py:106 build/lib/bookie/views/users.py:101
 msgid "Middle Name"
 msgstr "Mellom navn"
 
-#: bookie/views/users.py:104
+#: bookie/views/users.py:109 build/lib/bookie/views/users.py:104
 msgid "Last Name"
 msgstr "Etternavn"
 
-#: bookie/views/users.py:110
+#: bookie/views/users.py:115 build/lib/bookie/views/users.py:110
 msgid "Enter password..."
 msgstr "Skriv inn passord"
 
-#: bookie/views/users.py:116
+#: bookie/views/users.py:121 build/lib/bookie/views/users.py:116
 msgid "Active"
 msgstr "Aktiv"
 
-#: bookie/views/users.py:117
+#: bookie/views/users.py:122 build/lib/bookie/views/users.py:117
 msgid "Untick this to deactivate the account."
 msgstr "Huk av denne boksen at denne kontoen skal være aktiv."
 
-#: bookie/views/users.py:129 bookie/views/users.py:139
+#: bookie/views/users.py:134 bookie/views/users.py:144
+#: build/lib/bookie/views/users.py:129 build/lib/bookie/views/users.py:139
 msgid "Permissions"
 msgstr "Tilganger"
 
-#: bookie/views/users.py:134
+#: bookie/views/users.py:139 build/lib/bookie/views/users.py:134
 msgid "Group name"
 msgstr "Gruppe navn"
 
-#: bookie/views/users.py:144
-msgid "User"
-msgstr "Bruker"
-
-#: bookie/views/users.py:145
+#: bookie/views/users.py:150 build/lib/bookie/views/users.py:145
 msgid "Add User"
 msgstr "Legg til bruker"
 
-#: bookie/views/users.py:154
+#: bookie/views/users.py:159 build/lib/bookie/views/users.py:154
 msgid "Send password registration link"
 msgstr "Send lenke for å fullføre registrering"
 
-#: bookie/views/users.py:178
+#: bookie/views/users.py:182 build/lib/bookie/views/users.py:178
 msgid "Add Group"
 msgstr "Legg til gruppe"
 
-#: bookie/views/helpers/form.py:49
+#: bookie/views/helpers/form.py:49 build/lib/bookie/views/helpers/form.py:49
 msgid "Save"
 msgstr "Lagre"
 
-#: bookie/views/helpers/form.py:50
+#: bookie/views/helpers/form.py:50 build/lib/bookie/views/helpers/form.py:50
 msgid "Your changes have been saved."
 msgstr "Dine endringer ble lagret."
 
-#: bookie/views/helpers/form.py:74
+#: bookie/views/helpers/form.py:74 build/lib/bookie/views/helpers/form.py:74
 msgid "No changes made."
 msgstr "Ingen endringer gjort."
 
 #: bookie/views/helpers/form.py:103
-msgid "Edit <em>${title}</em>"
+#, fuzzy
+#| msgid "Edit <em>${title}</em>"
+msgid "<em>${title}</em>"
 msgstr "Endre <em>${title}</em>"
 
-#: bookie/views/helpers/form.py:108
+#: bookie/views/helpers/form.py:108 build/lib/bookie/views/helpers/form.py:108
 msgid "Successfully added item."
 msgstr "Lagret innslag"
 
-#: bookie/views/helpers/form.py:133
+#: bookie/views/helpers/form.py:133 build/lib/bookie/views/helpers/form.py:133
 msgid "Add ${type} to <em>${title}</em>"
 msgstr "Legg til ${type} til <em>${title}</em>"
 
-#: bookie/views/helpers/form.py:138
+#: bookie/views/helpers/form.py:138 build/lib/bookie/views/helpers/form.py:138
 msgid "Add ${type}"
 msgstr "Legg til ${type}"
+
+#: build/lib/bookie/templates/admin/user_manage.pt:7
+msgid "Editing Group"
+msgstr "Endre Gruppe"
+
+#: build/lib/bookie/templates/entity/view.pt:27
+msgid "Vehicle orders"
+msgstr ""
+
+#: build/lib/bookie/views/helpers/form.py:103
+msgid "Edit <em>${title}</em>"
+msgstr "Endre <em>${title}</em>"
 
