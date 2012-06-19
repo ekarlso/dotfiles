@@ -14,4 +14,4 @@ class TestForm(AddFormView):
 class TestAddForm(UnitTestBase):
     def test_something(self):
         f = TestForm(Dummy(), DummyRequest(),
-                    schema=models.Booking.get_schema())()
+            schema=models.Booking.get_schema())()
