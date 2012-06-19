@@ -96,7 +96,7 @@ class EditFormView(BaseFormView):
         return HTTPFound(location=location)
 
     def edit(self, **appstruct):
-        self.context.update(appstruct)
+        getattr(self.context, "from_dict", self.context.update)(appstruct)
 
     @reify
     def first_heading(self):
