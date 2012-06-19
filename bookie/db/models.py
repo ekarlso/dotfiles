@@ -99,9 +99,9 @@ class User(Base, UserMixin):
     __format_string__ = "{first_name} {middle_name} {last_name}"
     __expose_attrs__ = ["first_name", "middle_name", "last_name"]
     __possible_permissions__ = permission_names()
-    first_name = Column(UnicodeText, default='')
-    middle_name = Column(UnicodeText, default='')
-    last_name = Column(UnicodeText, default='')
+    first_name = Column(UnicodeText, default=u'')
+    middle_name = Column(UnicodeText, default=u'')
+    last_name = Column(UnicodeText, default=u'')
 
 
 class UserPermission(Base, UserPermissionMixin):
