@@ -100,7 +100,7 @@ class EditFormView(BaseFormView):
 
     @reify
     def first_heading(self):
-        return _(u'Edit <em>${title}</em>',
+        return _(u'<em>${title}</em>',
                 mapping=dict(title=self.context.title))
 
 
