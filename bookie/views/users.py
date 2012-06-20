@@ -228,7 +228,6 @@ class UserEditForm(UserForm):
         s = UserSchema()
         _all_from_db(s)
         del s["password"]
-        del s["user_name"]
         return s
 
     @property
@@ -244,7 +243,6 @@ class GroupEditForm(UserEditForm):
     def schema_factory(self):
         s = GroupSchema()
         _all_from_db(s)
-        del s["group_name"]
         return s
 
 
