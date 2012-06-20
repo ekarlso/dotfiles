@@ -39,18 +39,11 @@ def group_validator(node, value):
         raise colander.Invalid(node, _(u"No such group: ${group}",
                                 mapping=dict(group=value)))
 
-def _pt(keys):
-    """
-    What kind of permission type is it
-    """
-    return "user" if "user_name" in keys else "group"
-
-
 def _pk(data):
     """
     Get a permission key
     """
-    return _pt(data) == "user" and "user_permissions" or "permissions"
+    return "user_permissions" if "first_name" in data else "permissions"
 
 
 def _all_from_db(schema):
@@ -161,12 +154,11 @@ class UserAddForm(AddFormView):
         appstruct.pop('csrf_token', None)
         _mangle_appstruct(appstruct)
         appstruct['email'] = appstruct['email'] and appstruct['email'].lower()
-        send_email = appstruct.pop('send_email', False)
-        if send_email:
-            email_set_password(get_principals()[name], self.request)
+        if appstruct.pop("send_email", False):
+            security.email_set_password(get_principals()[name], self.request)
         #location = self.request.url.split('?')[0] + '?' + urlencode(
         #    {'extra': name})
-        user = models.User().update(appstruct).save()
+        user = models.User().from_dict(appstruct).save()
         self.request.session.flash(_(u'${title} added.',
                                      mapping=dict(title=user.title)),
                                      'success')
@@ -185,7 +177,7 @@ class GroupAddForm(AddFormView):
 
     def add_group_success(self, appstruct):
         _mangle_appstruct(appstruct)
-        models.Group().update(appstruct).save()
+        models.Group().from_dict(appstruct).save()
         return HTTPFound(location=get_url("auth_manage"))
 
 
@@ -236,6 +228,7 @@ class UserEditForm(UserForm):
         s = UserSchema()
         _all_from_db(s)
         del s["password"]
+        del s["user_name"]
         return s
 
     @property
@@ -251,7 +244,8 @@ class GroupEditForm(UserEditForm):
     def schema_factory(self):
         s = GroupSchema()
         _all_from_db(s)
-        return GroupSchema()
+        del s["group_name"]
+        return s
 
 
 @view_config(route_name="user_manage", permission="system.admin",
