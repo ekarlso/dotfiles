@@ -220,7 +220,6 @@ class BaseModel(object):
                             'Cannot send mixed (dict/non dict) data '
                             'to list relationships in from_dict data.')
                     record = rel_class.update_or_create(row)
-                    print record
                     new_attr_value.append(record)
                 setattr(self, key, new_attr_value)
             else:
