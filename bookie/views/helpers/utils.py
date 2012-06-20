@@ -22,6 +22,11 @@ def menu_item(title, route, *args, **kw):
     return {"title": title, "url": get_url(route, *args, **kw)}
 
 
+def menu_came_from(request, title="Go Back"):
+    came_from = request.params.get("came_from", None)
+    return [dict(title=title, url=came_from)] if came_from else []
+
+
 def create_anchor(string, route=None, *args, **kw):
     return literal('<a href="%s">%s</a>') % \
         (get_url(route, *args, **kw), string)
@@ -66,7 +71,3 @@ def translate(*args, **kwargs):
     else:
         localizer = get_localizer(request)
     return localizer.translate(*args, **kwargs)
-
-
-__all__ = ["get_url", "menu_item", "create_anchor", "wrap_td", "when_normalize", "render_view",
-            "get_localizer_for_locale_name", "translate"]
