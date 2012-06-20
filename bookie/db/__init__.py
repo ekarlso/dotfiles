@@ -2,7 +2,7 @@ import os
 from pprint import pformat
 
 from pyramid.threadlocal import get_current_registry
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 
 #from .. import get_settings
 import bookie
@@ -30,6 +30,10 @@ def configure_db(settings=None, drop_all=False):
     sql_str = settings["sqlalchemy.url"]
     timeout = settings.get("sqlalchemy.timeout", None) or 600
     engine = create_engine(sql_str, pool_recycle=timeout)
+
+    def _fk_pragma_on_connect(dbapi_con, con_record):
+        dbapi_con.execute('pragma foreign_keys=ON')
+    event.listen(engine, 'connect', _fk_pragma_on_connect)
 
     DBSession.registry.clear()
     DBSession.configure(bind=engine)
