@@ -1,5 +1,6 @@
 import re
 import urllib
+import uuid
 
 from plone.i18n.normalizer import urlnormalizer
 from pyramid.i18n import get_locale_name, TranslationStringFactory
@@ -121,3 +122,7 @@ def name_to_camel(string, joiner=""):
     Convert a string with 'test_test' to 'TestTest'
     """
     return joiner.join([i.title() for i in string.split("_")])
+
+
+def generate_uuid():
+    return unicode(uuid.uuid4())
