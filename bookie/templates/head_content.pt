@@ -4,6 +4,7 @@
             <a class="brand" href="/">Bookie BETA</a>
             <tal:replace tal:replace="api.render_template('bookie:templates/nav/global.pt')"/>
             <tal:replace tal:replace="api.render_template('bookie:templates/nav/dropdown_user.pt')"/>
+            <tal:replace tal:replace="api.render_template('bookie:templates/nav/dropdown_companies.pt')"/>
         </div><!-- container -->
     </div><!-- navbar-inner-->
 </div><!-- navbar -->
