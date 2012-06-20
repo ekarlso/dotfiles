@@ -1,6 +1,6 @@
 from pprint import pformat
 import logging
-import pdb
+import ipdb
 import re
 from urllib import urlencode
 
@@ -39,44 +39,46 @@ def group_validator(node, value):
         raise colander.Invalid(node, _(u"No such group: ${group}",
                                 mapping=dict(group=value)))
 
-def _type(keys):
+def _pt(keys):
     """
-    Tells one which type a appstruct is based on contents of keys
+    What kind of permission type is it
     """
-    return "group" if "group_name" in keys else "user"
+    return "user" if "user_name" in keys else "group"
 
 
-def _add_from_db(schema):
+def _pk(data):
     """
-    Adds stuff from the database
+    Get a permission key
+    """
+    return _pt(data) == "user" and "user_permissions" or "permissions"
+
+
+def _all_from_db(schema):
+    """
+    Get's all the available roles / groups and adds them to the schema
     """
     if "groups" in schema:
         schema["groups"]["group"].widget.values = \
             [dict(label=g.group_name, value=g.group_name) \
                 for g in models.Group.query.all()]
-    schema["permissions"].widget.values = models.permission_pairs()
+    schema[_pk(schema)].widget.values = models.permission_pairs()
     return schema
 
 
-def _in(appstruct):
+def _mangle_appstruct(appstruct):
     """
     Helper to convert data from dict data to SA data
     """
-    d = appstruct
-    if "groups" in d:
-        # NOTE: Convert groups for users
-        d["groups"] = [models.Group.by_group_name(i) \
-            for i in d["groups"]]
+    if "groups" in appstruct:
+        # NOTE: Should probably do the Group ID here from the form instead of
+        #       looking up the name
+        appstruct["groups"] = [{"id": models.Group.by_group_name(gn).id} \
+            for gn in appstruct.pop("groups")]
 
-    pt = _type(d.keys())
-    given_perms = d.pop("permissions")
-    new_perms = [models.permission_create(pt, pn, d[pt + "_name"]) \
-                        for pn in given_perms]
-    if pt == "user":
-        d["user_permissions"] = new_perms
-    else:
-        d["permissions"] = new_perms
-    return d
+    # NOTE: Mangle permissions
+    pk = _pk(appstruct) # NOTE: user_permissions or permissions
+    appstruct[pk] = [{"perm_name": pn} for pn in appstruct.pop(pk)]
+    return appstruct
 
 
 class Groups(colander.SequenceSchema):
@@ -122,7 +124,7 @@ class UserSchema(UserSimpleSchema):
         title=_(u'Groups'),
         missing=[],
         widget=SequenceWidget(min_len=1))
-    permissions = colander.SchemaNode(
+    user_permissions = colander.SchemaNode(
         deform.Set(allow_empty=True),
         validator=roleset_validator,
         missing=[],
@@ -147,21 +149,19 @@ class UserAddForm(AddFormView):
 
     def schema_factory(self):
         schema = UserSchema()
-        _add_from_db(schema)
+        _all_from_db(schema)
         schema.add(colander.SchemaNode(
             colander.Boolean(),
             name=u'send_email',
             title=_(u'Send password registration link'),
-            default=True,
-            ))
+            default=True,))
         return schema
 
     def add_user_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        _in(appstruct)
+        _mangle_appstruct(appstruct)
         appstruct['email'] = appstruct['email'] and appstruct['email'].lower()
         send_email = appstruct.pop('send_email', False)
-        #get_principals()[name] = appstruct
         if send_email:
             email_set_password(get_principals()[name], self.request)
         #location = self.request.url.split('?')[0] + '?' + urlencode(
@@ -180,11 +180,11 @@ class GroupAddForm(AddFormView):
 
     def schema_factory(self):
         schema = GroupSchema()
-        _add_from_db(schema)
+        _all_from_db(schema)
         return schema
 
     def add_group_success(self, appstruct):
-        _in(appstruct)
+        _mangle_appstruct(appstruct)
         models.Group().update(appstruct).save()
         return HTTPFound(location=get_url("auth_manage"))
 
@@ -193,10 +193,10 @@ class GroupAddForm(AddFormView):
             renderer="bookie:templates/admin/auth_manage.pt")
 def auth_manage(context, request):
     users = models.User.query.all()
-    user_grid = PyramidGrid(users, ["user_name", "name", "email"])
+    user_grid = PyramidGrid(users, ["title", "email"])
 
     groups = models.Group.query.all()
-    group_grid = PyramidGrid(groups, ["group_name", "member_count", "users"])
+    group_grid = PyramidGrid(groups, models.Group.exposed_attrs())
 
     user_addform = UserAddForm(context, request)()
     if request.is_response(user_addform):
@@ -223,25 +223,34 @@ class UserForm(EditFormView):
 
 
 class UserEditForm(UserForm):
+    def before(self, form):
+        d = self.context.to_dict()
+        # NOTE: A User has groups. Load them
+        if "groups" in self.schema:
+            d["groups"] = self.context.groups
+        # NOTE: Get permissions
+        d[_pk(d)] = [p.perm_name for p in self.context[_pk(d)]]
+        form.appstruct = d
+
     def schema_factory(self):
-        schema = UserSchema()
-        _add_from_db(schema)
-        del schema["password"]
-        return schema
+        s = UserSchema()
+        _all_from_db(s)
+        del s["password"]
+        return s
 
     @property
     def cancel_url(self):
         return get_url("auth_manage")
 
     def save_success(self, appstruct):
-        _in(appstruct)
+        _mangle_appstruct(appstruct)
         return super(UserForm, self).save_success(appstruct)
 
 
 class GroupEditForm(UserEditForm):
     def schema_factory(self):
         s = GroupSchema()
-        _add_from_db(s)
+        _all_from_db(s)
         return GroupSchema()
 
 
