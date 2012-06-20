@@ -15,6 +15,7 @@ CONF_DEFAULTS = {
     "bookie.base_includes": " ".join([
         "bookie",
         "bookie.views",
+        "bookie.views.bookings",
         "bookie.views.entities",
         "bookie.views.login",
         "bookie.views.help",
@@ -141,7 +142,8 @@ def includeme(config):
 
     # NOTE: Anything else that's not in base here..
     config.add_translation_dirs('bookie:locale')
-    config.set_request_property(security.get_user, 'user', reify=True)
+    # NOTE: Should be reified
+    config.set_request_property(security.get_user, 'user', reify=False)
     from .views.helpers import add_renderer_globals
     config.add_subscriber(add_renderer_globals, BeforeRender)
     return config
