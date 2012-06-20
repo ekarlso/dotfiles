@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 
 #from .. import get_settings
 import bookie
-from .base import Base, DBSession
+from .base import *
 
 
 def register_models(engine):
