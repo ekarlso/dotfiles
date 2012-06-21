@@ -1,5 +1,6 @@
 colander
 deform
+ipdb
 plone.i18n
 pyramid
 pyramid_beaker
