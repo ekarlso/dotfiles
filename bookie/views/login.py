@@ -19,7 +19,7 @@ from ..utils import _
 LOG = logging.getLogger(__name__)
 
 
-@view_config(route_name='login', renderer='bookie:templates/login.pt')
+@view_config(route_name='login', renderer='login.mako')
 def login(context, request):
     login_url = urllib.unquote(request.route_url("login"))
     referrer = request.url
@@ -52,7 +52,7 @@ def login(context, request):
         if user is not None:
             email_set_password(
                 user, request,
-                template_name='bookie:templates/email-reset-password.pt')
+                template_name='email-reset-password.mako')
             request.session.flash(_(
                 u"You should receive an email with a link to reset your "
                 u"password momentarily."), 'success')
@@ -99,7 +99,7 @@ class SetPasswordSchema(colander.MappingSchema):
         )
 
 
-@view_config(name="set-password", renderer="bookie:template/edit/simpleform.pt")
+@view_config(name="set-password", renderer="bookie:template/edit/simpleform.mako")
 def set_password(context, request,
                  success_msg=_(u"You've reset your password successfully.")):
     form = Form(SetPasswordSchema(), buttons=(Button('submit', _(u'Submit')),))
@@ -155,6 +155,6 @@ def forbidden_view(request):
 
 
 def includeme(config):
-    config.add_view(name='forbidden', renderer='bookie:templates/forbidden.pt')
+    config.add_view(name='forbidden', renderer='forbidden.mako')
     config.add_route("login", "/@@login")
     config.add_route("logout", "/@@logout")

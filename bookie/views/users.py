@@ -182,7 +182,7 @@ class GroupAddForm(AddFormView):
 
 
 @view_config(route_name="auth_manage", permission="system.admin",
-            renderer="bookie:templates/admin/auth_manage.pt")
+            renderer="admin/auth_manage.mako")
 def auth_manage(context, request):
     users = models.User.query.all()
     user_grid = PyramidGrid(users, ["title", "email"])
@@ -247,26 +247,26 @@ class GroupEditForm(UserEditForm):
 
 
 @view_config(route_name="user_manage", permission="system.admin",
-            renderer="bookie:templates/admin/user_manage.pt")
+            renderer="admin/user_manage.mako")
 def user_edit(request):
     user = models.User.query.filter_by(id=request.matchdict["id"]).one()
     return mk_form(UserEditForm, user, request)
 
 
 @view_config(route_name="group_manage", permission="system.admin",
-            renderer="bookie:templates/admin/group_manage.pt")
+            renderer="admin/group_manage.mako")
 def group_edit(request):
     group = models.Group.query.filter_by(id=request.matchdict["id"]).one()
     return mk_form(GroupEditForm, group, request)
 
 
 @view_config(route_name="user_prefs", permission="view",
-            renderer="bookie:templates/user_prefs.pt")
+            renderer="user_prefs.mako")
 def user_preferences(request):
     user = request.user
     f = mk_form(UserForm, user, request)
     if type(f) == dict:
-        f["first_heading"] = user.title
+        f["sub_header"] = user.title
     return f
 
 

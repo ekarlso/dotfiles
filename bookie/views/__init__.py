@@ -16,7 +16,7 @@ def mako_renderer(tname, **kw):
     return template.render(_=tra, **kw)
 
 
-@view_config(route_name="index", renderer="bookie:templates/index.pt")
+@view_config(route_name="index", renderer="index.mako")
 def index(request):
     return {"page_title": "Welcome to Bookie!"}
 

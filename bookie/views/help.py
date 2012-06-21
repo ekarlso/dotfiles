@@ -18,7 +18,7 @@ from .helpers import get_url
 
 
 @view_config(route_name="support_contact",
-            renderer="bookie:templates/help/contact.pt")
+            renderer="help/contact.mako")
 def support_contact(context, request):
     return {}
 
