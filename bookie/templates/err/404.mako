@@ -1,3 +1,6 @@
+<%inherit file="/base.mako"/>
+
+<%block name="heading_wrapper"/>
 <%block name="content">
 <div class="span6 alert">
     <div class="alert">
