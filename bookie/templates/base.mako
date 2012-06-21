@@ -19,14 +19,14 @@
             1. The page_header is set and will be the top header of the page
             2. The page_header is set and sub_header is set, page_header is like in 1. but has sub_header underneath
     </%doc>
-    <%block name="page_header_container">
+    <%block name="heading_wrapper">
         <div class="row-fluid">
             <div class="page-header">
-                <%block name="page_header">
+                <%block name="page_heading">
                     <h1>${page_title or api.page_title}</h1>
                 </%block>
 
-                <%block name="sub_header">
+                <%block name="sub_heading">
                     % if sub_title:
                         <h2>${sub_title}</h2>
                     % endif
