@@ -27,10 +27,12 @@ def get_appstruct(context, schema):
     return appstruct
 
 
-def mk_form(form_cls, ctx, request):
+def mk_form(form_cls, ctx, request, extra={}):
     form = form_cls(ctx, request)()
     if request.is_response(form):
         return form
+    form.update(extra)
+    print form
     return form
 
 
