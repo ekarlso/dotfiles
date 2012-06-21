@@ -19,6 +19,8 @@
         <a href="${item['url']}">
             <% 
                 icon = item.get("icon")
+                if icon and not icon.startswith("icon-"):
+                    icon = "icon-" + icon
                 # <insert default icon handling here?>
             %>
             % if icon:
@@ -26,7 +28,7 @@
             % endif
             ${item['title']}
         </a>
-    </li
+    </li>
 </%def>
 
 <%def name="sidebar(navtree)">
