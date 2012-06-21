@@ -1,6 +1,7 @@
 <%namespace name="funcs" file="funcs.mako" inheritable="True"/>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <%include file="head.mako"/>
 
 <body>
