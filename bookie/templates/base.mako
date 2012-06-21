@@ -11,26 +11,37 @@
 
 <%doc>We override the content_wrapper with our setup</%doc>
 <%block name="content_wrapper">
-    <!-- TODO: make span settable? -->
     <div class="span9">
-        <%doc>
-            We support 2 different types of heading styles:
-                1. The page_header is set and will be the top header of the page
-                2. The page_header is set and sub_header is set, page_header is like in 1. but has sub_header underneath
-        </%doc>
-        <%block name="page_head_wrapper">
-            % if page_header:
-            <div class="page-header">
-                <h1>${page_header}</h1>
-                % if sub_header:
-                    <h2>${sub_header}</h2>
-                % endif
-            </div>
-            % endif
-        </%block>
 
-        <%doc>Place content beneath the content header</%doc>
-        <%block name="content">
-        </%block>
+    <!-- TODO: make span settable? -->
+    <%doc>
+        We support 2 different types of heading styles:
+            1. The page_header is set and will be the top header of the page
+            2. The page_header is set and sub_header is set, page_header is like in 1. but has sub_header underneath
+    </%doc>
+    <%block name="page_header_container">
+        <div class="row-fluid">
+            <div class="page-header">
+                <%block name="page_header">
+                    <h1>${page_title or api.page_title}</h1>
+                </%block>
+
+                <%block name="sub_header">
+                    % if sub_title:
+                        <h2>${sub_title}</h2>
+                    % endif
+                </%block>
+            </div>
+        </div>
+    </%block>
+
+    <%doc>
+        Place content beneath the content header
+        At the moment the content block is left to implement it's own row-fluids / hero-units
+
+        We impose a span[0-9] on the content to limit it's width
+    </%doc>
+    <%block name="content"/>
+
     </div>
 </%block>
