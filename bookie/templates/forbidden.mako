@@ -1,7 +1,7 @@
 <%inherit file="base.mako"/>
 
 <%doc>Clear page_header here</%doc>
-<%block name="page_header"/>
+<%block name="heading_wrapper"/>
 
 <%block name="content">
 <div class="row-fluid alert">
