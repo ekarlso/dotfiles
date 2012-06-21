@@ -27,10 +27,10 @@ def booking_actions(obj=None, request=None):
 
 def booking_links(obj=None, request=None):
     nav_children = []
+    nav_children.append(menu_came_from(request))
+    nav_children.append("spacer")
     nav_children.append(menu_item(_("Bookings"), "bookings_view"))
     nav_children.append(menu_item(_("Create"), "booking_add"))
-    nav_children.append("spacer")
-    nav_children.append(menu_came_from(request))
     navigation = [{"title": "Navigation", "children": nav_children}]
     return navigation
 
@@ -66,20 +66,20 @@ class BookingAddForm(AddFormView):
 
 
 @view_config(route_name="booking_add", permission="view",
-            renderer="booking/add.mako")
+            renderer="add.mako")
 def booking_add(context, request):
-    form = mk_form(BookingAddForm, context, request)
-    return {"navtree": booking_actions(request=request), "form": form}
+    return mk_form(BookingAddForm, context, request,
+        extra={"navtree": booking_actions(request=request)})
 
 
 @view_config(route_name="booking_view", permission="view",
-            renderer="booking/view.pt")
+            renderer="view.mako")
 def booking_view(context, request):
     return {"navtree": booking_actions(request=request), "form": ""}
 
 
 @view_config(route_name="bookings_view", permission="view",
-            renderer="booking/overview.pt")
+            renderer="booking_overview.mako")
 def bookings_view(context, request):
     return {"navtree": booking_actions(request=request), "form": ""}
 
