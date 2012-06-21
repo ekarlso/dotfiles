@@ -24,7 +24,8 @@ def menu_item(title, route, *args, **kw):
 
 def menu_came_from(request, title="Go Back"):
     came_from = request.params.get("came_from", None)
-    return dict(title=title, url=came_from) if came_from else {}
+    return dict(icon="arrow-left", title=title, url=came_from) \
+        if came_from else {}
 
 
 def create_anchor(string, route=None, *args, **kw):
