@@ -105,26 +105,24 @@ class CarEditForm(EditFormView):
 
 
 @view_config(route_name="entity_add", permission="add",
-        renderer="bookie:templates/entity/add.pt")
+        renderer="add.mako")
 def entity_add(context, request):
     type_ = get_type(request)
-    return mk_form(CarAddForm, context, request)
+    return mk_form(CarAddForm, context, request,
+        extra={"page_title": _("Add"), "sub_title": type_.title()})
 
 
 @view_config(route_name="entity_edit", permission="edit",
-            renderer="bookie:templates/entity/edit.pt")
+            renderer="edit.mako")
 def entity_edit(context, request):
     obj = models.Entity.query.filter_by(
         deleted=False, id=request.matchdict["id"]).one()
-    f = mk_form(CarEditForm, obj, request)
-    if type(f) == dict:
-        f["navtree"] = entity_actions(obj=obj, request=request)
-        f["first_heading"] = obj.title
-    return f
+    return mk_form(CarEditForm, obj, request,
+        extra=dict(navtree=entity_actions(obj=obj, request=request)))
 
 
 @view_config(route_name="entity_view", permission="view",
-            renderer="bookie:templates/entity/view.pt")
+            renderer="entity_view.mako")
 def entity_view(context, request):
     deleted = request.params.get("deleted", False)
     entity = models.Entity.query.filter_by(
@@ -134,15 +132,16 @@ def entity_view(context, request):
     b_grid_latest = PyramidGrid(
         models.Booking.latest(filter_by=dict(entity=entity)),
         models.Booking.exposed_attrs())
+
     return {
         "navtree": entity_actions(entity, request),
-        "first_heading": entity.title,
         "entity": entity,
+        "sub_title": entity.title,
         "b_grid_latest": b_grid_latest}
 
 
 @view_config(route_name="entity_delete", permission="delete",
-            renderer="bookie:templates/delete.pt")
+            renderer="delete.mako")
 def entity_delete(context, request):
     entity = models.Entity.query.filter_by(
         deleted=False, id=request.matchdict["id"]).one()
@@ -150,12 +149,12 @@ def entity_delete(context, request):
         entity.delete()
         request.session.flash(_("Delete successful"))
         return HTTPFound(location=get_url("entities_view", type=entity.type))
-    return {"first_heading": entity.title,
-        "navtree": entity_actions(entity, request)}
+    return {"navtree": entity_actions(entity, request),
+        "sub_title": entity.title}
 
 
 @view_config(route_name="entities_view", permission="view",
-            renderer="bookie:templates/entity/overview.pt")
+            renderer="entity_overview.mako")
 def entities_view(context, request):
     deleted = request.params.get("deleted", False)
     type_ = get_type(request)
@@ -168,9 +167,7 @@ def entities_view(context, request):
         create_anchor(item["title"], "entity_view", type=type_, id=item["id"]))
 
     return {"navtree": entity_links(request),
-        "entity_grid": grid, "entity_type": name_to_camel(type_, joiner=" ")}
-
-
+        "entity_grid": grid, "sub_title": name_to_camel(type_, joiner=" ")}
 
 
 def includeme(config):
