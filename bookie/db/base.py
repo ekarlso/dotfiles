@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-import ipdb
 
 from colanderalchemy import SQLAlchemyMapping
 from sqlalchemy import Column, Boolean, DateTime

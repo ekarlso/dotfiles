@@ -1,6 +1,5 @@
 from bookie.testing import UnitTestBase
 from bookie.db import models as m
-import ipdb
 
 import logging
 from pprint import pprint
