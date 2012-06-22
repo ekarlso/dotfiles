@@ -1,6 +1,6 @@
 colander
 deform
-form_encode
+formencode
 plone.i18n
 pyramid
 pyramid_beaker
