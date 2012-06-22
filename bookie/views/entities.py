@@ -172,7 +172,7 @@ def entities_view(context, request):
 
 def includeme(config):
     config.add_route("entity_add", "/entity/{type}/add")
-    config.add_route("entity_view", "/entity/{id}/view")
     config.add_route("entity_edit", "/entity/{id}/edit")
+    config.add_route("entity_view", "/entity/{id}/view")
     config.add_route("entity_delete", "/entity/{id}/delete")
     config.add_route("entities_view", "/entity/{type}")

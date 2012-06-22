@@ -81,6 +81,7 @@ def booking_view(context, request):
 @view_config(route_name="bookings_view", permission="view",
             renderer="booking_overview.mako")
 def bookings_view(context, request):
+    #grid = PyramidGrid(models.Booking.query.filter_by
     return {"navtree": booking_actions(request=request), "form": ""}
 
 
