@@ -4,11 +4,14 @@ bookie README
 Getting Started
 ---------------
 
+- Activate VirtualEnv:
+  bin/active 
+
 - cd <directory containing this file>
 
-- $venv/bin/python setup.py develop
+- python setup.py develop
 
-- $venv/bin/populate_bookie development.ini
+- initialize_bookie_db development.ini#bookie
 
-- $venv/bin/pserve development.ini
+- pserve development.ini
 
