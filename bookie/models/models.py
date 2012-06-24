@@ -18,7 +18,7 @@ from ziggurat_foundations.models import BaseModel, UserMixin, GroupMixin, \
     ExternalIdentityMixin
 from ziggurat_foundations import ziggurat_model_init, models as zm
 
-from ..utils import camel_to_name, name_to_camel, generate_uuid
+from .. import redis, utils
 from .base import Base, DBSession
 
 
@@ -176,7 +176,7 @@ class Entity(Base):
     __tablename__ = "entity"
     __expose_attrs__ = ["brand", "model", "produced", "identifier"]
     __format_string__ = '{brand} {model} - {produced} {identifier}'
-    id = Column(Unicode(36), primary_key=True, default=generate_uuid)
+    id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     type = Column(Unicode(50))
     brand = Column(UnicodeText)
     model = Column(UnicodeText)
@@ -187,7 +187,7 @@ class Entity(Base):
 
     @declared_attr
     def __mapper_args__(cls):
-        name = unicode(camel_to_name(cls.__name__))
+        name = unicode(utils.camel_to_name(cls.__name__))
         return {"polymorphic_on": "type", "polymorphic_identity": name}
 
 
@@ -246,7 +246,7 @@ class Booking(Base):
     __format_string__ = "{customer_name} - {start_at} > {end_at}"
     __expose_attrs__ = ["customer", "start", "end"]
     __tablename__ = "order"
-    id = Column(Unicode(36), primary_key=True, default=generate_uuid)
+    id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     price = Column(Integer)
 
     start_at = Column(
