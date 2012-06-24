@@ -97,6 +97,10 @@ class BaseModel(object):
     def items(self):
         return dict([(k, getattr(self, k)) for k in self])
 
+    @classmethod
+    def get_by(cls, *args, **kw):
+        return cls.query.filter_by(*args, **kw).first()
+
     @property
     def hide_attrs(self):
         """Protected attributes - shouldn't be exposed"""
