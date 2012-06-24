@@ -7,6 +7,7 @@ from sqlalchemy import create_engine, event
 #from .. import get_settings
 import bookie
 from .base import *
+from .models import *
 
 
 def register_models(engine):

@@ -29,7 +29,7 @@ def testing_db_url():
 
 def _initTestingDB():
     from sqlalchemy import create_engine
-    from bookie.db import configure_db
+    from bookie.models import configure_db
 
     configure_db(drop_all=True)
 

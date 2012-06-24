@@ -12,7 +12,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.exceptions import Forbidden
 from pyramid.view import view_config
 
-from ..db import models
+from .. import models
 from ..utils import _
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
 from .helpers import get_url

@@ -6,7 +6,7 @@ from pyramid.threadlocal import get_current_registry
 from pyramid.util import DottedNameResolver
 from pyramid_beaker import session_factory_from_settings
 
-from . import db, security, utils
+from . import models, security, utils
 
 
 CONF_DEFAULTS = {
@@ -121,7 +121,7 @@ def base_configure(global_config, **settings):
             config.include(module)
         config.commit()
 
-    db.configure_db()
+    models.configure_db()
     return config
 
 

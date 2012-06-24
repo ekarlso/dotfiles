@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from bookie.testing import Dummy, DummyRequest, UnitTestBase
 
-from bookie.db import models
+from bookie import models
 from bookie.views.helpers import AddFormView
 from bookie.views.bookings import BookingSchema
 

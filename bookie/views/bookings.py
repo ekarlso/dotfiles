@@ -11,7 +11,7 @@ from pyramid.exceptions import Forbidden
 from pyramid.request import Request
 from pyramid.view import view_config
 
-from ..db import models
+from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
 from .helpers import menu_item, menu_came_from, get_url, create_anchor, wrap_td
