@@ -44,22 +44,44 @@ def get_model(obj):
     return tm
 
 
+def get_nav_data(request, extra={}):
+    """
+    Get some navigational data, GPS coordinate like ;)
+
+    :arg request: Mandatory request
+    :type request: Request
+    :key extra: Extra data to override the defaults
+    :type key: dict
+    """
+    d = request.matchdict.copy()
+    d.update(extra)
+    return d
+
 
 # TODO: Make these better?
-def entity_actions(obj=None, request=None):
-    return entity_links(obj) + [
+def entity_actions(obj, request):
+    """
+    Entity actions - on a entity page
+    """
+    # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
+    d = get_nav_data(request, extra={"type": obj.type})
+
+    return entity_links(d) + [
         {"title": _("Entity Actions"), "children": [
-            menu_item(_("View"), "entity_view", id=obj.id),
-            menu_item(_("Edit"), "entity_edit", id=obj.id),
-            menu_item(_("Delete"), "entity_delete", id=obj.id),
+            menu_item(_("View"), "entity_view", **d),
+            menu_item(_("Edit"), "entity_edit", **d),
+            menu_item(_("Delete"), "entity_delete", **d),
             menu_item(_("Book me"), "booking_add",
-                    _query=dict(came_from=request.url))]}
+                    _query=dict(came_from=request.url, entity=d["id"]))]}
         ]
 
-def entity_links(obj=None):
+def entity_links(data):
+    """
+    Return some navigation links
+    """
     return [
         {"title": _("Navigation"), "children": [
-            menu_item(_("Overview"), "entities_view", type=get_type(obj))]}]
+            menu_item(_("Overview"), "entities_view", **data)]}]
 
 
 class CarSchema(colander.Schema):
@@ -107,7 +129,6 @@ class CarEditForm(EditFormView):
 @view_config(route_name="entity_add", permission="add",
         renderer="add.mako")
 def entity_add(context, request):
-    type_ = get_type(request)
     return mk_form(CarAddForm, context, request,
         extra={"page_title": _("Add"), "sub_title": type_.title()})
 
@@ -118,7 +139,7 @@ def entity_edit(context, request):
     obj = models.Entity.query.filter_by(
         deleted=False, id=request.matchdict["id"]).one()
     return mk_form(CarEditForm, obj, request,
-        extra=dict(navtree=entity_actions(obj=obj, request=request)))
+        extra=dict(navtree=entity_actions(obj, request)))
 
 
 @view_config(route_name="entity_view", permission="view",
@@ -130,8 +151,8 @@ def entity_view(context, request):
 
     ##b_latest = models.Booking.latest(entity=entity)
     b_grid_latest = PyramidGrid(
-        models.Booking.latest(filter_by=dict(entity=entity)),
-        models.Booking.exposed_attrs())
+        models.Booking.latest(filter_by={"entity": entity}),
+            models.Booking.exposed_attrs())
 
     return {
         "navtree": entity_actions(entity, request),
@@ -149,7 +170,8 @@ def entity_delete(context, request):
         entity.delete()
         request.session.flash(_("Delete successful"))
         return HTTPFound(location=get_url("entities_view", type=entity.type))
-    return {"navtree": entity_actions(entity, request),
+    return {
+        "navtree": entity_actions(entity, request),
         "sub_title": entity.title}
 
 
@@ -163,16 +185,21 @@ def entities_view(context, request):
     entities = type_model.query.filter_by(deleted=deleted).all()
 
     grid = PyramidGrid(entities, type_model.exposed_attrs())
-    grid.column_formats["brand"] = lambda cn, i, item: wrap_td(
-        create_anchor(item["title"], "entity_view", type=type_, id=item["id"]))
+    def _link(cn, i, item):
+        nav_data = get_nav_data(request, extra={"id": item["id"]})
+        a = create_anchor(item["title"], "entity_view", **nav_data)
+        return wrap_td(a)
+    grid.column_formats["brand"] = _link
 
-    return {"navtree": entity_links(request),
-        "entity_grid": grid, "sub_title": name_to_camel(type_, joiner=" ")}
+    return {
+        "navtree": entity_links(get_nav_data(request)),
+        "entity_grid": grid,
+        "sub_title": name_to_camel(type_, joiner=" ")}
 
 
 def includeme(config):
-    config.add_route("entity_add", "/entity/{type}/add")
-    config.add_route("entity_edit", "/entity/{id}/edit")
-    config.add_route("entity_view", "/entity/{id}/view")
-    config.add_route("entity_delete", "/entity/{id}/delete")
-    config.add_route("entities_view", "/entity/{type}")
+    config.add_route("entity_add", "/{group_name}/entity/{type}/add")
+    config.add_route("entity_edit", "/{group_name}/entity/{id}/edit")
+    config.add_route("entity_view", "/{group_name}/entity/{id}/view")
+    config.add_route("entity_delete", "/{group_name}/entity/{id}/delete")
+    config.add_route("entities_view", "/{group_name}/entity/{type}")
