@@ -74,22 +74,16 @@ class TemplateAPI(object):
 
     utils = utils
 
-    def macro(self, asset_spec, macro_name='main'):
-        return get_renderer(asset_spec).implementation().macros[macro_name]
-
-    #@classmethod
-    #def resource_url(cls, resource):
-    #    get_
-
-    def _resource(self, resource):
-        has_package = re.search("^\w+:", resource)
-        if not has_package:
-            resource = "%s:%s" % (self.__module__.split(".")[0], resource)
-        return self.request.static_url(resource)
-
+    # NOTE: HTML / Link helpers
     def _resource_html(self, format, resource):
+        def _link(p):
+            has_package = re.search("^\w+:", p)
+            if not has_package:
+                p = "%s:%s" % (self.__module__.split(".")[0], p)
+            return self.request.static_url(p)
+
         def _html(p):
-            return format % self._resource(p)
+            return format % _link(p)
 
         if type(resource) == list:
             string = "\n".join([_html(p) for p in resource])
@@ -102,6 +96,23 @@ class TemplateAPI(object):
 
     def script_link(self, resource, format=SCRIPT_LINK):
         return self._resource_html(format, resource)
+
+    def resource_url(self, context=None, *elements, **kwargs):
+        if context is None:
+            context = self.context
+        return self.request.resource_url(context, *elements, **kwargs)
+
+    def avatar_url(self, user=None, size="14", default_image='identicon'):
+        if user is None:
+            user = self.request.user
+        email = user.email
+        if not email:
+            email = user.name
+        h = hashlib.md5(email).hexdigest()
+        query = {'default': default_image, 'size': str(size)}
+        url = 'https://secure.gravatar.com/avatar/%s?%s' % (
+            h, urllib.urlencode(query))
+        return url
 
     @reify
     def site_title(self):
@@ -120,28 +131,7 @@ class TemplateAPI(object):
             view_title = self.site_title
         return u'%s' % (view_title)
 
-    def url(self, context=None, *elements, **kwargs):
-        if context is None:
-            context = self.context
-        return self.request.resource_url(context, *elements, **kwargs)
-
-    @reify
-    def root(self):
-        return self.lineage[-1]
-
-    @reify
-    def lineage(self):
-        return list(lineage(self.context))
-
-    @reify
-    def breadcrumbs(self):
-        return reversed(self.lineage)
-
-    #def has_permission(self, permission, context=None):
-    #    if context is None:
-    #        context = self.context
-    #    return has_permission(permission, context, self.request)
-
+    # NOTE: Render helpers
     def render_view(self, name='', context=None, request=None, secure=True,
                     bare=True):
         if context is None:
@@ -160,31 +150,38 @@ class TemplateAPI(object):
     def render_template(self, renderer, **kwargs):
         return TemplateStructure(render(renderer, kwargs, self.request))
 
-    #def list_children(self, context=None, permission='view'):
-    #    if context is None:
-    #        context = self.context
-    #    children = []
-    #    if hasattr(context, 'values'):
-    #        for child in context.values():
-    #            if (not permission or
-    #                has_permission(permission, child, self.request)):
-    #                children.append(child)
-    #    return children
+    @reify
+    def root(self):
+        return self.lineage[-1]
+
+    @reify
+    def lineage(self):
+        return list(lineage(self.context))
+
+    @reify
+    def breadcrumbs(self):
+        return reversed(self.lineage)
+
+    def list_children(self, context=None, permission='view'):
+        if context is None:
+            context = self.context
+        children = []
+        if hasattr(context, 'values'):
+            for child in context.values():
+                if (not permission or
+                    has_permission(permission, child, self.request)):
+                    children.append(child)
+        return children
 
     inside = staticmethod(inside)
 
-    def avatar_url(self, user=None, size="14", default_image='identicon'):
-        if user is None:
-            user = self.request.user
-        email = user.email
-        if not email:
-            email = user.name
-        h = hashlib.md5(email).hexdigest()
-        query = {'default': default_image, 'size': str(size)}
-        url = 'https://secure.gravatar.com/avatar/%s?%s' % (
-            h, urllib.urlencode(query))
-        return url
+    # NOTE: Security stuff
+    def has_permission(self, permission, context=None):
+        if context is None:
+            context = self.context
+        return has_permission(permission, context, self.request)
 
+    # NOTE: Formatting / Conversion
     @reify
     def locale_name(self):
         return get_locale_name(self.request)
@@ -206,35 +203,11 @@ class TemplateAPI(object):
             format = self.settings['bookie.time_format']
         return format_time(t, format=format, locale=self.locale_name)
 
-    def get_type(self, name):
-        for class_ in get_settings()['bookie.available_types']:
-            if class_.type_info.name == name:
-                return class_
-
     def name_to_camel(self, *args, **kw):
         return name_to_camel(*args, **kw)
 
     def camel_to_name(self, *args, **kw):
         return camel_to_name(*args, **kw)
-
-    #def find_edit_view(self, item):
-    #    view_name = self.request.view_name
-    #    if not view_permitted(item, self.request, view_name):
-    #        view_name = u'edit'
-    #    if not view_permitted(item, self.request, view_name):
-    #        view_name = u''
-    #    return view_name
-
-    #@reify
-    #def edit_links(self):
-    #    if not hasattr(self.context, 'type_info'):
-    #        return []
-    #    return [l for l in self.context.type_info.edit_links
-    #            if l.permitted(self.context, self.request)]
-
-    #def more_links(self, name):
-    #    return [l for l in getattr(self, name)
-    #            if l.permitted(self.context, self.request)]
 
 
 __all__ = ["template_api", "add_renderer_globals", "is_root",
