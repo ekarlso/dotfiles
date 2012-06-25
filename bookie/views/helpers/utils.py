@@ -12,6 +12,14 @@ from bookie import get_settings
 from bookie.utils import _
 
 
+"""
+What goes here?
+
+Utlities that help for HTML / View things.
+Other things go into <pkg.utils>
+"""
+
+
 def get_url(route, *args, **kw):
     request = get_current_request()
     location = "%s" % _url(route, request, *args, **kw)
@@ -57,18 +65,3 @@ def render_view(context, request, name='', secure=True):
     response = render_view_to_response(context, request, name, secure)
     if response is not None:
         return response.ubody
-
-
-def get_localizer_for_locale_name(locale_name):
-    registry = get_current_registry()
-    tdirs = registry.queryUtility(ITranslationDirectories, default=[])
-    return make_localizer(locale_name, tdirs)
-
-
-def translate(*args, **kwargs):
-    request = get_current_request()
-    if request is None:
-        localizer = get_localizer_for_locale_name('en')
-    else:
-        localizer = get_localizer(request)
-    return localizer.translate(*args, **kwargs)

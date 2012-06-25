@@ -10,6 +10,13 @@ from repoze.lru import LRUCache
 _ = TranslationStringFactory('bookie')
 
 
+"""
+What to put in here?
+
+"Generic" utilities that are not View / HTML specific
+See <pkg>.views.helpers.utils for more info.
+"""
+
 class DontCache(Exception):
     pass
 
@@ -124,5 +131,22 @@ def name_to_camel(string, joiner=""):
     return joiner.join([i.title() for i in string.split("_")])
 
 
+def get_localizer_for_locale_name(locale_name):
+    registry = get_current_registry()
+    tdirs = registry.queryUtility(ITranslationDirectories, default=[])
+    return make_localizer(locale_name, tdirs)
+
+
+def translate(*args, **kwargs):
+    request = get_current_request()
+    if request is None:
+        localizer = get_localizer_for_locale_name('en')
+    else:
+        localizer = get_localizer(request)
+    return localizer.translate(*args, **kwargs)
+
+
 def generate_uuid():
     return unicode(uuid.uuid4())
+
+
