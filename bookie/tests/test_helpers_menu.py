@@ -33,6 +33,13 @@ class TestMenuItem(unittest.TestCase):
         self.assertEquals(m.children[1].children[0].title, "subchild")
         self.assertEquals(m.children[1].children[0].url, "subchild")
 
+    def test_menu_html(self):
+        """
+        Test the top level for now
+        """
+        m = self.make()
+        self.assertEquals(m.__html__(), """<li><a href="#">Home</a></li>""")
+
 
 if __name__ == '__main__':
     unittest.main()
