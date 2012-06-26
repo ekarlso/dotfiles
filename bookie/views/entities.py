@@ -152,12 +152,12 @@ def entity_view(context, request):
     ##b_latest = models.Booking.latest(entity=entity)
     b_grid_latest = PyramidGrid(
         models.Booking.latest(filter_by={"entity": entity}),
-            models.Booking.exposed_attrs())
+        models.Booking.exposed_attrs())
 
     return {
         "navtree": entity_actions(entity, request),
-        "entity": entity,
         "sub_title": entity.title,
+        "entity": entity,
         "b_grid_latest": b_grid_latest}
 
 
@@ -193,8 +193,8 @@ def entities_view(context, request):
 
     return {
         "navtree": entity_links(get_nav_data(request)),
-        "entity_grid": grid,
-        "sub_title": name_to_camel(type_, joiner=" ")}
+        "sub_title": name_to_camel(type_, joiner=" "),
+        "entity_grid": grid}
 
 
 def includeme(config):
