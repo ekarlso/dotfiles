@@ -5,10 +5,23 @@ import re
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+from .utils import get_url
+
 
 STYLE_CLS = [
     "divider"
 ]
+
+
+def menu_item(value, view_name, *args, **kw):
+    """
+    A simple helper for generating out menu dicts
+    """
+    return {
+        "value": value,
+        "view_name": view_name,
+        "view_args": args,
+        "view_kw": kw}
 
 
 def get_template(template):
@@ -31,14 +44,20 @@ class MenuItem(object):
     :param children: A list of children dicts
     :param parent: The parent of this item
     """
-    def __init__(self, context, request, parent=None, children=[], value=None, url=None, icon=None):
+    def __init__(self, context, request, parent=None, children=[], value=None,
+        url=None, icon=None, view_name=None, view_args=[], view_kw={}):
         self.context, self.request = context, request
 
         self.parent = parent
         self.children = [self.__class__(context, request, parent=self, **i) for i in children]
 
-        self.value, self.url, = value, url
+        self.value = value
+
+        # NOTE: View override url
+        if view_name:
+            url = get_url(view_name, *view_args, **view_kw)
         self.url = url
+
         if icon and not icon.startswith("icon-"):
             icon = "icon-" + icon
         self.icon = icon
@@ -73,6 +92,7 @@ class MenuItem(object):
         elif self.value.lower() in STYLE_CLS:
             cls.append(self.value.lower())
         return " ".join(cls)
+
 
     @property
     def icon_html(self):
