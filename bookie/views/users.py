@@ -15,7 +15,7 @@ from pyramid.view import view_config
 from .. import models
 from ..utils import _
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import get_url
+from .helpers import menu_item
 
 
 LOG = logging.getLogger(__name__)
@@ -71,6 +71,13 @@ def _mangle_appstruct(appstruct):
     pk = _pk(appstruct) # NOTE: user_permissions or permissions
     appstruct[pk] = [{"perm_name": pn} for pn in appstruct.pop(pk)]
     return appstruct
+
+
+def prefs_menu():
+    return [{
+        "value": _("My settings"), "children": [
+            menu_item(_("Preferences"), "user_prefs"),
+            menu_item(_("Reset password"), "reset_password")]}]
 
 
 class Groups(colander.SequenceSchema):
@@ -161,7 +168,7 @@ class UserAddForm(AddFormView):
         self.request.session.flash(_(u'${title} added.',
                                      mapping=dict(title=user.title)),
                                      'success')
-        return HTTPFound(location=get_url("auth_manage"))
+        return HTTPFound(location=get_url("auth_settings"))
 
 
 class GroupAddForm(AddFormView):
@@ -177,31 +184,7 @@ class GroupAddForm(AddFormView):
     def add_group_success(self, appstruct):
         _mangle_appstruct(appstruct)
         models.Group().from_dict(appstruct).save()
-        return HTTPFound(location=get_url("auth_manage"))
-
-
-@view_config(route_name="auth_manage", permission="system.admin",
-            renderer="admin/auth_manage.mako")
-def auth_manage(context, request):
-    users = models.User.query.all()
-    user_grid = PyramidGrid(users, ["title", "email"])
-
-    groups = models.Group.query.all()
-    group_grid = PyramidGrid(groups, models.Group.exposed_attrs())
-
-    user_addform = UserAddForm(context, request)()
-    if request.is_response(user_addform):
-        return user_addform
-
-    group_addform = GroupAddForm(context, request)()
-    if request.is_response(group_addform):
-        return group_addform
-
-    return {
-        "user_grid": user_grid,
-        "user_addform": user_addform,
-        "group_grid": group_grid,
-        "group_addform": group_addform}
+        return HTTPFound(location=get_url("auth_settings"))
 
 
 class UserForm(EditFormView):
@@ -231,7 +214,7 @@ class UserEditForm(UserForm):
 
     @property
     def cancel_url(self):
-        return get_url("auth_manage")
+        return get_url("auth_settings")
 
     def save_success(self, appstruct):
         _mangle_appstruct(appstruct)
@@ -245,32 +228,63 @@ class GroupEditForm(UserEditForm):
         return s
 
 
-@view_config(route_name="user_manage", permission="system.admin",
-            renderer="admin/user_manage.mako")
-def user_edit(request):
-    user = models.User.query.filter_by(id=request.matchdict["id"]).one()
-    return mk_form(UserEditForm, user, request)
+@view_config(route_name="auth_settings", permission="system.admin",
+            renderer="admin/auth_settings.mako")
+def auth_settings(context, request):
+    users = models.User.query.all()
+    user_grid = PyramidGrid(users, ["title", "email"])
+
+    groups = models.Group.query.all()
+    group_grid = PyramidGrid(groups, models.Group.exposed_attrs())
+
+    user_addform = UserAddForm(context, request)()
+    if request.is_response(user_addform):
+        return user_addform
+
+    group_addform = GroupAddForm(context, request)()
+    if request.is_response(group_addform):
+        return group_addform
+
+    return {
+        "user_grid": user_grid,
+        "user_addform": user_addform,
+        "group_grid": group_grid,
+        "group_addform": group_addform}
 
 
-@view_config(route_name="group_manage", permission="system.admin",
-            renderer="admin/group_manage.mako")
+@view_config(route_name="group_edit", permission="system.admin",
+            renderer="edit.mako")
 def group_edit(request):
     group = models.Group.query.filter_by(id=request.matchdict["id"]).one()
     return mk_form(GroupEditForm, group, request)
+
+
+@view_config(route_name="group_req_access", permission="view",
+            renderer="edit.mako")
+def group_req_access(request):
+    return {}
+
+
+@view_config(route_name="user_edit", permission="system.admin",
+            renderer="edit.mako")
+def user_edit(request):
+    user = models.User.query.filter_by(id=request.matchdict["id"]).one()
+    return mk_form(UserEditForm, user, request)
 
 
 @view_config(route_name="user_prefs", permission="view",
             renderer="user_prefs.mako")
 def user_preferences(request):
     user = request.user
-    f = mk_form(UserForm, user, request)
-    if type(f) == dict:
-        f["sub_header"] = user.title
-    return f
+    return mk_form(UserForm, user, request,
+        extra={"navtree": prefs_menu()})
 
 
 def includeme(config):
-    config.add_route("auth_manage", "@@admin/auth")
-    config.add_route("user_manage", "@@admin/users/{id}")
-    config.add_route("group_manage", "@@admin/groups/{id}")
+    config.add_route("auth_settings", "@@admin/auth")
+    # NOTE: Group links
+    config.add_route("group_req_access", "@@companies/req_access")
+    config.add_route("group_edit", "@@admin/groups/{id}")
+    # NOTE: User links
     config.add_route("user_prefs", "@@prefs")
+    config.add_route("user_edit", "@@admin/users/{id}")
