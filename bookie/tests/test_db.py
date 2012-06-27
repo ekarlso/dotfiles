@@ -30,9 +30,13 @@ class TestUser(UnitTestBase):
         self.assertEquals(data, self.u.to_dict())
 
     def test_add_group(self):
-        self.u.from_dict({"groups": [{"id": 1}]}).save()
+        """
+        Just test that groups are added correctly using from_dict
+        """
+        self.u.from_dict({"groups": [{"group_name": "System Admins"}]}).save()
         self.assertEquals(len(self.u.groups), 1)
-        self.u.from_dict({"groups": [{"id": 1}, {"id": 2}]}).save()
+        self.u.from_dict({"groups": [
+            {"group_name": "System Admins"}, {"group_name": "RentOurWrecks Inc"}]}).save()
         self.assertEquals(len(self.u.groups), 2)
 
 class TestGroup(UnitTestBase):

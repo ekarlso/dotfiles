@@ -183,7 +183,7 @@ class Entity(Base):
     identifier = Column(UnicodeText, unique=True)
     produced = Column(Integer)
 
-    retailer_id = Column(Integer, ForeignKey('groups.id'), nullable=False)
+    retailer_name = Column(Integer, ForeignKey('groups.group_name'), nullable=False)
 
     @declared_attr
     def __mapper_args__(cls):
@@ -225,7 +225,7 @@ class Customer(Base):
     email = Column(UnicodeText)
     phone = Column(Integer)
 
-    retailer_id = Column(Integer, ForeignKey('groups.id'))
+    retailer_name = Column(Integer, ForeignKey('groups.group_name'))
 
 
 class Location(Base):
@@ -238,7 +238,7 @@ class Location(Base):
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
 
-    retailer_id = Column(Integer, ForeignKey("groups.id"))
+    retailer_name = Column(Integer, ForeignKey("groups.group_name"))
     retailer = relationship("Group", backref="locations")
 
 
