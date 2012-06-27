@@ -14,7 +14,7 @@ from pyramid.url import resource_url
 from bookie import get_settings
 from bookie.utils import _, name_to_camel, camel_to_name
 
-from . import utils
+from . import menu, utils
 
 
 def template_api(context, request, **kwargs):
@@ -114,6 +114,12 @@ class TemplateAPI(object):
             h, urllib.urlencode(query))
         return url
 
+    def dropdown(self, data):
+        return menu.Dropdown(self.context, self.request, data)
+
+    def sidebar(self, data):
+        return menu.Sidebar(self.context, self.request, data)
+
     @reify
     def site_title(self):
         value = get_settings().get('bookie.site_title')
@@ -208,6 +214,7 @@ class TemplateAPI(object):
 
     def camel_to_name(self, *args, **kw):
         return camel_to_name(*args, **kw)
+
 
 
 __all__ = ["template_api", "add_renderer_globals", "is_root",
