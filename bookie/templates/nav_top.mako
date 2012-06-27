@@ -21,15 +21,20 @@ Menu for when a user is authed
 </%doc>
 <%
     if request.user:
-        dd_companies = {"value": "Companies", "icon": "user", "children": [
-                        {"value": "Request access to a company",
-                        "url": "@@companies/request_access"}]}
+        dd_companies = {
+            "value": "Companies", "icon": "user", "children": [
+                {"value": "Request access to a company",
+                "view_name": "group_req_access"}]}
         user_value = request.user.first_name + " - " + request.user.user_name
-        dd_user = {"value": user_title, "icon": "user", "children": [
-                {"value": "Preferences", "url": "@@prefs"}]}
-        api.dropdown(dd_companies)
-        api.dropdown(dd_user)
+        dd_user = {
+            "value": user_value, "icon": "user", "children": [
+                {"value": "Preferences", "view_name": "user_prefs"},
+                {"value": "Reset password", "view_name": "reset_password"}]}
 %>
+% if request.user:
+    ${api.dropdown(dd_user)}
+    ${api.dropdown(dd_companies)}
+% endif
 
 </div><!-- container -->
 </div><!-- navbar-inner-->

@@ -15,6 +15,7 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _
+from .users import prefs_menu
 
 LOG = logging.getLogger(__name__)
 
@@ -99,8 +100,8 @@ class SetPasswordSchema(colander.MappingSchema):
         )
 
 
-@view_config(name="set-password", renderer="bookie:template/edit/simpleform.mako")
-def set_password(context, request,
+@view_config(route_name="reset_password", renderer="edit.mako")
+def reset_password(context, request,
                  success_msg=_(u"You've reset your password successfully.")):
     form = Form(SetPasswordSchema(), buttons=(Button('submit', _(u'Submit')),))
     rendered_form = None
@@ -136,7 +137,7 @@ def set_password(context, request,
         rendered_form = form.render(request.params.items())
 
     return {"page_title": _(u"Reset your password - ${title}"),
-            "form": rendered_form}
+            "navtree": prefs_menu(), "form": rendered_form}
 
 
 @view_config(context=HTTPForbidden, accept="text/html")
@@ -158,3 +159,4 @@ def includeme(config):
     config.add_view(name='forbidden', renderer='forbidden.mako')
     config.add_route("login", "/@@login")
     config.add_route("logout", "/@@logout")
+    config.add_route("reset_password", "/@@reset_password")
