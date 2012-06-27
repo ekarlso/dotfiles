@@ -28,10 +28,11 @@ def booking_actions(obj=None, request=None):
 def booking_links(obj=None, request=None):
     nav_children = []
     nav_children.append(menu_came_from(request))
-    nav_children.append("spacer")
+    nav_children.append({"value": "divider"})
     nav_children.append(menu_item(_("Bookings"), "bookings_view"))
     nav_children.append(menu_item(_("Create"), "booking_add"))
-    navigation = [{"title": "Navigation", "children": nav_children}]
+    navigation = [{"value": "Navigation", "children": nav_children}]
+    print navigation
     return navigation
 
 

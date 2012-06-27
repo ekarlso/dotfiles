@@ -49,7 +49,13 @@ class MenuItem(object):
         self.context, self.request = context, request
 
         self.parent = parent
-        self.children = [self.__class__(context, request, parent=self, **i) for i in children]
+        new_children = []
+        for child in children:
+            if len(child) > 0:
+                # NOTE: Skip empty items
+                new_children.append(
+                    self.__class__(context, request, parent=self, **child))
+        self.children = new_children
 
         self.value = value
 

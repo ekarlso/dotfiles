@@ -70,6 +70,9 @@ class TestDropdown(TestMenu):
 class TestSidebar(TestMenu):
     cls = Sidebar
 
+    def make(self, menu=[MENU]):
+        return self.cls(Dummy(), DummyRequest(), menu)
+
     def test_html(self):
         m = self.make()
 
