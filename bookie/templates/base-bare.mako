@@ -1,11 +1,9 @@
-<%namespace name="funcs" file="funcs.mako" inheritable="True"/>
-
 <!DOCTYPE html>
 <html lang="en">
 <%include file="head.mako"/>
 
 <body>
-<%include file="head_content.mako"/>
+<%include file="nav_top.mako"/>
 
 <div class="container-fluid">
     <div class="row-fluid">

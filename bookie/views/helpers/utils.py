@@ -26,8 +26,8 @@ def get_url(route, *args, **kw):
     return location
 
 
-def menu_item(title, route, *args, **kw):
-    return {"title": title, "url": get_url(route, *args, **kw)}
+def menu_item(value, route, *args, **kw):
+    return {"value": value, "url": get_url(route, *args, **kw)}
 
 
 def menu_came_from(request, title="Go Back"):

@@ -4,7 +4,7 @@
 <%block name="left_wrapper">
     <%block name="left">
         % if navtree:
-            <div class="span2">${self.funcs.sidebar(navtree)}</div>
+            <div class="span2">${api.sidebar(navtree)}</div>
         % endif
     </%block>
 </%block>

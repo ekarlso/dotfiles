@@ -6,6 +6,11 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 
 
+STYLE_CLS = [
+    "divider"
+]
+
+
 def get_template(template):
     template_dir = os.path.dirname(__file__) + "/templates/"
     lookup = TemplateLookup(directories=[template_dir])
@@ -19,20 +24,20 @@ class MenuItem(object):
     :param context: A context
     :param request: A request
 
-    :param title: The title / text for this menu item
+    :param value: The value / text for this menu item
     :param url: The href / url for this menu item
     :param icon: A Icon to prepend to the text
 
     :param children: A list of children dicts
     :param parent: The parent of this item
     """
-    def __init__(self, context, request, parent=None, children=[], title=None, url=None, icon=None):
+    def __init__(self, context, request, parent=None, children=[], value=None, url=None, icon=None):
         self.context, self.request = context, request
 
         self.parent = parent
         self.children = [self.__class__(context, request, parent=self, **i) for i in children]
 
-        self.title, self.url, = title, url
+        self.value, self.url, = value, url
         self.url = url
         if icon and not icon.startswith("icon-"):
             icon = "icon-" + icon
@@ -49,33 +54,42 @@ class MenuItem(object):
     def is_parent(self):
         return len(self.children) > 0
 
+    # TODO: FIX ME
     def levels(self):
+        """
+        Should return at what level we're at in the menu indent structure
+        """
         i = 0
         c = self
         while (getattr(c, "parent", False)):
             c = c.parent
             i += 1
 
+    @property
+    def cls(self):
+        cls = []
+        if not self.value in STYLE_CLS and self.url == self.request.url:
+            cls.append("active")
+        elif self.value.lower() in STYLE_CLS:
+            cls.append(self.value.lower())
+        return " ".join(cls)
+
+    @property
+    def icon_html(self):
+        return '<i class=%s></i>' % self.icon if self.icon else ''
+
     def __iter__(self):
         return iter(self.children)
 
+    def subitems(self):
+        for i in self:
+            for ci in i.items():
+                yield ci
+
     def items(self):
         yield self
-        for item in self:
-            for child_item in item.items():
-                yield child_item
-
-    def __html__(self):
-        return get_template(self.template).render(item=self)
-        html = """<li%s><a href="%s">%s%s</a></li>"""
-        icon_html = '<i class=%s></i>' % self.icon if self.icon else ''
-        # NOTE: Need to add support for menu header here (sidebar)
-        li_cls = []
-        if self.is_active:
-            li_cls.append("active")
-        li_cls = ' class="%s"' % " ".join(li_cls) \
-            if len(li_cls) > 0 else ''
-        return html % (li_cls, self.url, icon_html, self.title)
+        for i in self.subitems():
+            yield i
 
 
 class Menu(object):
@@ -84,13 +98,17 @@ class Menu(object):
     """
     template = None
     def __init__(self, context, request, struct):
-        self.items = MenuItem(context, request, **struct)
+        self.tree = MenuItem(context, request, **struct)
 
     def __iter__(self):
-        return self.items.items()
+        return self.tree.subitems()
 
     def __html__(self):
         return get_template(self.template).render(menu=self)
+
+    @property
+    def top(self):
+        return self.tree
 
 
 class Dropdown(Menu):
@@ -99,3 +117,7 @@ class Dropdown(Menu):
 
 class Sidebar(Menu):
     template = "sidebar.mako"
+    def __init__(self, context, request, struct):
+        if type(struct) == list:
+            struct = {"children": struct}
+        super(Sidebar, self).__init__(context, request, struct)

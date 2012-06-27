@@ -17,12 +17,12 @@
 </div><!-- nav-collapse -->
 
 <%
-    dd_companies = {"title": "Companies", "icon": "user", "children": [
-            {"title": "Request access to a company",
+    dd_companies = {"value": "Companies", "icon": "user", "children": [
+            {"value": "Request access to a company",
             "url": "@@companies/request_access"}]}
-    user_title = request.user.first_name + " - " + request.user.user_name
-    dd_user = {"title": user_title, "icon": "user", "children": [
-            {"title": "Preferences", "url": "@@prefs"}]}
+    user_value = request.user.first_name + " - " + request.user.user_name
+    dd_user = {"value": user_title, "icon": "user", "children": [
+            {"value": "Preferences", "url": "@@prefs"}]}
     if request.user:
         api.dropdown(dd_companies)
         api.dropdown(dd_user)

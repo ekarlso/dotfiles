@@ -67,7 +67,7 @@ def entity_actions(obj, request):
     d = get_nav_data(request, extra={"type": obj.type})
 
     return entity_links(d) + [
-        {"title": _("Entity Actions"), "children": [
+        {"value": _("Entity Actions"), "children": [
             menu_item(_("View"), "entity_view", **d),
             menu_item(_("Edit"), "entity_edit", **d),
             menu_item(_("Delete"), "entity_delete", **d),
@@ -80,7 +80,7 @@ def entity_links(data):
     Return some navigation links
     """
     return [
-        {"title": _("Navigation"), "children": [
+        {"value": _("Navigation"), "children": [
             menu_item(_("Overview"), "entities_view", **data)]}]
 
 
