@@ -14,7 +14,7 @@ from pyramid.view import view_config
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, get_url, create_anchor, wrap_td
+from .helpers import menu_item, get_nav_data, get_url, create_anchor, wrap_td
 
 
 LOG = logging.getLogger(__name__)
@@ -42,20 +42,6 @@ def get_model(obj):
         raise HTTPNotFound(_("Invalid type ${type} requested",
             mapping=dict(type=t)))
     return tm
-
-
-def get_nav_data(request, extra={}):
-    """
-    Get some navigational data, GPS coordinate like ;)
-
-    :arg request: Mandatory request
-    :type request: Request
-    :key extra: Extra data to override the defaults
-    :type key: dict
-    """
-    d = request.matchdict.copy()
-    d.update(extra)
-    return d
 
 
 # TODO: Make these better?
