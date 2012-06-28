@@ -117,6 +117,9 @@ class TemplateAPI(object):
     def dropdown(self, data):
         return menu.Dropdown(self.context, self.request, data)
 
+    def nav(self, data):
+        return menu.Navigation(self.context, self.request, data)
+
     def sidebar(self, data):
         return menu.Sidebar(self.context, self.request, data)
 

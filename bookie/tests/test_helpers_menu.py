@@ -6,7 +6,8 @@ from mock import MagicMock
 
 from bookie.testing import Dummy
 from bookie.testing import DummyRequest
-from bookie.views.helpers.menu import Dropdown, Menu, MenuItem, Sidebar
+from bookie.views.helpers.menu import MenuItem, Menu, Dropdown, Navigation, \
+    Sidebar
 
 
 MENU = {"value": "Home", "url": "#", "children": [
@@ -55,26 +56,37 @@ class TestMenuItem(unittest.TestCase):
 
 class TestMenu(unittest.TestCase):
     cls = Menu
+    menu = MENU
 
-    def make(self, menu=MENU):
+    def make(self, menu=None):
+        menu = menu or self.menu
         return self.cls(Dummy(), DummyRequest(), menu)
 
 
 class TestDropdown(TestMenu):
     cls = Dropdown
+    menu = {"children": [MENU]}
 
     def test_html(self):
         m = self.make()
+        m.__html__()
+
+
+class TestNavigation(TestMenu):
+    cls = Navigation
+
+    def test_html(self):
+        m = self.make()
+        m.__html__()
 
 
 class TestSidebar(TestMenu):
     cls = Sidebar
-
-    def make(self, menu=[MENU]):
-        return self.cls(Dummy(), DummyRequest(), menu)
+    menu = {"children": [MENU]}
 
     def test_html(self):
         m = self.make()
+        m.__html__()
 
 
 if __name__ == '__main__':

@@ -144,7 +144,8 @@ class MenuItem(object):
 
 class Menu(object):
     """
-    A Menu
+    A menu structure structure that has a menu item on top which is used to
+    describe the menu itself and children underneath
     """
     template = None
     def __init__(self, context, request, struct):
@@ -165,13 +166,9 @@ class Dropdown(Menu):
     template = "dropdown.mako"
 
 
+class Navigation(Menu):
+    template = "navigation.mako"
+
+
 class Sidebar(Menu):
     template = "sidebar.mako"
-    def __init__(self, context, request, struct):
-        # NOTE: We want a list since we'll get object from beneath the first
-        # item of the menu tree in the for i in ... loop
-        if type(struct) == list:
-            struct = {"children": struct}
-        else:
-            raise ValueError("Struct should be a list...")
-        super(Sidebar, self).__init__(context, request, struct)
