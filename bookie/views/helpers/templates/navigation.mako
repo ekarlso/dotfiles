@@ -10,7 +10,7 @@
     <ul class="nav">
     % for i in menu:
         % if i.is_showable:
-        <li${'class="%s"' % i.cls if i.cls else ''}>
+        <li${' class="%s"' % i.cls if i.cls else ''}>
             <a href="${i.url}">${i.icon_html}${i.value}</a>
         </li>
         % endif
