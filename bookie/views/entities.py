@@ -67,7 +67,7 @@ def entity_links(data):
     """
     return [
         {"value": _("Navigation"), "children": [
-            menu_item(_("Overview"), "entities_view", **data)]}]
+            menu_item(_("Overview"), "entity_overview", **data)]}]
 
 
 class CarSchema(colander.Schema):
@@ -99,7 +99,7 @@ class CarAddForm(AddFormView):
         car = models.Car().update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
-        location = get_url("entities_view", type=self.item_type.lower())
+        location = get_url("entity_overview", type=self.item_type.lower())
         return HTTPFound(location=location)
 
 
@@ -155,15 +155,15 @@ def entity_delete(context, request):
     if request.params.get("do") == "yes":
         entity.delete()
         request.session.flash(_("Delete successful"))
-        return HTTPFound(location=get_url("entities_view", type=entity.type))
+        return HTTPFound(location=get_url("entity_overview", type=entity.type))
     return {
         "navtree": entity_actions(entity, request),
         "sub_title": entity.title}
 
 
-@view_config(route_name="entities_view", permission="view",
+@view_config(route_name="entity_overview", permission="view",
             renderer="entity_overview.mako")
-def entities_view(context, request):
+def entity_overview(context, request):
     deleted = request.params.get("deleted", False)
     type_ = get_type(request)
     type_model = get_model(request)
@@ -188,4 +188,4 @@ def includeme(config):
     config.add_route("entity_edit", "/{group_name}/entity/{id}/edit")
     config.add_route("entity_view", "/{group_name}/entity/{id}/view")
     config.add_route("entity_delete", "/{group_name}/entity/{id}/delete")
-    config.add_route("entities_view", "/{group_name}/entity/{type}")
+    config.add_route("entity_overview", "/{group_name}/entity/{type}")
