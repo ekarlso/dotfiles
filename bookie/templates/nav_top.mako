@@ -8,13 +8,19 @@
     <span class="icon-bar"></span>
     <span class="icon-bar"></span>
 </a>
-<div class="nav-collapse">
-    <ul class="nav">
-        <li class=""><a href="/">Home</a></li>
-        <li class=""><a href="/booking">Booking</a></li>
-        <li class=""><a href="/entity/car">Cars</a></li>
-    </ul>
-</div><!-- nav-collapse -->
+
+<%
+# NOTE: Should we move this?
+data = request.matchdict.copy()
+if not "group" in data:
+    data["group"] = "default"
+
+menu_nav = {"children": [
+    {"value": "Home", "view_name": "index"}, 
+    {"value": "Booking", "view_name": "booking_overview", "view_kw": data}, 
+    {"value": "Cars", "view_name": "entity_overview", "view_kw": data}]}
+%>
+${api.nav(menu_nav)}
 
 <%doc>
 Menu for when a user is authed
