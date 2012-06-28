@@ -17,7 +17,8 @@ MENU = {"value": "Home", "url": "#", "children": [
             {"value": "subchild", "url": "subchild"}]
         },
         {"value": "child3", "url": "child3", "children": [
-            {"value": "subchild", "url": "subchild"}]}
+            {"value": "subchild", "url": "subchild"}]},
+        {"value": "conditional_child", "url": "secret", "check": False}
         ]}
 
 
@@ -34,7 +35,7 @@ class TestMenuItem(unittest.TestCase):
         self.assertEquals(m.url, "#")
         self.assertEquals(m.children[0].value, "child1")
         self.assertEquals(m.children[0].url, "child1")
-        self.assertNotEquals(m.children[0].icon, None)
+        self.assertNotEquals(m.children[0].icon, False)
         self.assertEquals(m.children[1].value, "divider")
         self.assertEquals(m.children[2].value, "child2")
         self.assertEquals(m.children[2].url, "child2")
@@ -52,6 +53,17 @@ class TestMenuItem(unittest.TestCase):
         self.assertEquals(m.children[1].is_parent, False)
         self.assertEquals(m.children[2].is_parent, True)
         self.assertEquals(m.children[2].is_parent, True)
+        self.assertEquals(m.children[3].is_parent, True)
+        self.assertEquals(m.children[4].is_parent, False)
+
+    def test_showable(self):
+        m = self.make()
+        self.assertEquals(m.is_showable, True)
+        self.assertEquals(m.children[0].is_showable, True)
+        self.assertEquals(m.children[1].is_showable, True)
+        self.assertEquals(m.children[2].is_showable, True)
+        self.assertEquals(m.children[3].is_showable, True)
+        self.assertEquals(m.children[4].is_showable, False)
 
 
 class TestMenu(unittest.TestCase):

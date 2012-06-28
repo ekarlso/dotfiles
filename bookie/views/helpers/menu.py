@@ -51,7 +51,19 @@ def get_template(template):
     return lookup.get_template(template)
 
 
-class MenuItem(object):
+class MenuBase(object):
+    def __init__(self, check=True, *args, **kw):
+        self.check = check
+
+    @property
+    def is_showable(self):
+        check = self.check
+        if callable(check):
+            check = check(self)
+        return True if check else False
+
+
+class MenuItem(MenuBase):
     """
     A Basic menu item
 
@@ -65,8 +77,9 @@ class MenuItem(object):
     :param children: A list of children dicts
     :param parent: The parent of this item
     """
-    def __init__(self, context, request, parent=None, children=[], value=None,
+    def __init__(self, context, request, parent=None, check=True, children=[], value=None,
         url=None, icon=None, view_name=None, view_args=[], view_kw={}):
+        MenuBase.__init__(self, check)
         self.context, self.request = context, request
 
         self.parent = parent
@@ -99,6 +112,7 @@ class MenuItem(object):
     @property
     def is_parent(self):
         return len(self.children) > 0
+
 
     # TODO: FIX ME
     def levels(self):
@@ -142,13 +156,14 @@ class MenuItem(object):
             yield i
 
 
-class Menu(object):
+class Menu(MenuBase):
     """
     A menu structure structure that has a menu item on top which is used to
     describe the menu itself and children underneath
     """
     template = None
-    def __init__(self, context, request, struct):
+    def __init__(self, context, request, struct, check=None):
+        MenuBase.__init__(self, check)
         self.tree = MenuItem(context, request, **struct)
 
     def __iter__(self):

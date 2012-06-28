@@ -1,6 +1,8 @@
+% if menu.is_showable:
 <div class="well sidebar-nav">
     <ul class="nav nav-list">
     % for i in menu:
+        % if i.is_showable:
         <%
             if i.is_parent:
                 li_cls = ' class="%s"' % (i.cls + " nav-header")
@@ -14,6 +16,8 @@
             <a href="${i.url}">${i.icon_html}${i.value}</a>
             % endif
         </li>
+        % endif
     % endfor
     </ul>
 </div>
+% endif

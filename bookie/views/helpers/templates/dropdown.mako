@@ -1,3 +1,4 @@
+% if menu.is_showable:
 <div class="btn-group pull-right">
     <%doc>
     The top item has the menu value typically.
@@ -9,6 +10,7 @@
     </a>
     <ul class="dropdown-menu">
         % for i in menu:
+            % if i.is_showable:
             <% li_cls = ' class="%s"' % i.cls if i.cls else ''%>
             <li${li_cls}>
             % if i.url:
@@ -17,6 +19,8 @@
                 </a>
                 % endif
             </li>
+            % endif
         % endfor
     </ul>
 </div>
+% endif
