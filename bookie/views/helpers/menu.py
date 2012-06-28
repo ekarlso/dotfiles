@@ -1,6 +1,7 @@
 from itertools import chain
 import os.path
 import re
+import urllib2
 
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -73,7 +74,7 @@ class MenuItem(object):
         """
         Is this the active menu item?
         """
-        return self.request.url == self.url
+        return urllib2.unquote(self.request.url) == urllib2.unquote(self.url)
 
     @property
     def is_parent(self):
@@ -92,8 +93,11 @@ class MenuItem(object):
 
     @property
     def cls(self):
+        """
+        Return some css classes for this menu item
+        """
         cls = []
-        if not self.value in STYLE_CLS and self.url == self.request.url:
+        if not self.value in STYLE_CLS and (self.url and self.is_active):
             cls.append("active")
         elif self.value.lower() in STYLE_CLS:
             cls.append(self.value.lower())
