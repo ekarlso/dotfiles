@@ -279,11 +279,11 @@ class Booking(Base):
 
     @property
     def start(self):
-        return "{start_at} {start_location_name}".format(**self.format_data())
+        return "{start_at} ({start_location_name})".format(**self.format_data())
 
     @property
     def end(self):
-        return "{end_at} {end_location_name}".format(**self.format_data())
+        return "{end_at} ({end_location_name})".format(**self.format_data())
 
     @classmethod
     def latest(cls, limit=5, time_since=1, filter_by={}):
