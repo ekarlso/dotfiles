@@ -52,28 +52,29 @@ def entity_actions(obj, request):
     # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
     d = get_nav_data(request, extra={"type": obj.type})
 
-    return entity_links(d) + [
-        {"value": _("Entity Actions"), "children": [
-            menu_item(_("View"), "entity_view", **d),
-            menu_item(_("Edit"), "entity_edit", **d),
-            menu_item(_("Delete"), "entity_delete", **d),
-            menu_item(_("Book me"), "booking_add",
-                    _query=dict(came_from=request.url, entity=d["id"]))]}
-        ]
+    links = entity_links(d)
+    actions = []
+    actions.append(menu_item(_("View"), "entity_view", **d))
+    actions.append(menu_item(_("Edit"), "entity_edit", **d))
+    actions.append(menu_item(_("Delete"), "entity_delete", **d))
+    actions.append(menu_item(_("Book me"), "booking_add",
+                _query=dict(came_from=request.url, entity=d["id"]), **d))
+    links.append({"value": _("Entity Actions"), "children": actions})
+    return links
 
 def entity_links(data):
     """
     Return some navigation links
     """
-    return [
-        {"value": _("Navigation"), "children": [
-            menu_item(_("Overview"), "entity_overview", **data)]}]
+    children = []
+    children.append(menu_item(_("Overview"), "entity_overview", **data))
+    return [{"value": _("Navigation"), "children": children}]
 
 
 class CarSchema(colander.Schema):
     brand = colander.SchemaNode(
         colander.String(),
-        title=_("Car"))
+        eitle=_("Car"))
     model = colander.SchemaNode(
         colander.String(),
         title=_("Model"))
