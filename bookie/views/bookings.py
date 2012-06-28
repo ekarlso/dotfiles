@@ -14,7 +14,7 @@ from pyramid.view import view_config
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, menu_came_from, get_url, create_anchor, wrap_td
+from .helpers import menu_item, menu_came_from, get_nav_data, get_url, create_anchor, wrap_td
 
 
 LOG = logging.getLogger(__name__)
@@ -26,13 +26,14 @@ def booking_actions(obj=None, request=None):
 
 
 def booking_links(obj=None, request=None):
+    data = get_nav_data(request)
+
     nav_children = []
     nav_children.append(menu_came_from(request))
     nav_children.append({"value": "divider"})
-    nav_children.append(menu_item(_("Bookings"), "bookings_view"))
-    nav_children.append(menu_item(_("Create"), "booking_add"))
+    nav_children.append(menu_item(_("Bookings"), "booking_overview", **data))
+    nav_children.append(menu_item(_("Create"), "booking_add", **data))
     navigation = [{"value": "Navigation", "children": nav_children}]
-    print navigation
     return navigation
 
 
@@ -54,7 +55,6 @@ class BookingAddForm(AddFormView):
                 Button("cancel", _("Cancel")))
 
     def schema_factory(self):
-        #return models.Booking.get_schema()
         return BookingSchema()
 
     def add_booking_success(self, appstruct):
@@ -66,6 +66,15 @@ class BookingAddForm(AddFormView):
         return HTTPFound(location=location)
 
 
+class BookingEditForm(EditFormView):
+    @property
+    def success_url(self):
+        return self.request.url
+
+    def schema_factory(self):
+        return BookingSchema()
+
+
 @view_config(route_name="booking_add", permission="view",
             renderer="add.mako")
 def booking_add(context, request):
@@ -73,21 +82,41 @@ def booking_add(context, request):
         extra={"navtree": booking_actions(request=request)})
 
 
+@view_config(route_name="booking_edit", permission="edit",
+            renderer="edit.mako")
+def booking_edit(context, request):
+    obj = models.Order.filter_by(
+        deleted=False, id=request.matchdict["id"]).one()
+    return mk_form(BookingEditForm, obj, request,
+        extra=dict(navtree=booking_actions(request=request)))
+
+
 @view_config(route_name="booking_view", permission="view",
             renderer="view.mako")
 def booking_view(context, request):
-    return {"navtree": booking_actions(request=request), "form": ""}
+    obj = models.Booking.get_one(id=request.matchdict["id"])
+    return {
+        "navtree": booking_actions(request=request),
+        "booking": obj}
 
 
-@view_config(route_name="bookings_view", permission="view",
+@view_config(route_name="booking_overview", permission="view",
             renderer="booking_overview.mako")
-def bookings_view(context, request):
-    #grid = PyramidGrid(models.Booking.query.filter_by
-    return {"navtree": booking_actions(request=request), "form": ""}
+def booking_overview(context, request):
+    deleted = request.params.get("deleted", False)
+
+    bookings = models.Booking.query.filter_by(
+        deleted=deleted).join(
+        models.Customer.retailer)
+    grid = PyramidGrid(bookings, models.Booking.exposed_attrs())
+
+    return {
+        "navtree": booking_actions(request=request),
+        "booking_grid": grid}
 
 
 def includeme(config):
-    config.add_route("booking_add", "/booking/add")
+    config.add_route("booking_add", "/booking/{tenant}/add")
     config.add_route("booking_edit", "/booking/{id}/edit")
     config.add_route("booking_view", "/booking/{id}/view")
-    config.add_route("bookings_view", "/booking")
+    config.add_route("booking_overview", "/booking/{tenant}")
