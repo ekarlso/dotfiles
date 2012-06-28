@@ -98,8 +98,16 @@ class BaseModel(object):
         return dict([(k, getattr(self, k)) for k in self])
 
     @classmethod
-    def get_by(cls, *args, **kw):
+    def get_first(cls, *args, **kw):
         return cls.query.filter_by(*args, **kw).first()
+
+    @classmethod
+    def get_one(cls, *args, **kw):
+        return cls.query.filter_by(*args, **kw).one()
+
+    @classmethod
+    def all_by(cls, *args, **kw):
+        return cls.query.filter_by(*args, **kw).all()
 
     @property
     def hide_attrs(self):
