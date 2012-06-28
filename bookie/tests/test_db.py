@@ -7,6 +7,9 @@ logging.basicConfig()
 
 
 class TestUser(UnitTestBase):
+    """
+    Do some tests with users
+    """
     def setUp(self):
         super(TestUser, self).setUp()
         logging.getLogger("sqlalchemy.engine").setLevel(logging.WARN)
@@ -40,6 +43,9 @@ class TestUser(UnitTestBase):
         self.assertEquals(len(self.u.groups), 2)
 
 class TestGroup(UnitTestBase):
+    """
+    Do some tests with groups
+    """
     def setUp(self):
         super(TestGroup, self).setUp()
         self.g = m.Group.by_group_name("System Admins")
