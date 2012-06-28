@@ -128,7 +128,7 @@ class AddFormView(BaseFormView):
 
     @reify
     def first_heading(self):
-        from bookie.views.helpers.utils import translate
+        from bookie.utils import translate
         context_title = getattr(self.request.context, 'title', None)
         type_title = self.item_type or self.add.type_info.title
         if context_title:
