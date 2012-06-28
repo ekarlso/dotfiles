@@ -18,11 +18,12 @@ def menu_item(value, view_name, *args, **kw):
     """
     A simple helper for generating out menu dicts
     """
-    return {
+    data = {
         "value": value,
         "view_name": view_name,
         "view_args": args,
         "view_kw": kw}
+    return data
 
 
 def menu_came_from(request, title="Go Back"):
@@ -133,10 +134,9 @@ class MenuItem(MenuBase):
         cls = []
         if not self.value in STYLE_CLS and (self.url and self.is_active):
             cls.append("active")
-        elif self.value.lower() in STYLE_CLS:
+        elif self.value and self.value.lower() in STYLE_CLS:
             cls.append(self.value.lower())
         return " ".join(cls)
-
 
     @property
     def icon_html(self):
@@ -162,8 +162,14 @@ class Menu(MenuBase):
     describe the menu itself and children underneath
     """
     template = None
-    def __init__(self, context, request, struct, check=None):
+    multiple = False
+
+    def __init__(self, context, request, struct, check=True):
         MenuBase.__init__(self, check)
+        if self.multiple:
+            if type(struct) != list:
+                raise TypeError("Needs to be list")
+            struct = {"children": struct}
         self.tree = MenuItem(context, request, **struct)
 
     def __iter__(self):
@@ -186,4 +192,5 @@ class Navigation(Menu):
 
 
 class Sidebar(Menu):
+    multiple = True
     template = "sidebar.mako"

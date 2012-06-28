@@ -94,7 +94,7 @@ class TestNavigation(TestMenu):
 
 class TestSidebar(TestMenu):
     cls = Sidebar
-    menu = {"children": [MENU]}
+    menu = [MENU]
 
     def test_html(self):
         m = self.make()
