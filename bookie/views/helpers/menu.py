@@ -25,6 +25,26 @@ def menu_item(value, view_name, *args, **kw):
         "view_kw": kw}
 
 
+def menu_came_from(request, title="Go Back"):
+    came_from = request.params.get("came_from", None)
+    return dict(icon="arrow-left", title=title, url=came_from) \
+        if came_from else {}
+
+
+def get_nav_data(request, extra={}):
+    """
+    Get some navigational data, GPS coordinate like ;)
+
+    :arg request: Mandatory request
+    :type request: Request
+    :key extra: Extra data to override the defaults
+    :type key: dict
+    """
+    d = request.matchdict.copy()
+    d.update(extra)
+    return d
+
+
 def get_template(template):
     template_dir = os.path.dirname(__file__) + "/templates/"
     lookup = TemplateLookup(directories=[template_dir])

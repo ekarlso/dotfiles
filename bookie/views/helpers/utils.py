@@ -1,6 +1,5 @@
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
-from pyramid.i18n import get_localizer, get_locale_name, make_localizer
 from pyramid.interfaces import ITranslationDirectories
 from pyramid.threadlocal import get_current_registry, get_current_request
 from pyramid.view import render_view_to_response
@@ -24,12 +23,6 @@ def get_url(route, *args, **kw):
     request = get_current_request()
     location = "%s" % _url(route, request, *args, **kw)
     return location
-
-
-def menu_came_from(request, title="Go Back"):
-    came_from = request.params.get("came_from", None)
-    return dict(icon="arrow-left", title=title, url=came_from) \
-        if came_from else {}
 
 
 def create_anchor(string, route=None, *args, **kw):
