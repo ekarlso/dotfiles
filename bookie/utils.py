@@ -3,7 +3,8 @@ import urllib
 import uuid
 
 from plone.i18n.normalizer import urlnormalizer
-from pyramid.i18n import get_locale_name, TranslationStringFactory
+from pyramid.i18n import get_locale_name, TranslationStringFactory, \
+    get_localizer, make_localizer
 from pyramid.threadlocal import get_current_request
 from repoze.lru import LRUCache
 
