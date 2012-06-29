@@ -259,12 +259,6 @@ def group_edit(request):
     return mk_form(GroupEditForm, group, request)
 
 
-@view_config(route_name="group_req_access", permission="view",
-            renderer="edit.mako")
-def group_req_access(request):
-    return {}
-
-
 @view_config(route_name="user_edit", permission="system.admin",
             renderer="edit.mako")
 def user_edit(request):
@@ -283,7 +277,6 @@ def user_preferences(request):
 def includeme(config):
     config.add_route("auth_settings", "@@admin/auth")
     # NOTE: Group links
-    config.add_route("group_req_access", "@@companies/req_access")
     config.add_route("group_edit", "@@admin/groups/{id}")
     # NOTE: User links
     config.add_route("user_prefs", "@@prefs")
