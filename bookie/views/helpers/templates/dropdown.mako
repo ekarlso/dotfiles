@@ -5,7 +5,7 @@
     In the dropdown case we use it to set the value of the dropdown caret button
     </%doc>
     <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-        <i class="icon-user"></i>${menu.tree.value}
+        ${menu.tree.icon_html}${menu.tree.value}
         <span class="caret"></span>
     </a>
     <ul class="dropdown-menu">
