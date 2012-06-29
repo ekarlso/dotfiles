@@ -141,6 +141,7 @@ class Category(Base):
     A entity category is owned by a retailer
     """
     __tablename__ = "category"
+    __expose_attrs__ = ["name", "description"]
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), nullable=False)
     description = Column(UnicodeText)
@@ -164,6 +165,7 @@ category_meta_table = Table('category_meta_map', Base.metadata,
 
 class CategoryMeta(Base):
     __tablename__ = "category_meta"
+    __expose_attrs__ = ["name", "value"]
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255))
     value = Column(UnicodeText, nullable=True)
