@@ -27,7 +27,9 @@ def populate_samples():
         g_view = GroupPermission(perm_name="view")
         g_order = GroupPermission(perm_name="order")
 
-        group = Group(group_name="System Admins",
+        group = Group(
+            group_name="System Admins",
+            group_type="security",
             permissions=[g_sadmin]).save()
 
         admin = User(user_name="admin", status=1, groups=[group],
@@ -44,6 +46,7 @@ def populate_samples():
 
         group = Group(
             group_name="RentOurWrecks Inc",
+            group_type="retailer",
             permissions=[g_radmin],
             organization_id=3232,
             customers=[customer]).save()
@@ -103,6 +106,7 @@ def populate_samples():
 
         group = Group(
             group_name="TransportVehicles Inc",
+            group_type="retailer",
             organization_id=3232,
             permissions=[g_radmin],
             customers=[customer]).save()

@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship, backref, exc, object_mapper, \
     synonym, validates
 from sqlalchemy import Column, Integer, Unicode, BigInteger, \
     Unicode, ForeignKey, Date, DateTime, Boolean, UnicodeText, UniqueConstraint, Table
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
 from ziggurat_foundations.models import BaseModel, UserMixin, GroupMixin, \
     GroupPermissionMixin, UserGroupMixin, GroupResourcePermissionMixin, \
@@ -64,10 +65,22 @@ class Group(Base, GroupMixin):
     __format_string__ = "{group_name}"
     __expose_attrs__ = ["group_name", "organization_id"]
     __possible_permissions__ = permission_names()
+    __possible_types__ = ["retailer", "security", "system"]
+
     organization_id = Column(Integer)
+    _type = Column(Unicode, nullable=False)
 
     customers = relationship("Customer", backref="retailer")
     entities = relationship("Entity", backref="retailer")
+
+    @hybrid_property
+    def group_type(self):
+        return self._type
+
+    @group_type.setter
+    def set_type(self, value):
+        assert value in self.__possible_types__
+        self._type = value
 
 
 class GroupPermission(Base, GroupPermissionMixin):
@@ -102,6 +115,10 @@ class User(Base, UserMixin):
     first_name = Column(UnicodeText, default=u'')
     middle_name = Column(UnicodeText, default=u'')
     last_name = Column(UnicodeText, default=u'')
+
+    @property
+    def retailers(self):
+        return [g for g in self.groups if g._type == "retailer"]
 
 
 class UserPermission(Base, UserPermissionMixin):
