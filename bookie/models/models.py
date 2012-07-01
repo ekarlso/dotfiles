@@ -142,6 +142,7 @@ class Category(Base):
     """
     __tablename__ = "category"
     __expose_attrs__ = ["name", "description"]
+    __format_string__ = "{name}"
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), nullable=False)
     description = Column(UnicodeText)
