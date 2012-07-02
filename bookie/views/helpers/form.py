@@ -85,7 +85,7 @@ class BaseFormView(FormView):
 
 
 class EditFormView(BaseFormView):
-    add_template_vars = ('first_heading',)
+    add_template_vars = ('sub_title',)
 
     def before(self, form):
         form.appstruct = get_appstruct(self.context, self.schema)
@@ -101,7 +101,7 @@ class EditFormView(BaseFormView):
         getattr(self.context, "from_dict", self.context.update)(appstruct)
 
     @reify
-    def first_heading(self):
+    def sub_title(self):
         return _(u'<em>${title}</em>',
                 mapping=dict(title=self.context.title))
 
@@ -109,7 +109,7 @@ class EditFormView(BaseFormView):
 class AddFormView(BaseFormView):
     success_message = _(u"Successfully added item.")
     item_type = None
-    add_template_vars = ('first_heading',)
+    add_template_vars = ('sub_title',)
 
     def save_success(self, appstruct):
         appstruct.pop('csrf_token', None)
@@ -127,7 +127,7 @@ class AddFormView(BaseFormView):
         return name
 
     @reify
-    def first_heading(self):
+    def sub_title(self):
         from bookie.utils import translate
         context_title = getattr(self.request.context, 'title', None)
         type_title = self.item_type or self.add.type_info.title
