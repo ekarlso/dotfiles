@@ -14,12 +14,14 @@ CONF_DEFAULTS = {
     'bookie.configurators': '',
     "bookie.base_includes": " ".join([
         "bookie",
+        "bookie.security",
         "bookie.views",
         "bookie.views.bookings",
         "bookie.views.categories",
         "bookie.views.entities",
         "bookie.views.misc",
         "bookie.views.login",
+        "bookie.views.retailer",
         "bookie.views.users"]),
     'bookie.use_tables': '',
     'bookie.root_factory': 'bookie.security.RootFactory',
@@ -63,7 +65,7 @@ def get_version():
 
 def authtkt_factory(**settings):
     return AuthTktAuthenticationPolicy(
-        secret=settings['bookie.secret2'], callback=security.get_group)
+        secret=settings['bookie.secret2'], callback=security.get_groups)
 
 
 def acl_factory(**settings):
@@ -129,22 +131,8 @@ def base_configure(global_config, **settings):
 def includeme(config):
     settings = config.get_settings()
 
-    # NOTE: Auth settings here
-    authentication_policy = settings[
-        'bookie.authn_policy_factory'][0](**settings)
-    authorization_policy = settings[
-        'bookie.authz_policy_factory'][0](**settings)
-    session_factory = settings['bookie.session_factory'][0](**settings)
-    if authentication_policy:
-        config.set_authentication_policy(authentication_policy)
-    if authorization_policy:
-        config.set_authorization_policy(authorization_policy)
-    config.set_session_factory(session_factory)
-
-    # NOTE: Anything else that's not in base here..
     config.add_translation_dirs('bookie:locale')
     # NOTE: Should be reified
-    config.set_request_property(security.get_user, 'user', reify=True)
     from .views.helpers import add_renderer_globals
     config.add_subscriber(add_renderer_globals, BeforeRender)
     return config
