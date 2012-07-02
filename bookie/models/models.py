@@ -98,7 +98,15 @@ class GroupResourcePermission(Base, GroupResourcePermissionMixin):
 
 
 class Resource(Base, ResourceMixin):
-    pass
+    @declared_attr
+    def parent(self):
+        return relationship("Resource", backref="children",
+                                    remote_side="Resource.resource_id")
+
+    @declared_attr
+    def __mapper_args__(cls):
+        name = unicode(utils.camel_to_name(cls.__name__))
+        return {"polymorphic_on": "resource_type", "polymorphic_identity": name}
 
 
 class UserGroup(Base, UserGroupMixin):
@@ -141,42 +149,28 @@ class ExternalIdentity(Base, ExternalIdentityMixin):
 
 # NOTE: Map categories >< entities
 category_entity_map = Table('category_entity_map', Base.metadata,
-    Column('category_id', Integer, ForeignKey('category.id')),
+    Column('category_id', Integer, ForeignKey('resources.resource_id')),
     Column('entity_id', Integer, ForeignKey('entity.id'))
 )
 
 
-# NOTE: Map categories >< categories
-category_map = Table('category_map', Base.metadata,
-    Column("parent_id", Integer, ForeignKey("category.id"), primary_key=True),
-    Column("child_id", Integer, ForeignKey("category.id"), primary_key=True)
-)
-
-
-class Category(Base):
+class Category(Resource):
     """
     A entity category is owned by a retailer
     """
     __tablename__ = "category"
     __expose_attrs__ = ["name", "description"]
     __format_string__ = "{name}"
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255), nullable=False)
     description = Column(UnicodeText)
 
-    resource_id = Column(Integer, ForeignKey("resources.resource_id"))
-    resource = relationship("Resource", backref="categories")
-
-    categories = relationship("Category", secondary=category_map,
-                            primaryjoin=id==category_map.c.parent_id,
-                            secondaryjoin=id==category_map.c.child_id,
-                            backref="parent_categories")
+    resource_id = Column(Integer, ForeignKey("resources.resource_id",
+                        onupdate='CASCADE', ondelete='CASCADE'))
     entities = relationship("Entity", secondary=category_entity_map,
                             backref="categories")
 
 
 category_meta_table = Table('category_meta_map', Base.metadata,
-    Column('category_id', Integer, ForeignKey('category.id')),
+    Column('category_id', Integer, ForeignKey('resources.resource_id')),
     Column('meta_id', Integer, ForeignKey('category_meta.id'))
 )
 
