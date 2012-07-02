@@ -67,8 +67,14 @@ def entity_links(data):
     Return some navigation links
     """
     children = []
-    children.append(menu_item(_("Overview"), "entity_overview", **data))
+    children.append(menu_item(_("Overview"), "entity_type_overview", **data))
     return [{"value": _("Navigation"), "children": children}]
+
+
+def column_link(cn, i, item):
+    nav_data = get_nav_data(request, extra={"id": item["id"]})
+    a = create_anchor(item["title"], "entity_view", **nav_data)
+    return wrap_td(a)
 
 
 class CarSchema(colander.Schema):
@@ -100,7 +106,7 @@ class CarAddForm(AddFormView):
         car = models.Car().update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
-        location = get_url("entity_overview", type=self.item_type.lower())
+        location = get_url("entity_type_overview", type=self.item_type.lower())
         return HTTPFound(location=location)
 
 
@@ -156,7 +162,7 @@ def entity_delete(context, request):
     if request.params.get("do") == "yes":
         entity.delete()
         request.session.flash(_("Delete successful"))
-        return HTTPFound(location=get_url("entity_overview", type=entity.type))
+        return HTTPFound(location=get_url("entity_type_overview", type=entity.type))
     return {
         "navtree": entity_actions(entity, request),
         "sub_title": entity.title}
@@ -165,6 +171,12 @@ def entity_delete(context, request):
 @view_config(route_name="entity_overview", permission="view",
             renderer="entity_overview.mako")
 def entity_overview(context, request):
+    return {"navtree": entity_links(get_nav_data(request))}
+
+
+@view_config(route_name="entity_type_overview", permission="view",
+            renderer="entity_type_overview.mako")
+def entity_type_overview(context, request):
     deleted = request.params.get("deleted", False)
     type_ = get_type(request)
     type_model = get_model(request)
@@ -172,11 +184,7 @@ def entity_overview(context, request):
     entities = type_model.query.filter_by(deleted=deleted).all()
 
     grid = PyramidGrid(entities, type_model.exposed_attrs())
-    def _link(cn, i, item):
-        nav_data = get_nav_data(request, extra={"id": item["id"]})
-        a = create_anchor(item["title"], "entity_view", **nav_data)
-        return wrap_td(a)
-    grid.column_formats["brand"] = _link
+    grid.column_formats["brand"] = column_link
 
     return {
         "navtree": entity_links(get_nav_data(request)),
@@ -185,8 +193,9 @@ def entity_overview(context, request):
 
 
 def includeme(config):
-    config.add_route("entity_add", "/{tenant}/entity/{type}/add")
+    config.add_route("entity_add", "/{tenant}/entity/add")
     config.add_route("entity_edit", "/{tenant}/entity/{id}/edit")
     config.add_route("entity_view", "/{tenant}/entity/{id}/view")
     config.add_route("entity_delete", "/{tenant}/entity/{id}/delete")
-    config.add_route("entity_overview", "/{tenant}/entity/{type}")
+    config.add_route("entity_overview", "/{tenant}/entity")
+    config.add_route("entity_type_overview", "/{tenant}/entity{type}")
