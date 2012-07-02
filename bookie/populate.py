@@ -11,7 +11,7 @@ from .models import Category, Entity, Property, DrivableEntity, Car
 
 
 def category_dict(names):
-    return dict([(n, Category(name=n)) for n in names])
+    return dict([(n, Category(resource_name=n)) for n in names])
 
 
 def populate():
@@ -58,13 +58,10 @@ def populate_samples():
 
         sub_cars = category_dict(["Sedan", "Stationwagon", "SUV", "Coupe",
                             "Pickup", "7 seats", "9 seats"])
-        top_cars = Category(name="Cars", categories=sub_cars.values()).save()
+        top_cars = Category(resource_name="Cars", children=sub_cars.values()).save()
         sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"])
-        top_transport = Category(name="Transport",
-                                categories=sub_transport.values()).save()
-        resources = Resource(
-            resource_name="Cars", categories=[top_cars, top_transport],
-            resource_type="categories").save()
+        top_transport = Category(resource_name="Transport",
+                                children=sub_transport.values()).save()
 
         loc_bryne = Location(name="Bryne",
             street_address="RoadBryne 1",
@@ -123,12 +120,9 @@ def populate_samples():
         user.save()
 
         sub_truck = category_dict(["18 m3", "22 m3", "26 m3", "35 m3"])
-        top_truck = Category(name="Truck", categories=sub_truck.values()).save()
+        top_truck = Category(resource_name="Truck", children=sub_truck.values()).save()
         sub_bus = category_dict(["9 seats", "17 seats"])
-        top_bus = Category(name="Mini bus", categories=sub_bus.values()).save()
-        resources = Resource(
-            resource_name="Transport", categories=[top_truck, top_bus],
-            resource_type="categories").save()
+        top_bus = Category(resource_name="Mini bus", children=sub_bus.values()).save()
 
         loc_bryne = Location(name="Bryne",
             street_address="RoadBryne 1",
