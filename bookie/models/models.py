@@ -165,7 +165,7 @@ class Category(Base):
     description = Column(UnicodeText)
 
     resource_id = Column(Integer, ForeignKey("resources.resource_id"))
-    resources = relationship("Resource", backref="categories")
+    resource = relationship("Resource", backref="categories")
 
     categories = relationship("Category", secondary=category_map,
                             primaryjoin=id==category_map.c.parent_id,
