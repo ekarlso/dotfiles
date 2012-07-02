@@ -98,6 +98,8 @@ class GroupResourcePermission(Base, GroupResourcePermissionMixin):
 
 
 class Resource(Base, ResourceMixin):
+    __format_string__ = "resource_name"
+    __expose_attrs__ = ["resource_name", "description"]
     @declared_attr
     def parent(self):
         return relationship("Resource", backref="children",
@@ -107,10 +109,6 @@ class Resource(Base, ResourceMixin):
     def __mapper_args__(cls):
         name = unicode(utils.camel_to_name(cls.__name__))
         return {"polymorphic_on": "resource_type", "polymorphic_identity": name}
-
-    @property
-    def title(self):
-        return self.resource_name
 
 
 class UserGroup(Base, UserGroupMixin):
