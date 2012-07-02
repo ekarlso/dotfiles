@@ -17,11 +17,18 @@ from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
 from .helpers import get_url
 
 
-@view_config(route_name="support_contact",
-            renderer="help/contact.mako")
-def support_contact(context, request):
-    return {}
+@view_config(route_name="contact",
+            renderer="contact.mako")
+def contact(context, request):
+    return {"navtree": {}}
+
+
+@view_config(route_name="support",
+            renderer="contact.mako")
+def contact(context, request):
+    return {"navtree": {}}
 
 
 def includeme(config):
-    config.add_route("support_contact", "/@@contact")
+    config.add_route("contact", "/@@contact")
+    config.add_route("support", "/@@contact_support")

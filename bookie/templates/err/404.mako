@@ -11,7 +11,7 @@
         <div>
             It looks like you have requested a resource which I can't find for you.
 
-            If you think it should exist please contact ${api.utils.create_anchor('support', 'support_contact')}
+            If you think it should exist please contact ${api.utils.create_anchor('support', 'support')}
         </div>
     </div>
 </div>
