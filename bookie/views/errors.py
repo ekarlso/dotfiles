@@ -7,4 +7,4 @@ from sqlalchemy.orm.exc import NoResultFound
 @view_config(context=NoResultFound, renderer="err/404.mako")
 def sqla_404(exc, request):
     request.response.status_int = 404
-    return {"first_heading": "Queried resource not found"}
+    return {"sub_title": "Queried resource not found"}
