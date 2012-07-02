@@ -165,7 +165,6 @@ class BaseModel(object):
         """
         local, remote = get_prop_names(self)
         data = self.to_dict()
-        import ipdb
         for remote_property in remote:
             remote_data = self.remote_to_dict(remote_property)
             for relation_key, relation_value in remote_data.items():
