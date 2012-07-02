@@ -108,6 +108,10 @@ class Resource(Base, ResourceMixin):
         name = unicode(utils.camel_to_name(cls.__name__))
         return {"polymorphic_on": "resource_type", "polymorphic_identity": name}
 
+    @property
+    def title(self):
+        return self.resource_name
+
 
 class UserGroup(Base, UserGroupMixin):
     """
@@ -164,7 +168,8 @@ class Category(Resource):
     description = Column(UnicodeText)
 
     resource_id = Column(Integer, ForeignKey("resources.resource_id",
-                        onupdate='CASCADE', ondelete='CASCADE'))
+                        onupdate='CASCADE', ondelete='CASCADE'),
+                        primary_key=True)
     entities = relationship("Entity", secondary=category_entity_map,
                             backref="categories")
 
@@ -219,7 +224,6 @@ class DrivableEntity(Entity):
     """
     Represent a drivable entity
     """
-    __title_attrs__ = ["brand", "model", "produced", "identifier"]
     @property
     def gps(self, value=None):
         print "gps" in self.properties
