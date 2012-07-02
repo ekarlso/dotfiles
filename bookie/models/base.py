@@ -36,8 +36,7 @@ class BaseModel(object):
     Base class to make ones life working with models and python easier
     """
     __expose_attrs__ = None
-    __title_attrs__ = None
-    __hide_attrs__ = None
+
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
     __protected_attributes__ = set([
@@ -87,12 +86,10 @@ class BaseModel(object):
         return n, getattr(self, n)
 
     def keys(self):
-        return [k for k in self.__dict__.keys() \
-            if k not in self.hide_attrs]
+        return [k for k in self.__dict__.keys()]
 
     def values(self, attrs=None):
-        attrs = attrs or self.keys()
-        return [self.__dict__[k] for k in keys]
+        return self.__dict__.values()
 
     def items(self):
         return dict([(k, getattr(self, k)) for k in self])
@@ -108,13 +105,6 @@ class BaseModel(object):
     @classmethod
     def all_by(cls, *args, **kw):
         return cls.query.filter_by(*args, **kw).all()
-
-    @property
-    def hide_attrs(self):
-        """Protected attributes - shouldn't be exposed"""
-        hidden = self.__hide_attrs__ or []
-        hidden.append("_sa_instance_state")
-        return hidden
 
     def to_dict(self, deep={}, exclude=[]):
         data = dict([(k, getattr(self, k)) \
@@ -175,6 +165,7 @@ class BaseModel(object):
         """
         local, remote = get_prop_names(self)
         data = self.to_dict()
+        import ipdb
         for remote_property in remote:
             remote_data = self.remote_to_dict(remote_property)
             for relation_key, relation_value in remote_data.items():
