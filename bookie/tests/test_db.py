@@ -42,6 +42,11 @@ class TestUser(UnitTestBase):
             {"group_name": "System Admins"}, {"group_name": "RentOurWrecks Inc"}]}).save()
         self.assertEquals(len(self.u.groups), 2)
 
+    def test_has_group(self):
+        user = m.User.get_one(id=2)
+        self.assertEquals(user.has_group("RentOurWrecks Inc"), True)
+
+
 class TestGroup(UnitTestBase):
     """
     Do some tests with groups

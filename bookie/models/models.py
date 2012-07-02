@@ -130,6 +130,10 @@ class User(Base, UserMixin):
     def retailers(self):
         return [g for g in self.groups if g._type == "retailer"]
 
+    def has_group(self, group_name, group_type="retailer"):
+        return bool(self.groups_dynamic.filter_by(
+            group_name=group_name, group_type=group_type).one())
+
 
 class UserPermission(Base, UserPermissionMixin):
     """
