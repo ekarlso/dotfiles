@@ -95,7 +95,9 @@ def caching_policy_chooser(context, request, response):
 @subscriber(NewResponse)
 def set_cache_headers(event):
     request, response = event.request, event.response
-    context = event.request.context
+    context = getattr(event.request, "context", None)
+    if not context:
+        return
 
     # If no caching policy was previously set (by setting the
     # CACHE_POLICY_HEADER header), we'll choose one at this point:
