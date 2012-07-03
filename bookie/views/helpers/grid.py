@@ -2,6 +2,40 @@ from webhelpers.html import grid, tags
 from webhelpers import date
 
 
+from .navigation import get_nav_data
+
+
+def wrap_td(string):
+    return HTML.td(literal(string))
+
+
+def column_link(request, value, extra={}):
+    """
+    :param request: A Request object
+    :param value: The value to be used within the 'a'
+    :key extra: Some extra data that get's passed to get_data_data()
+    """
+    nav_data = get_nav_data(request, extra=extra)
+    a = create_anchor(value, "category_view", **nav_data)
+    return wrap_td(a)
+
+
+def when_normalize(col_num, i, item):
+    time = item.timestamp
+    label = date.distance_of_time_in_words(time,
+        datetime.utcnow(),
+        granularity='minute')
+    if item.request_id:
+        href = request.route_url('logs',
+            _query=(('request_id', item.request_id,),), page=1)
+        return h.HTML.td(h.link_to(label, href,
+            title=time.strftime('%Y-%m-%d %H:%M:%S'),
+            class_='c%s' % col_num))
+    else:
+       return HTML.td(label, title=time.strftime('%Y-%m-%d %H:%M:%S'),
+            class_='c%s' % col_num)
+
+
 class PyramidGrid(grid.Grid):
     """
     Subclass of Grid that can handle header link generation for quick building

@@ -14,7 +14,7 @@ from pyramid.url import resource_url
 from bookie import get_settings
 from bookie.utils import _, name_to_camel, camel_to_name
 
-from . import menu, utils
+from . import navigation, utils
 
 
 def template_api(context, request, **kwargs):

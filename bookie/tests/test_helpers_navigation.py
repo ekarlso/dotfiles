@@ -6,7 +6,7 @@ from mock import MagicMock
 
 from bookie.testing import Dummy
 from bookie.testing import DummyRequest
-from bookie.views.helpers.menu import MenuItem, Menu, Dropdown, Navigation, \
+from bookie.views.helpers.navigation import MenuItem, Menu, Dropdown, Navigation, \
     Sidebar
 
 

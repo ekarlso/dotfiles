@@ -30,26 +30,6 @@ def create_anchor(string, route=None, *args, **kw):
         (get_url(route, *args, **kw), string)
 
 
-def wrap_td(string):
-    return HTML.td(literal(string))
-
-
-def when_normalize(col_num, i, item):
-    time = item.timestamp
-    label = date.distance_of_time_in_words(time,
-        datetime.utcnow(),
-        granularity='minute')
-    if item.request_id:
-        href = request.route_url('logs',
-            _query=(('request_id', item.request_id,),), page=1)
-        return h.HTML.td(h.link_to(label, href,
-            title=time.strftime('%Y-%m-%d %H:%M:%S'),
-            class_='c%s' % col_num))
-    else:
-       return HTML.td(label, title=time.strftime('%Y-%m-%d %H:%M:%S'),
-            class_='c%s' % col_num)
-
-
 def render_view(context, request, name='', secure=True):
     response = render_view_to_response(context, request, name, secure)
     if response is not None:
