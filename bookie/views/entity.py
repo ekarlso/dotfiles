@@ -13,8 +13,10 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, get_nav_data, get_url, create_anchor, wrap_td
+from .helpers import AddFormView, EditFormView, mk_form
+from .helpers import PyramidGrid, column_link, wrap_td
+from .helpers import menu_item, get_nav_data, get_url, create_anchor
+
 
 
 LOG = logging.getLogger(__name__)
@@ -67,14 +69,8 @@ def entity_links(data):
     Return some navigation links
     """
     children = []
-    children.append(menu_item(_("Overview"), "entity_type_overview", **data))
+    children.append(menu_item(_("Overview"), "entity_overview", **data))
     return [{"value": _("Navigation"), "children": children}]
-
-
-def column_link(cn, i, item):
-    nav_data = get_nav_data(request, extra={"id": item["id"]})
-    a = create_anchor(item["title"], "entity_view", **nav_data)
-    return wrap_td(a)
 
 
 class CarSchema(colander.Schema):
@@ -171,7 +167,17 @@ def entity_delete(context, request):
 @view_config(route_name="entity_overview", permission="view",
             renderer="entity_overview.mako")
 def entity_overview(context, request):
-    return {"navtree": entity_links(get_nav_data(request))}
+    deleted = request.params.get("deleted", False)
+
+    entities = models.Entity.query.filter_by(deleted=deleted).all()
+
+    grid = PyramidGrid(entities, models.Entity.exposed_attrs())
+    grid.column_formats["brand"] = lambda cn, i, item: column_link(
+        request, item["title"], "entity_view", view_kw=item.to_dict())
+
+    return {
+        "navtree": entity_links(get_nav_data(request)),
+        "entity_grid": grid}
 
 
 @view_config(route_name="entity_type_overview", permission="view",
@@ -184,7 +190,9 @@ def entity_type_overview(context, request):
     entities = type_model.query.filter_by(deleted=deleted).all()
 
     grid = PyramidGrid(entities, type_model.exposed_attrs())
-    grid.column_formats["brand"] = column_link
+    grid.column_formats["brand"] = lambda cn, i, item: \
+        column_link(request, item["title"], "entity_view",
+                    view_kw=item.to_dict())
 
     return {
         "navtree": entity_links(get_nav_data(request)),
@@ -198,4 +206,4 @@ def includeme(config):
     config.add_route("entity_view", "/{tenant}/entity/{id}/view")
     config.add_route("entity_delete", "/{tenant}/entity/{id}/delete")
     config.add_route("entity_overview", "/{tenant}/entity")
-    config.add_route("entity_type_overview", "/{tenant}/entity{type}")
+    config.add_route("entity_type_overview", "/{tenant}/entity/type}")
