@@ -168,10 +168,12 @@ def entity_delete(context, request):
             renderer="entity_overview.mako")
 def entity_overview(context, request):
     deleted = request.params.get("deleted", False)
-
     entities = models.Entity.query.filter_by(deleted=deleted).all()
 
-    grid = PyramidGrid(entities, models.Entity.exposed_attrs())
+    columns = models.Entity.exposed_attrs()
+    columns.append("type")
+
+    grid = PyramidGrid(entities, columns)
     grid.column_formats["brand"] = lambda cn, i, item: column_link(
         request, item["title"], "entity_view", view_kw=item.to_dict())
 
