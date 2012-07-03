@@ -63,24 +63,46 @@ class Group(Base, GroupMixin):
     An organization - typically something with users and customers
     """
     __format_string__ = "{group_name}"
-    __expose_attrs__ = ["group_name", "organization_id"]
+    __expose_attrs__ = ["group_name"]
     __possible_permissions__ = permission_names()
     __possible_types__ = ["retailer", "security", "system"]
 
+    _group_type = Column("group_type", Unicode(20), nullable=False)
     organization_id = Column(Integer)
-    _type = Column(Unicode, nullable=False)
 
-    customers = relationship("Customer", backref="retailer")
-    entities = relationship("Entity", backref="retailer")
+    @declared_attr
+    def __mapper_args__(cls):
+        name = unicode(utils.camel_to_name(cls.__name__))
+        return {"polymorphic_on": "_group_type", "polymorphic_identity": name}
 
     @hybrid_property
     def group_type(self):
-        return self._type
+        return self._group_type
 
     @group_type.setter
     def set_type(self, value):
         assert value in self.__possible_types__
-        self._type = value
+        self._group_type = value
+
+
+class Retailer(Group):
+    __tablename__ = "groups_retailer"
+
+    group_name = Column(Unicode(120), ForeignKey("groups.group_name",
+                        onupdate='CASCADE', ondelete='CASCADE'),
+                        primary_key=True)
+
+    customers = relationship("Customer", backref="retailer")
+    entities = relationship("Entity", backref="retailer")
+
+
+class Security(Group):
+    __tablename__ = "groups_security"
+    pass
+
+    group_name = Column(Unicode(120), ForeignKey("groups.group_name",
+                        onupdate='CASCADE', ondelete='CASCADE'),
+                        primary_key=True)
 
 
 class GroupPermission(Base, GroupPermissionMixin):
@@ -100,6 +122,7 @@ class GroupResourcePermission(Base, GroupResourcePermissionMixin):
 class Resource(Base, ResourceMixin):
     __format_string__ = "resource_name"
     __expose_attrs__ = ["resource_name", "description"]
+
     @declared_attr
     def parent(self):
         return relationship("Resource", backref="children",
@@ -128,7 +151,7 @@ class User(Base, UserMixin):
 
     @property
     def retailers(self):
-        return [g for g in self.groups if g._type == "retailer"]
+        return [g for g in self.groups if g.group_type == "retailer"]
 
     def has_group(self, group_name, group_type="retailer"):
         count = self.groups_dynamic.filter_by(
@@ -173,6 +196,7 @@ class Category(Resource):
     resource_id = Column(Integer, ForeignKey("resources.resource_id",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
+
     entities = relationship("Entity", secondary=category_entity_map,
                             backref="categories")
 
@@ -205,7 +229,7 @@ class Entity(Base):
     identifier = Column(UnicodeText, unique=True)
     produced = Column(Integer)
 
-    retailer_name = Column(Integer, ForeignKey('groups.group_name'), nullable=False)
+    retailer_name = Column(Integer, ForeignKey('groups.group_name'))
 
     @declared_attr
     def __mapper_args__(cls):
@@ -246,7 +270,9 @@ class Customer(Base):
     email = Column(UnicodeText)
     phone = Column(Integer)
 
-    retailer_name = Column(Integer, ForeignKey('groups.group_name'))
+    # NOTE: Maybe change to ID?
+    retailer_name = Column(Integer, ForeignKey('groups.group_name',
+                    onupdate="CASCADE", ondelete="CASCADE"))
 
 
 class Location(Base):
@@ -259,6 +285,7 @@ class Location(Base):
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
 
+    # NOTE: Maybe change to ID?
     retailer_name = Column(Integer, ForeignKey("groups.group_name"))
     retailer = relationship("Group", backref="locations")
 

@@ -6,7 +6,7 @@ from random import choice
 import transaction
 
 from .models import User, UserPermission, Group, GroupPermission, Resource
-from .models import Customer, Booking, Location
+from .models import Retailer, Customer, Booking, Location
 from .models import Category, Entity, Property, DrivableEntity, Car
 
 
@@ -44,7 +44,7 @@ def populate_samples():
                     contact="Steffen Soma", email="stefsoma@gmail.com",
                     phone="+47 xxxxxxxx")
 
-        group = Group(
+        group = Retailer(
             group_name="RentOurWrecks Inc",
             group_type="retailer",
             permissions=[g_radmin],
@@ -101,7 +101,7 @@ def populate_samples():
                 contact="Endre Karlson", email="endre.karlson@gmail.com",
                 phone="+47 xxxxxxxx")
 
-        group = Group(
+        group = Retailer(
             group_name="TransportVehicles Inc",
             group_type="retailer",
             organization_id=3232,
