@@ -64,8 +64,8 @@ def _mangle_appstruct(appstruct):
     if "groups" in appstruct:
         # NOTE: Should probably do the Group ID here from the form instead of
         #       looking up the name
-        appstruct["groups"] = [{"id": models.Group.by_group_name(gn).id} \
-            for gn in appstruct.pop("groups")]
+        appstruct["groups"] = [{"group_name": models.Group.by_group_name(g).\
+            group_name}for g in appstruct.pop("groups")]
 
     # NOTE: Mangle permissions
     pk = _pk(appstruct) # NOTE: user_permissions or permissions
@@ -255,7 +255,8 @@ def auth_settings(context, request):
 @view_config(route_name="group_edit", permission="system.admin",
             renderer="edit.mako")
 def group_edit(request):
-    group = models.Group.query.filter_by(id=request.matchdict["id"]).one()
+    group = models.Group.query.filter_by(
+        group_name=request.matchdict["group_name"]).one()
     return mk_form(GroupEditForm, group, request)
 
 
@@ -277,7 +278,7 @@ def user_preferences(request):
 def includeme(config):
     config.add_route("auth_settings", "@@admin/auth")
     # NOTE: Group links
-    config.add_route("group_edit", "@@admin/groups/{id}")
+    config.add_route("group_edit", "@@admin/group/{group_name}/edit")
     # NOTE: User links
     config.add_route("user_prefs", "@@prefs")
-    config.add_route("user_edit", "@@admin/users/{id}")
+    config.add_route("user_edit", "@@admin/user/{id}/edit")
