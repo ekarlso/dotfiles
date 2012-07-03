@@ -3,6 +3,7 @@ from webhelpers import date
 
 
 from .navigation import get_nav_data
+from .utils import create_anchor
 
 
 def wrap_td(string):
