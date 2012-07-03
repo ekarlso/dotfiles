@@ -132,7 +132,8 @@ class TemplateAPI(object):
 
     @reify
     def page_title(self):
-        view_title = self.request.view_name.replace('_', ' ').title()
+        view_title = self.name_to_camel(self.request.view_name) \
+            if hasattr(self.request, "view_name") else ''
         if view_title:
             view_title += u' '
         view_title += getattr(self.context, "title", "")
