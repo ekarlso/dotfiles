@@ -166,7 +166,7 @@ class Category(Resource):
     A entity category is owned by a retailer
     """
     __tablename__ = "category"
-    __expose_attrs__ = ["name", "description"]
+    __expose_attrs__ = ["resource_name", "description"]
     __format_string__ = "{name}"
     description = Column(UnicodeText)
 
