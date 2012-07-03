@@ -68,6 +68,8 @@ class RootFactory(object):
         self.__acl__ = [(Allow, Authenticated, u'view'), ]
         #general page factory - append custom non resource permissions
         if request.user:
+            if request.group and not request.user.has_group(request.group):
+                raise exception.HTTPNotFound
             for perm_user, perm_name in request.user.permissions:
                 self.__acl__.append((Allow, perm_user, perm_name,))
 
