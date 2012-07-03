@@ -131,8 +131,9 @@ class User(Base, UserMixin):
         return [g for g in self.groups if g._type == "retailer"]
 
     def has_group(self, group_name, group_type="retailer"):
-        return bool(self.groups_dynamic.filter_by(
-            group_name=group_name, group_type=group_type).one())
+        count = self.groups_dynamic.filter_by(
+                group_name=group_name, group_type=group_type).count()
+        return True and count == 1 or False
 
 
 class UserPermission(Base, UserPermissionMixin):
