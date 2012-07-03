@@ -115,13 +115,13 @@ class TemplateAPI(object):
         return url
 
     def dropdown(self, data):
-        return menu.Dropdown(self.context, self.request, data)
+        return navigation.Dropdown(self.context, self.request, data)
 
     def nav(self, data):
-        return menu.Navigation(self.context, self.request, data)
+        return navigation.Navigation(self.context, self.request, data)
 
     def sidebar(self, data):
-        return menu.Sidebar(self.context, self.request, data)
+        return navigation.Sidebar(self.context, self.request, data)
 
     @reify
     def site_title(self):
