@@ -140,14 +140,14 @@ class BaseModel(object):
         return data
 
     @classmethod
-    def exposed_attrs(cls, attrs=None):
+    def exposed_attrs(cls):
         """
         Returns the either given or attrs set in __exposed_attrs__
         """
-        attrs = attrs or cls.__expose_attrs__
+        attrs = cls.__expose_attrs__
         if not attrs and isinstance(cls, BaseModel):
             attrs = attrs.keys()
-        return attrs
+        return list(attrs)
 
     def format_data(self):
         """
