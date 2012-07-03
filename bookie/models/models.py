@@ -167,7 +167,7 @@ class Category(Resource):
     """
     __tablename__ = "category"
     __expose_attrs__ = ["resource_name", "description"]
-    __format_string__ = "{name}"
+    __format_string__ = "{resource_name}"
     description = Column(UnicodeText)
 
     resource_id = Column(Integer, ForeignKey("resources.resource_id",
