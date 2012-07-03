@@ -1,4 +1,4 @@
-from webhelpers.html import grid, tags
+from webhelpers.html import grid, literal, tags, HTML
 from webhelpers import date
 
 
@@ -10,14 +10,18 @@ def wrap_td(string):
     return HTML.td(literal(string))
 
 
-def column_link(request, value, extra={}):
+def column_link(request, anchor_text, view, view_args=[], view_kw={}):
     """
+    Helpers to format a element in a column as a anchor
+
     :param request: A Request object
-    :param value: The value to be used within the 'a'
-    :key extra: Some extra data that get's passed to get_data_data()
+    :param anchor_text: The text of the anchor
+    :param view: The view_name to use
+    :key view_args: Args to pass down
+    :key view_kw: Keywords to pass down
     """
-    nav_data = get_nav_data(request, extra=extra)
-    a = create_anchor(value, "category_view", **nav_data)
+    view_kw = get_nav_data(request, extra=view_kw)
+    a = create_anchor(anchor_text, view, **view_kw)
     return wrap_td(a)
 
 

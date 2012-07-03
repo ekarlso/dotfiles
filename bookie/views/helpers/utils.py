@@ -20,14 +20,23 @@ Other things go into <pkg.utils>
 
 
 def get_url(route, *args, **kw):
+    """
+    Get a URL
+    """
     request = get_current_request()
     location = "%s" % _url(route, request, *args, **kw)
     return location
 
 
-def create_anchor(string, route=None, *args, **kw):
+def create_anchor(string, view=None, *args, **kw):
+    """
+    Create a anchor towards a route
+
+    :param view: The view_name to use
+    """
+
     return literal('<a href="%s">%s</a>') % \
-        (get_url(route, *args, **kw), string)
+        (get_url(view, *args, **kw), string)
 
 
 def render_view(context, request, name='', secure=True):
