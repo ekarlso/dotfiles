@@ -118,10 +118,9 @@ class BaseModel(object):
         """
         q = cls.query
         filters.update(kw)
-        for key, val in filters.items():
-            q.filter_by(key=val)
+        q.filter_by(**filters)
         if limit:
-            self.limit(limit)
+            q.limit(limit)
         return q
 
     @classmethod
