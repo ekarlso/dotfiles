@@ -31,4 +31,4 @@ def home(context, request):
 
 
 def includeme(config):
-    config.add_route("retailer_home", "/{group}/home")
+    config.add_route("retailer_home", "/@{group}/home")

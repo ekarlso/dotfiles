@@ -144,8 +144,8 @@ def category_overview(context, request):
 
 
 def includeme(config):
-    config.add_route("category_add", "/{group}/category/add")
-    config.add_route("category_edit", "/{group}/category/{resource_id}/edit")
-    config.add_route("category_view", "/{group}/category/{resource_id}/view")
-    config.add_route("category_delete", "/{group}/category/{resource_id}/delete")
-    config.add_route("category_overview", "/{group}/category")
+    config.add_route("category_add", "/@{group}/category/add")
+    config.add_route("category_edit", "/@{group}/category/{resource_id}/edit")
+    config.add_route("category_view", "/@{group}/category/{resource_id}/view")
+    config.add_route("category_delete", "/@{group}/category/{resource_id}/delete")
+    config.add_route("category_overview", "/@{group}/category")

@@ -203,9 +203,9 @@ def entity_type_overview(context, request):
 
 
 def includeme(config):
-    config.add_route("entity_add", "/{tenant}/entity/add")
-    config.add_route("entity_edit", "/{tenant}/entity/{id}/edit")
-    config.add_route("entity_view", "/{tenant}/entity/{id}/view")
-    config.add_route("entity_delete", "/{tenant}/entity/{id}/delete")
-    config.add_route("entity_overview", "/{tenant}/entity")
-    config.add_route("entity_type_overview", "/{tenant}/entity/type}")
+    config.add_route("entity_add", "/@{group}/entity/add")
+    config.add_route("entity_edit", "/@{group}/entity/{id}/edit")
+    config.add_route("entity_view", "/@{group}/entity/{id}/view")
+    config.add_route("entity_delete", "/@{group}/entity/{id}/delete")
+    config.add_route("entity_overview", "/@{group}/entity")
+    config.add_route("entity_type_overview", "/@{group}/entity/{type}")

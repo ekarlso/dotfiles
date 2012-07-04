@@ -121,7 +121,7 @@ def booking_overview(context, request):
 
 
 def includeme(config):
-    config.add_route("booking_add", "/{group}/booking/add")
-    config.add_route("booking_edit", "/{group}/booking/{id}/edit")
-    config.add_route("booking_view", "/{group}/booking/{id}/view")
-    config.add_route("booking_overview", "/{group}/booking")
+    config.add_route("booking_add", "/@{group}/booking/add")
+    config.add_route("booking_edit", "/@{group}/booking/{id}/edit")
+    config.add_route("booking_view", "/@{group}/booking/{id}/view")
+    config.add_route("booking_overview", "/@{group}/booking")
