@@ -10,7 +10,9 @@
 menu_nav = {"check": request.user, "children": [
     {"value": "Home", "view_name": "index"},
     {"value": "Dashboard", "check": request.group,
-        "view_name": "retailer_home", "view_kw": {"group": request.group}}]}
+        "view_name": "retailer_home", "view_kw": {"group": request.group}},
+    {"value": "Booking", "check": request.group,
+        "view_name": "booking_overview", "view_kw": {"group": request.group}}]}
 %>
 ${api.nav(menu_nav)}
 
