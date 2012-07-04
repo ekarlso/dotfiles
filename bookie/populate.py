@@ -144,10 +144,11 @@ def populate_samples():
             start_location=loc_stavanger, end_location=loc_bryne)
         Booking(price=5, customer=customer, entity=outlander_2,
             start_location=loc_stavanger, end_location=loc_bryne)
+
         # NOTE: Rents out Trucks and Bus
         customer = Customer(name="WreckLovers Inc", organization_id=2343,
                 contact="Endre Karlson", email="endre.karlson@gmail.com",
-                phone="+47 xxxxxxxx")
+                phone="+47 xxxxxxxx").save()
 
         group = Retailer(
             group_name="TransportVehicles Inc",
@@ -179,14 +180,14 @@ def populate_samples():
             street_address="RoadStavanger 1",
             city="Stavanger", postal_code=4035, retailer=group)
 
-        entity = Car(
+        entity_1 = Car(
             brand="Brand-A",
             model="Model-A",
             identifier="ID-A",
             produced=2004,
             retailer=group,
             categories=[sub_truck["18 m3"]]).save()
-        entity = Car(
+        entity_2 = Car(
             brand="Brand-B",
             model="Model-B",
             identifier="ID-B",
@@ -194,14 +195,14 @@ def populate_samples():
             retailer=group,
             categories=[sub_bus["9 seats"]]).save()
 
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=entity_1,
             created_at=(datetime.now() - timedelta(5)),
             start_location=loc_stavanger, end_location=loc_bryne)
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=entity_1,
             start_location=loc_bryne, end_location=loc_stavanger)
 
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=entity_2,
             created_at=(datetime.now() - timedelta(2)),
             start_location=loc_bryne, end_location=loc_stavanger)
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=entity_2,
             start_location=loc_stavanger, end_location=loc_bryne)
