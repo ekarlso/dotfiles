@@ -111,9 +111,9 @@ def booking_overview(context, request):
 
     columns = models.Booking.exposed_attrs() + ["entity"]
     grid = PyramidGrid(bookings, columns)
-    grid.column_formats["entity"] = lambda cn, i, item: \
-        column_link(request, item["entity"], "entity_view",
-            view_kw=item.entity.to_dict())
+
+    grid.column_formats["entity"] = lambda cn, i, item: column_link(
+        request, item["entity"], "entity_view", view_kw=item.entity.to_dict())
 
     return {
         "navtree": booking_actions(request=request),
