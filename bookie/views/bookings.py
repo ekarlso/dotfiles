@@ -94,7 +94,7 @@ def booking_edit(context, request):
 @view_config(route_name="booking_view", permission="view",
             renderer="view.mako")
 def booking_view(context, request):
-    obj = models.Booking.get_one(id=request.matchdict["id"])
+    obj = models.Booking.get_by(id=request.matchdict["id"])
     return {
         "navtree": booking_actions(request=request),
         "booking": obj}
@@ -105,9 +105,7 @@ def booking_view(context, request):
 def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
-    bookings = models.Booking.query.filter_by(
-        deleted=deleted).join(
-        models.Customer.retailer)
+    bookings = models.Booking.search(deleted=deleted, retailer=request.group)
     grid = PyramidGrid(bookings, models.Booking.exposed_attrs())
 
     return {
@@ -116,7 +114,7 @@ def booking_overview(context, request):
 
 
 def includeme(config):
-    config.add_route("booking_add", "/booking/{tenant}/add")
+    config.add_route("booking_add", "/{group}/booking/add")
     config.add_route("booking_edit", "/booking/{id}/edit")
     config.add_route("booking_view", "/booking/{id}/view")
-    config.add_route("booking_overview", "/booking/{tenant}")
+    config.add_route("booking_overview", "/{group}/booking")
