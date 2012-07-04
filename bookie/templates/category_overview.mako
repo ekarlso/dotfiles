@@ -2,8 +2,8 @@
 
 <%block name="content">
 <div class="row-fluid">
-    <table class="stylized">
-        ${grid}
+    <table class="table table-striped">
+        ${category_grid}
     </table>
 </div>
 </%block>
