@@ -136,6 +136,12 @@ def includeme(config):
     # NOTE: Should be reified
     from .views.helpers import add_renderer_globals
     config.add_subscriber(add_renderer_globals, BeforeRender)
+
+    config.add_subscriber("bookie.utils.add_renderer_globals",
+                        "pyramid.events.BeforeRender")
+    config.add_subscriber("bookie.utils.add_localizer",
+                        "pyramid.events.NewRequest")
+
     return config
 
 
