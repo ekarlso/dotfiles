@@ -4,7 +4,7 @@
     <div class="row-fluid">
         <div class="span3">
             <em>Vehicle information</em>
-            <table>
+            <table clasS="table table-condensed">
                 <tr>
                     <td>Brand</td><td>${entity.brand}</td>
                 </tr>
@@ -24,7 +24,7 @@
         </div>
         <div class="span6">
             <em>Latest bookings</em>
-            <table>
+            <table class="table table-condensed">
                 ${b_grid_latest}
             </table>
         </div>
