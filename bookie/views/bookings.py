@@ -13,8 +13,10 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, menu_came_from, get_nav_data, get_url, create_anchor, wrap_td
+from .helpers import AddFormView, EditFormView, mk_form
+from .helpers import PyramidGrid, column_link, wrap_td
+from .helpers import menu_item, menu_came_from, get_nav_data, get_url, create_anchor
+
 
 
 LOG = logging.getLogger(__name__)
@@ -106,7 +108,12 @@ def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
     bookings = models.Booking.search(deleted=deleted, retailer=request.group)
-    grid = PyramidGrid(bookings, models.Booking.exposed_attrs())
+
+    columns = models.Booking.exposed_attrs() + ["entity"]
+    grid = PyramidGrid(bookings, columns)
+    grid.column_formats["entity"] = lambda cn, i, item: \
+        column_link(request, item["entity"], "entity_view",
+            view_kw=item.entity.to_dict())
 
     return {
         "navtree": booking_actions(request=request),
@@ -115,6 +122,6 @@ def booking_overview(context, request):
 
 def includeme(config):
     config.add_route("booking_add", "/{group}/booking/add")
-    config.add_route("booking_edit", "/booking/{id}/edit")
-    config.add_route("booking_view", "/booking/{id}/view")
+    config.add_route("booking_edit", "/{group}/booking/{id}/edit")
+    config.add_route("booking_view", "/{group}/booking/{id}/view")
     config.add_route("booking_overview", "/{group}/booking")
