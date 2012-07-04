@@ -13,8 +13,9 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, get_nav_data, get_url, create_anchor, wrap_td
+from .helpers import AddFormView, EditFormView, mk_form
+from .helpers import PyramidGrid, column_link, wrap_td
+from .helpers import menu_item, get_nav_data, get_url, create_anchor
 
 
 LOG = logging.getLogger(__name__)
@@ -46,18 +47,13 @@ def category_links(data):
     return [{"value": _("Navigation"), "children": children}]
 
 
-def column_link(request, value, extra={}):
-    nav_data = get_nav_data(request, extra=extra)
-    a = create_anchor(value, "category_view", **nav_data)
-    return wrap_td(a)
-
-
-class Category(colander.Schema):
-    name = colander.SchemaNode(
+class CategorySchema(colander.Schema):
+    resource_name = colander.SchemaNode(
         colander.String(),
-        title=_("Category"))
+        title=_("Name"))
     description = colander.SchemaNode(
         colander.String(),
+        missing=None,
         title=_("Description"))
 
 
@@ -99,7 +95,7 @@ def category_add(context, request):
             renderer="edit.mako")
 def category_edit(context, request):
     obj = models.Resource.query.filter_by(
-        deleted=False, resource_id=request.matchdict["id"]).one()
+        deleted=False, resource_id=request.matchdict["resource_id"]).one()
     return mk_form(CategoryEditForm, obj, request,
         extra=dict(navtree=category_actions(obj, request)))
 
@@ -108,9 +104,9 @@ def category_edit(context, request):
             renderer="category_view.mako")
 def category_view(context, request):
     deleted = request.params.get("deleted", False)
-    obj = models.Resource.get_one(
-        deleted=deleted, resource_id=request.matchdict["id"])
-
+    obj = models.Resource.get_by(
+        deleted=deleted,
+        resource_id=request.matchdict["resource_id"])
     return {
         "navtree": category_actions(obj, request),
         "sub_title": obj.title,
@@ -121,7 +117,7 @@ def category_view(context, request):
             renderer="delete.mako")
 def category_delete(context, request):
     obj = models.Category.query.filter_by(
-        deleted=False, resource_id=request.matchdict["id"]).one()
+        deleted=False, resource_id=request.matchdict["resource_id"]).one()
     if request.params.get("do") == "yes":
         obj.delete()
         request.session.flash(_("Delete successful"))
@@ -138,8 +134,8 @@ def category_overview(context, request):
     objects = models.Category.query.filter_by(deleted=deleted).all()
 
     grid = PyramidGrid(objects, models.Category.exposed_attrs())
-    grid.column_formats["name"] = lambda cn, i, item: \
-        column_link(request, item["name"], item.to_dict())
+    grid.column_formats["resource_name"] = lambda cn, i, item: \
+        column_link(request, item["resource_name"], "category_view", view_kw=item.to_dict())
 
     return {
         "navtree": category_links(get_nav_data(request)),
@@ -149,7 +145,7 @@ def category_overview(context, request):
 
 def includeme(config):
     config.add_route("category_add", "/{group}/category/add")
-    config.add_route("category_edit", "/{group}/category/{id}/edit")
-    config.add_route("category_view", "/{group}/category/{id}/view")
-    config.add_route("category_delete", "/{group}/category/{id}/delete")
+    config.add_route("category_edit", "/{group}/category/{resource_id}/edit")
+    config.add_route("category_view", "/{group}/category/{resource_id}/view")
+    config.add_route("category_delete", "/{group}/category/{resource_id}/delete")
     config.add_route("category_overview", "/{group}/category")
