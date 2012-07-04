@@ -116,9 +116,8 @@ class BaseModel(object):
         :key filters: Filters to apply
         :key limit: Limit to apply
         """
-        q = cls.query
         filters.update(kw)
-        q.filter_by(**filters)
+        q = cls.query.filter_by(**filters)
         if limit:
             q.limit(limit)
         return q
