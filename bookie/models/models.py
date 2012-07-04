@@ -87,7 +87,6 @@ class Group(Base, GroupMixin):
 
 class Retailer(Group):
     __tablename__ = "groups_retailer"
-
     group_name = Column(Unicode(120), ForeignKey("groups.group_name",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
@@ -98,8 +97,6 @@ class Retailer(Group):
 
 class Security(Group):
     __tablename__ = "groups_security"
-    pass
-
     group_name = Column(Unicode(120), ForeignKey("groups.group_name",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
@@ -332,6 +329,21 @@ class Booking(Base):
     @property
     def end(self):
         return "{end_at} ({end_location_name})".format(**self.format_data())
+
+    @classmethod
+    def search(cls, retailer=None, **kw):
+        """
+        Search bookings
+
+        :param retailer: Narrow this search down to a certain retailer
+        """
+        q = cls._search_query(**kw)
+        if retailer:
+            # NOTE: Booking is linked to a Customer which is linked to a
+            #       Retailer group
+            q = q.filter_by(customer_id=Customer.id).\
+                join(Customer).filter(Customer.retailer_name==retailer)
+        return q.all()
 
     @classmethod
     def latest(cls, limit=5, time_since=1, filter_by={}):
