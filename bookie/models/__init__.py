@@ -40,7 +40,7 @@ def configure_db(settings=None, drop_all=False):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
-    if drop_all or os.environ.get('BOOKIE_TEST_DB_STRING'):
+    if drop_all or os.environ.get('BOOKIE_DB_RELOAD'):
         unregister_models(engine)
 
     register_models(engine)
