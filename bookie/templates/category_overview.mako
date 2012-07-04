@@ -3,7 +3,7 @@
 <%block name="content">
 <div class="row-fluid">
     <table class="table table-striped">
-        ${category_grid}
+        ${grid}
     </table>
 </div>
 </%block>

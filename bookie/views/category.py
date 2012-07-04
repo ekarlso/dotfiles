@@ -131,7 +131,9 @@ def category_delete(context, request):
             renderer="category_overview.mako")
 def category_overview(context, request):
     deleted = request.params.get("deleted", False)
-    objects = models.Category.query.filter_by(deleted=deleted).all()
+
+    objects = models.Category.query.filter_by(deleted=deleted).\
+        filter(models.Resource.owner_group_name==request.group)
 
     grid = PyramidGrid(objects, models.Category.exposed_attrs())
     grid.column_formats["resource_name"] = lambda cn, i, item: \
