@@ -8,7 +8,8 @@ from pyramid.i18n import get_locale_name, TranslationStringFactory, \
 from pyramid.threadlocal import get_current_request
 from repoze.lru import LRUCache
 
-_ = TranslationStringFactory('bookie')
+tsf = TranslationStringFactory('bookie')
+_ = tsf
 
 
 """
@@ -132,6 +133,21 @@ def name_to_camel(string, joiner=""):
     return joiner.join([i.title() for i in string.split("_")])
 
 
+def add_renderer_globals(event):
+    request = event["request"]
+    event['_'] = request.translate
+    event['localizer'] = request.localizer
+
+
+def add_localizer(event):
+    request = event.request
+    localizer = get_localizer(request)
+    def auto_translate(string):
+        return localizer.translate(tsf(string))
+    request.localizer = localizer
+    request.translate = auto_translate
+
+
 def get_localizer_for_locale_name(locale_name):
     registry = get_current_registry()
     tdirs = registry.queryUtility(ITranslationDirectories, default=[])
@@ -149,5 +165,3 @@ def translate(*args, **kwargs):
 
 def generate_uuid():
     return unicode(uuid.uuid4())
-
-
