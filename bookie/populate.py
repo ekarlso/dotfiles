@@ -56,12 +56,6 @@ def populate_samples():
         user.set_password("booker1")
         user.save()
 
-        sub_cars = category_dict(["Sedan", "Stationwagon", "SUV", "Coupe",
-                            "Pickup", "7 seats", "9 seats"])
-        top_cars = Category(resource_name="Cars", children=sub_cars.values()).save()
-        sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"])
-        top_transport = Category(resource_name="Transport",
-                                children=sub_transport.values()).save()
 
         loc_bryne = Location(name="Bryne",
             street_address="RoadBryne 1",
@@ -70,31 +64,85 @@ def populate_samples():
             street_address="RoadStavanger 1",
             city="Stavanger", postal_code=4035, retailer=group)
 
-        entity = Car(
-            brand="Mitsubishi",
-            model="Lancer",
-            identifier="DL87162",
-            produced=2008,
+        sub_cars = category_dict(["Sedan", "Stationwagon", "SUV", "Coupe",
+                            "Pickup", "7 seats", "9 seats"])
+        top_cars = Category(resource_name="Cars", children=sub_cars.values()).save()
+        sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"])
+        top_transport = Category(resource_name="Transport",
+                                children=sub_transport.values()).save()
+
+        focus_1 = Car(
+            brand="Ford",
+            model="Focus",
+            identifier="DF00005",
+            produced=2012,
             retailer=group,
-            categories=[sub_cars["SUV"]]).save()
-        entity = Car(
-            brand="Hyundai",
-            model="Elantra",
-            identifier="RH73369",
-            produced=2000,
+            categories=[sub_cars["Sedan"]]).save()
+        focus_2 = Car(
+            brand="Ford",
+            model="Focus",
+            identifier="DF00006",
+            produced=2012,
+            retailer=group,
+            categories=[sub_cars["Sedan"]]).save()
+        s60_1 = Car(
+            brand="Volvo",
+            model="S60",
+            identifier="DL00007",
+            produced=2011,
+            retailer=group,
+            categories=[sub_cars["Sedan"]]).save()
+        s60_2 = Car(
+            brand="Volvo",
+            model="S60",
+            identifier="DL00008",
+            produced=2011,
+            retailer=group,
+            categories=[sub_cars["Sedan"]]).save()
+        xc60_1 = Car(
+            brand="Volvo",
+            model="V60",
+            identifier="DL00003",
+            produced=2012,
             retailer=group,
             categories=[sub_cars["Stationwagon"]]).save()
+        xc60_2 = Car(
+            brand="Volvo",
+            model="V60",
+            identifier="DL00004",
+            produced=2012,
+            retailer=group,
+            categories=[sub_cars["Stationwagon"]]).save()
+        outlander_1 = Car(
+            brand="Mitsubishi",
+            model="Outlander",
+            identifier="DL00001",
+            produced=2011,
+            retailer=group,
+            categories=[sub_cars["SUV"]]).save()
+        outlander_2 = Car(
+            brand="Mitsubishi",
+            model="Outlander",
+            identifier="DL00002",
+            produced=2011,
+            retailer=group,
+            categories=[sub_cars["SUV"]]).save()
 
-        Booking(price=5, customer=customer, entity=entity,
+
+        Booking(price=5, customer=customer, entity=focus_1,
             created_at=(datetime.now() - timedelta(5)),
             start_location=loc_stavanger, end_location=loc_bryne)
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=focus_2,
             start_location=loc_bryne, end_location=loc_stavanger)
 
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=s60_1,
             created_at=(datetime.now() - timedelta(2)),
             start_location=loc_bryne, end_location=loc_stavanger)
-        Booking(price=5, customer=customer, entity=entity,
+        Booking(price=5, customer=customer, entity=s60_2,
+            start_location=loc_stavanger, end_location=loc_bryne)
+        Booking(price=5, customer=customer, entity=outlander_1,
+            start_location=loc_stavanger, end_location=loc_bryne)
+        Booking(price=5, customer=customer, entity=outlander_2,
             start_location=loc_stavanger, end_location=loc_bryne)
         # NOTE: Rents out Trucks and Bus
         customer = Customer(name="WreckLovers Inc", organization_id=2343,
