@@ -20,21 +20,21 @@ Menu for when a user is authed
 <%
 if request.user:
     children = []
-    children.append({"value": "Contact a group", "icon": "user",
+    children.append({"value": _("Contact a group"), "icon": "user",
         "view_name": "contact"})
     for g in request.user.retailers:
         children.append(
             {"value": g.group_name, "view_name": "retailer_home", 
                 "view_kw": {"group": g.group_name}})
-    drop_companies = {"value": "Companies", "children": children}
+    drop_companies = {"value": _("Companies"), "children": children}
 
     user_value = request.user.first_name + " - " + request.user.user_name
     drop_user = {
         "value": user_value, "icon": "user", "children": [
-            {"value": "Preferences", "icon": "user", "view_name": "user_prefs"},
-            {"value": "Reset password", "icon": "wrench", 
+            {"value": _("Preferences"), "icon": "user", "view_name": "user_prefs"},
+            {"value": _("Reset password"), "icon": "wrench", 
                 "view_name": "reset_password"},
-            {"value": "Logout", "icon": "warning-sign", "view_name": "logout"}]}
+            {"value": _("Logout"), "icon": "warning-sign", "view_name": "logout"}]}
 %>
 % if request.user:
 ${api.dropdown(drop_user)}
