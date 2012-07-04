@@ -26,9 +26,9 @@ def menu_item(value, view_name, *args, **kw):
     return data
 
 
-def menu_came_from(request, title="Go Back"):
+def menu_came_from(request, value="Go Back"):
     came_from = request.params.get("came_from", None)
-    return dict(icon="arrow-left", title=title, url=came_from) \
+    return dict(icon="arrow-left", value=value, url=came_from) \
         if came_from else {}
 
 
