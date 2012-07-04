@@ -10,8 +10,9 @@ from .models import Retailer, Customer, Booking, Location
 from .models import Category, Entity, Property, DrivableEntity, Car
 
 
-def category_dict(names):
-    return dict([(n, Category(resource_name=n)) for n in names])
+def category_dict(names, owner_group_name=True):
+    return dict([(n, Category(resource_name=n,
+                owner_group_name=owner_group_name)) for n in names])
 
 
 def populate():
@@ -44,88 +45,95 @@ def populate_samples():
                     contact="Steffen Soma", email="stefsoma@gmail.com",
                     phone="+47 xxxxxxxx")
 
-        group = Retailer(
+        retailer = Retailer(
             group_name="RentOurWrecks Inc",
             group_type="retailer",
-            permissions=[g_radmin],
             organization_id=3232,
             customers=[customer]).save()
 
-        user = User(user_name="booker1", status=1, groups=[group],
+        user = User(user_name="booker1", status=1, groups=[retailer],
                     email="booker1@random.com")
         user.set_password("booker1")
         user.save()
 
-
         loc_bryne = Location(name="Bryne",
             street_address="RoadBryne 1",
-            city="Stavanger", postal_code=4000, retailer=group)
+            city="Stavanger", postal_code=4000, retailer=retailer)
         loc_stavanger = Location(name="Stavanger",
             street_address="RoadStavanger 1",
-            city="Stavanger", postal_code=4035, retailer=group)
+            city="Stavanger", postal_code=4035, retailer=retailer)
 
-        sub_cars = category_dict(["Sedan", "Stationwagon", "SUV", "Coupe",
-                            "Pickup", "7 seats", "9 seats"])
-        top_cars = Category(resource_name="Cars", children=sub_cars.values()).save()
-        sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"])
-        top_transport = Category(resource_name="Transport",
-                                children=sub_transport.values()).save()
+        sub_cars = category_dict(
+            ["Sedan", "Stationwagon", "SUV", "Coupe", "Pickup", "7 seats",
+                "9 seats"],
+            owner_group_name=retailer.group_name)
+        top_cars = Category(
+            resource_name="Cars",
+            owner_group_name=retailer.group_name,
+            children=sub_cars.values()).save()
+        sub_transport = category_dict(
+            ["Caddy", "6m 3", "11 m3", "18 m3"],
+            owner_group_name=retailer.group_name)
+        top_transport = Category(
+            resource_name="Transport",
+            owner_group_name=retailer.group_name,
+            children=sub_transport.values()).save()
 
         focus_1 = Car(
             brand="Ford",
             model="Focus",
             identifier="DF00005",
             produced=2012,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["Sedan"]]).save()
         focus_2 = Car(
             brand="Ford",
             model="Focus",
             identifier="DF00006",
             produced=2012,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["Sedan"]]).save()
         s60_1 = Car(
             brand="Volvo",
             model="S60",
             identifier="DL00007",
             produced=2011,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["Sedan"]]).save()
         s60_2 = Car(
             brand="Volvo",
             model="S60",
             identifier="DL00008",
             produced=2011,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["Sedan"]]).save()
         xc60_1 = Car(
             brand="Volvo",
             model="V60",
             identifier="DL00003",
             produced=2012,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["Stationwagon"]]).save()
         xc60_2 = Car(
             brand="Volvo",
             model="V60",
             identifier="DL00004",
             produced=2012,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["Stationwagon"]]).save()
         outlander_1 = Car(
             brand="Mitsubishi",
             model="Outlander",
             identifier="DL00001",
             produced=2011,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["SUV"]]).save()
         outlander_2 = Car(
             brand="Mitsubishi",
             model="Outlander",
             identifier="DL00002",
             produced=2011,
-            retailer=group,
+            retailer=retailer,
             categories=[sub_cars["SUV"]]).save()
 
 
@@ -150,49 +158,58 @@ def populate_samples():
                 contact="Endre Karlson", email="endre.karlson@gmail.com",
                 phone="+47 xxxxxxxx").save()
 
-        group = Retailer(
+        retailer_2 = Retailer(
             group_name="TransportVehicles Inc",
             group_type="retailer",
             organization_id=3232,
-            permissions=[g_radmin],
             customers=[customer]).save()
-        user = User(user_name="booker2", status=1, groups=[group],
+        user = User(user_name="booker2", status=1, groups=[retailer],
                     email="booker2@random.com").save()
         user.set_password("booker2")
         user.save()
 
-        user = User(user_name="steffen", status=1, groups=[group],
+        user = User(user_name="steffen", status=1, groups=[retailer_2],
                     first_name="Steffen", middle_name="Tenold",
                     last_name="Soma",
                     email="steffen.soma@gmail.com").save()
         user.set_password("password")
         user.save()
 
-        sub_truck = category_dict(["18 m3", "22 m3", "26 m3", "35 m3"])
-        top_truck = Category(resource_name="Truck", children=sub_truck.values()).save()
-        sub_bus = category_dict(["9 seats", "17 seats"])
-        top_bus = Category(resource_name="Mini bus", children=sub_bus.values()).save()
+        sub_truck = category_dict(
+            ["18 m3", "22 m3", "26 m3", "35 m3"],
+            owner_group_name=retailer_2.group_name)
+        top_truck = Category(
+            resource_name="Truck",
+            children=sub_truck.values(),
+            owner_group_name=retailer_2.group_name).save()
+        sub_bus = category_dict(
+            ["9 seats", "17 seats"],
+            owner_group_name=retailer_2.group_name)
+        top_bus = Category(
+            resource_name="Mini bus",
+            children=sub_bus.values(),
+            owner_group_name=retailer_2.group_name).save()
 
         loc_bryne = Location(name="Bryne",
             street_address="RoadBryne 1",
-            city="Stavanger", postal_code=4000, retailer=group)
+            city="Stavanger", postal_code=4000, retailer=retailer_2)
         loc_stavanger = Location(name="Stavanger",
             street_address="RoadStavanger 1",
-            city="Stavanger", postal_code=4035, retailer=group)
+            city="Stavanger", postal_code=4035, retailer=retailer_2)
 
         entity_1 = Car(
             brand="Brand-A",
             model="Model-A",
             identifier="ID-A",
             produced=2004,
-            retailer=group,
+            retailer=retailer_2,
             categories=[sub_truck["18 m3"]]).save()
         entity_2 = Car(
             brand="Brand-B",
             model="Model-B",
             identifier="ID-B",
             produced=2011,
-            retailer=group,
+            retailer=retailer_2,
             categories=[sub_bus["9 seats"]]).save()
 
         Booking(price=5, customer=customer, entity=entity_1,
