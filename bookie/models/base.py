@@ -95,18 +95,51 @@ class BaseModel(object):
         return dict([(k, getattr(self, k)) for k in self])
 
     @classmethod
-    def get_first(cls, *args, **kw):
-        return cls.query.filter_by(*args, **kw).first()
-
-    @classmethod
-    def get_one(cls, *args, **kw):
+    def get_by(cls, *args, **kw):
+        """
+        Get one by filters
+        """
         return cls.query.filter_by(*args, **kw).one()
 
     @classmethod
     def all_by(cls, *args, **kw):
+        """
+        Get all by filters
+        """
         return cls.query.filter_by(*args, **kw).all()
 
+    @classmethod
+    def _search_query(cls, filters={}, limit=10, **kw):
+        """
+        A Search helper method
+
+        :key filters: Filters to apply
+        :key limit: Limit to apply
+        """
+        q = cls.query
+        filters.update(kw)
+        for key, val in filters.items():
+            q.filter_by(key=val)
+        if limit:
+            self.limit(limit)
+        return q
+
+    @classmethod
+    def search(cls, **kw):
+        """
+        Helper for searching, get it?
+
+        See _search_query keywords
+        """
+        return cls._search_query(**kw).all()
+
     def to_dict(self, deep={}, exclude=[]):
+        """
+        Make a dict of the object
+
+        :key deep: A dict containing what to expand on the attribute
+        :key exclude: What to excluse on the remote attribute
+        """
         data = dict([(k, getattr(self, k)) \
             for k in get_prop_names(self, exclude=exclude)[0]])
 
@@ -119,6 +152,10 @@ class BaseModel(object):
         This is basically a part of "Elixir's" to_dict method.
         I took it out into remote_to_dict to be able to use it elsewhere as
         well.
+
+        See 'self.to_dict' for 'deep' and 'exclude'
+
+        :param attr: The remote attribute to dict
         """
         data = {}
         db_data = getattr(self, attr)
@@ -175,26 +212,39 @@ class BaseModel(object):
 
     def format_self(self, format_string=None):
         """
-        Return a list of expose values
+        Represent ourselves
+
+        :key format_string: Optionally override self.__format_string__
         """
         format = format_string or self.__format_string__
         return format.format(**self.format_data())
 
     @property
     def title(self):
+        """
+        Calls self.format_self()
+        """
         return self.format_self()
 
     def __unicode__(self):
+        """
+        Does the same as self.title()
+        """
         return self.format_self()
 
     @classmethod
     def get_schema(cls):
+        """
+        If using ColandarAlchemy this will wrap a mapping around me
+        """
         return SQLAlchemyMapping(cls)
 
     def from_dict(self, data):
         """
         Update a mapped class with data from a JSON-style nested
         dict/list
+
+        :param data: Data to load
         """
         mapper = object_mapper(self)
         for key, value in data.items():
@@ -229,6 +279,11 @@ class BaseModel(object):
 
     @classmethod
     def update_or_create(cls, data, surrogate=True):
+        """
+        Update or create a record
+
+        :param data: Data to use
+        """
         pk_props = cls.__mapper__.primary_key
         # if all pk are present and not None
         if not [1 for p in pk_props if data.get(p.key) is None]:
