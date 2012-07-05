@@ -40,7 +40,7 @@ if request.user:
 %>
 % if request.user:
 ${api.dropdown(drop_user)}
-${api.dropdown(drop_companies)}
+${api.dropdown_button(drop_companies)}
 % endif
 
 </div><!-- container -->
