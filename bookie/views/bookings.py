@@ -107,7 +107,8 @@ def booking_view(context, request):
 def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
-    bookings = models.Booking.search(deleted=deleted, retailer=request.group)
+    bookings = models.Booking.search(
+        filter_by={"deleted": deleted, "retailer": request.group})
 
     columns = models.Booking.exposed_attrs() + ["entity"]
     grid = PyramidGrid(bookings, columns)
