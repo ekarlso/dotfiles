@@ -109,15 +109,15 @@ class BaseModel(object):
         return cls.query.filter_by(*args, **kw).all()
 
     @classmethod
-    def _search_query(cls, filters={}, limit=10, **kw):
+    def _search_query(cls, filters=[], filter_by={}, limit=10):
         """
         A Search helper method
 
         :key filters: Filters to apply
         :key limit: Limit to apply
         """
-        filters.update(kw)
-        q = cls.query.filter_by(**filters)
+        q = cls.query.filter_by(**filter_by)
+        q = q.filter(*filters)
         if limit:
             q.limit(limit)
         return q
@@ -129,7 +129,7 @@ class BaseModel(object):
 
         See _search_query keywords
         """
-        return cls._search_query(**kw).all()
+        return cls._search_query(*args, **kw).all()
 
     def to_dict(self, deep={}, exclude=[]):
         """
