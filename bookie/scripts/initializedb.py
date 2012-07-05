@@ -4,6 +4,8 @@ from pprint import pformat
 from random import choice
 import transaction
 
+from alembic.config import Config
+from alembic import command
 from pyramid.paster import get_appsettings, setup_logging
 
 from ..models import configure_db
@@ -28,4 +30,10 @@ def main(argv=sys.argv):
     if os.environ.get("BOOKIE_DB_STR"):
         settings["sqlalchemy.url"] = os.environ.get("BOOKIE_DB_STR")
 
+    # NOTE: This takes care of creating tables but not alembic
     configure_db(settings, drop_all=drop_all)
+
+    alembic_cfg = Config("alembic_ziggurat.ini")
+    command.stamp(alembic_cfg, "head")
+    alembic_cfg = Config("alembic.ini")
+    command.stamp(alembic_cfg, "head")

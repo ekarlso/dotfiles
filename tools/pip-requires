@@ -9,6 +9,7 @@ pyramid_handlers
 pyramid_tm
 pyramid_debugtoolbar
 simplejson
+alembic
 SQLAlchemy
 transaction
 zope.sqlalchemy
