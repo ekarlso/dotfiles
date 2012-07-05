@@ -187,6 +187,10 @@ class Dropdown(Menu):
     template = "dropdown.mako"
 
 
+class DropdownButton(Menu):
+    template = "dropdown_button.mako"
+
+
 class Navigation(Menu):
     template = "navigation.mako"
 

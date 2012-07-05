@@ -117,6 +117,9 @@ class TemplateAPI(object):
     def dropdown(self, data):
         return navigation.Dropdown(self.context, self.request, data)
 
+    def dropdown_button(self, data):
+        return navigation.DropdownButton(self.context, self.request, data)
+
     def nav(self, data):
         return navigation.Navigation(self.context, self.request, data)
 
