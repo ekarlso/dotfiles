@@ -87,6 +87,8 @@ class Group(Base, GroupMixin):
 
 class Retailer(Group):
     __tablename__ = "groups_retailer"
+
+    organization_id = Column(Unicode(40))
     group_name = Column(Unicode(120), ForeignKey("groups.group_name",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
@@ -177,7 +179,7 @@ class ExternalIdentity(Base, ExternalIdentityMixin):
 # NOTE: Map categories >< entities
 category_entity_map = Table('category_entity_map', Base.metadata,
     Column('category_id', Integer, ForeignKey('resources.resource_id')),
-    Column('entity_id', Integer, ForeignKey('entity.id'))
+    Column('entity_id', Unicode(40), ForeignKey('entity.id'))
 )
 
 
@@ -226,7 +228,8 @@ class Entity(Base):
     identifier = Column(UnicodeText, unique=True)
     produced = Column(Integer)
 
-    retailer_name = Column(Integer, ForeignKey('groups.group_name'))
+    # NOTE: Change to Int and ID
+    retailer_name = Column(Unicode, ForeignKey('groups.group_name'))
 
     @declared_attr
     def __mapper_args__(cls):
@@ -236,11 +239,11 @@ class Entity(Base):
 
 class Property(Base):
     __tablename__ = "entity_property"
-    id = Column(Integer, primary_key=True)
+    id = Column(Unicode(40), primary_key=True, default=utils.generate_uuid)
     name = Column(Unicode(255), index=True, nullable=False)
     value = Column(UnicodeText, nullable=True)
 
-    entity_id = Column(Integer, ForeignKey("entity.id"))
+    entity_id = Column(Unicode(40), ForeignKey("entity.id"))
     entity = relationship("Entity", backref="properties")
 
 
@@ -262,13 +265,13 @@ class Customer(Base):
     __tablename__ = "customer"
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText)
-    organization_id = Column(Integer)
+    organization_id = Column(Unicode(40))
     contact = Column(UnicodeText)
     email = Column(UnicodeText)
-    phone = Column(Integer)
+    phone = Column(Unicode(20))
 
-    # NOTE: Maybe change to ID?
-    retailer_name = Column(Integer, ForeignKey('groups.group_name',
+    # NOTE: Change to Int and ID
+    retailer_name = Column(Unicode, ForeignKey('groups.group_name',
                     onupdate="CASCADE", ondelete="CASCADE"))
 
 
@@ -282,8 +285,8 @@ class Location(Base):
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
 
-    # NOTE: Maybe change to ID?
-    retailer_name = Column(Integer, ForeignKey("groups.group_name"))
+    # NOTE: Change to Int and ID
+    retailer_name = Column(Unicode, ForeignKey("groups.group_name"))
     retailer = relationship("Group", backref="locations")
 
 
@@ -319,7 +322,7 @@ class Booking(Base):
     customer_id = Column(Integer, ForeignKey('customer.id'))
     customer = relationship("Customer", backref="orders")
 
-    entity_id = Column(Integer, ForeignKey('entity.id'))
+    entity_id = Column(Unicode(40), ForeignKey('entity.id'))
     entity = relationship("Entity", backref="orders")
 
     @property
