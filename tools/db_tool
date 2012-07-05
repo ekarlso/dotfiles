@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Simple helper script for revisioning db
+
+. $( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/db_settings.conf
+
+DUMPDIR=~/db_revs
+[ ! -d $DUMPDIR ] && mkdir $DUMPDIR
+
+OPTS=" -h $PGHOST -U $PGUSER $PGDB"
+DATE=$(date +%H%M_%d%m%Y)
+
+backup() {
+    name="$PGDB_$(echo 'select * from alembic_version, alembic_ziggurat_foundations_version;' | psql $OPTS | awk 'FNR == 3 {print "app_"$1"-ziggurat_"$3}')_$DATE.sql"
+    pg_dump -c $OPTS > $DUMPDIR/$name
+    gzip -f $DUMPDIR/$name
+}
+
+restore() {
+    sql="$DUMPDIR/$1"
+    [ -f "$sql" ] && {
+        echo "Restoring to $sql"
+        zcat $sql | psql $OPTS
+    } || {
+        echo "File doesn't exist $sql"
+    }
+}
+
+
+case $1 in
+    backup)
+        backup
+        ;;
+    restore)
+        restore $2
+        ;;
+    ls)
+        ls -lrt $DUMPDIR
+    ;;
+esac
