@@ -334,13 +334,15 @@ class Booking(Base):
         return "{end_at} ({end_location_name})".format(**self.format_data())
 
     @classmethod
-    def search(cls, retailer=None, **kw):
+    def search(cls, filter_by={}, **kw):
         """
         Search bookings
 
         :param retailer: Narrow this search down to a certain retailer
         """
-        q = cls._search_query(**kw)
+        retailer = filter_by.pop("retailer", None)
+        q = cls._search_query(filter_by=filter_by, **kw)
+
         if retailer:
             # NOTE: Booking is linked to a Customer which is linked to a
             #       Retailer group
