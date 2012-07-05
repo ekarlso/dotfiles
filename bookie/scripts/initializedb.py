@@ -24,4 +24,8 @@ def main(argv=sys.argv):
     settings = get_appsettings(config_uri)
     settings["bookie.populators"] = "bookie.populate.populate_samples"
 
-    configure_db(settings)
+    drop_all = True if os.environ.get("BOOKIE_DB_RELOAD") else False
+    if os.environ.get("BOOKIE_DB_STR"):
+        settings["sqlalchemy.url"] = os.environ.get("BOOKIE_DB_STR")
+
+    configure_db(settings, drop_all=drop_all)

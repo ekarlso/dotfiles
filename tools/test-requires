@@ -1,2 +1,5 @@
 mock
 ipdb
+
+MySQL-python
+psycopg2

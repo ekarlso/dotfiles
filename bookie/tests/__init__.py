@@ -14,7 +14,7 @@ from bookie.testing import setUp
 from bookie.testing import setUpFunctional
 from bookie.testing import setUpFunctionalStrippedDownApp
 from bookie.testing import tearDown
-from bookie.testing import testing_db_url
+from bookie.testing import test_db_url
 from bookie.testing import TestingRootFactory
 from bookie.testing import UnitTestBase
 
@@ -34,7 +34,7 @@ __all__ = [
     'setUpFunctional',
     'setUpFunctionalStrippedDownApp',
     'tearDown',
-    'testing_db_url',
+    'test_db_url',
     'TestingRootFactory',
     'UnitTestBase',
 ]

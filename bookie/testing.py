@@ -23,8 +23,8 @@ class DummyRequest(testing.DummyRequest):
                 hasattr(ob, 'status'))
 
 
-def testing_db_url():
-    return os.environ.get('BOOKIE_TEST_DB_STRING', 'sqlite://')
+def test_db_url():
+    return os.environ.get('BOOKIE_DB_STR', 'sqlite://')
 
 
 def _initTestingDB():
@@ -52,7 +52,7 @@ def setUp(init_db=True, **kwargs):
     settings['bookie.secret'] = 'secret'
     settings['bookie.secret2'] = 'secret2'
     settings['bookie.populators'] = 'bookie.populate.populate_samples'
-    settings["sqlalchemy.url"] = testing_db_url()
+    settings["sqlalchemy.url"] = test_db_url()
     settings.update(kwargs.get('settings', {}))
     _resolve_dotted(settings)
     kwargs['settings'] = settings
@@ -101,7 +101,7 @@ def setUpFunctional(global_config=None, **settings):
     tearDown()
 
     _settings = {
-        'sqlalchemy.url': testing_db_url(),
+        'sqlalchemy.url': test_db_url(),
         'bookie.secret': 'secret',
         'bookie.site_title': 'Bookie BETA',  # for mailing
         'bookie.populators': 'bookie.populate.populate_samples',

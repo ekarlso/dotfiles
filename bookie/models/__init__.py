@@ -1,4 +1,5 @@
 import os
+import re
 from pprint import pformat
 
 from pyramid.threadlocal import get_current_registry
@@ -32,15 +33,17 @@ def configure_db(settings=None, drop_all=False):
     timeout = settings.get("sqlalchemy.timeout", None) or 600
     engine = create_engine(sql_str, pool_recycle=timeout)
 
+    # NOTE: Enable FK Pragma for sqlite.
     def _fk_pragma_on_connect(dbapi_con, con_record):
         dbapi_con.execute('pragma foreign_keys=ON')
-    event.listen(engine, 'connect', _fk_pragma_on_connect)
+    if re.search("^sqlite:", sql_str):
+        event.listen(engine, 'connect', _fk_pragma_on_connect)
 
     DBSession.registry.clear()
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
 
-    if drop_all or os.environ.get('BOOKIE_DB_RELOAD'):
+    if drop_all:
         unregister_models(engine)
 
     register_models(engine)
