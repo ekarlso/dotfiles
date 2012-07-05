@@ -22,13 +22,13 @@ Menu for when a user is authed
 <%
 if request.user:
     children = []
-    children.append({"value": _("Contact a group"), "icon": "user",
+    children.append({"value": _("Contact a group"), "icon": "message",
         "view_name": "contact"})
     for g in request.user.retailers:
         children.append(
-            {"value": g.group_name, "view_name": "retailer_home", 
-                "view_kw": {"group": g.group_name}})
-    drop_companies = {"value": _("Companies"), "children": children}
+            {"value": g.group_name, "icon": "group", 
+                "view_name": "retailer_home", "view_kw": {"group": g.group_name}})
+    drop_companies = {"value": _("Companies"), "icon": "dashboard", "children": children}
 
     user_value = request.user.first_name + " - " + request.user.user_name
     drop_user = {
