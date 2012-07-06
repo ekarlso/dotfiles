@@ -18,6 +18,8 @@ ${api.nav(menu_nav)}
 
 <%doc>
 Menu for when a user is authed
+
+NOTE: This should maybe be moved to a .py file? :p
 </%doc>
 <%
 if request.user:
@@ -26,7 +28,7 @@ if request.user:
         "view_name": "contact"})
     for g in request.user.retailers:
         children.append(
-            {"value": g.group_name, "icon": "group", 
+            {"value": g.group_name, "icon": "group",
                 "view_name": "retailer_home", "view_kw": {"group": g.group_name}})
     drop_companies = {"value": _("Companies"), "icon": "dashboard", "children": children}
 
@@ -35,7 +37,7 @@ if request.user:
     drop_user = {
         "value": user_value, "icon": "user", "children": [
             {"value": _("Preferences"), "icon": "user", "view_name": "user_prefs"},
-            {"value": _("Reset password"), "icon": "wrench", 
+            {"value": _("Reset password"), "icon": "wrench",
                 "view_name": "reset_password"},
             {"value": _("Logout"), "icon": "warning-sign", "view_name": "logout"}]}
 %>
