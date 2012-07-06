@@ -30,7 +30,8 @@ if request.user:
                 "view_name": "retailer_home", "view_kw": {"group": g.group_name}})
     drop_companies = {"value": _("Companies"), "icon": "dashboard", "children": children}
 
-    user_value = request.user.first_name + " - " + request.user.user_name
+    user_value = request.user.first_name + " - " + request.user.user_name \
+        if request.user.first_name else request.user.user_name
     drop_user = {
         "value": user_value, "icon": "user", "children": [
             {"value": _("Preferences"), "icon": "user", "view_name": "user_prefs"},
