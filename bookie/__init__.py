@@ -1,3 +1,4 @@
+import pkg_resources
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
@@ -6,7 +7,7 @@ from pyramid.threadlocal import get_current_registry
 from pyramid.util import DottedNameResolver
 from pyramid_beaker import session_factory_from_settings
 
-from . import models, security, utils
+from . import models, security
 
 
 CONF_DEFAULTS = {
@@ -89,7 +90,7 @@ def _resolve_dotted(d, keys=CONF_DOTTED):
         d[key] = new_value
 
 
-def base_configure(global_config, **settings):
+def load_settings(global_config, **settings):
     for key, value in CONF_DEFAULTS.items():
         settings.setdefault(key, value)
 
@@ -104,7 +105,11 @@ def base_configure(global_config, **settings):
     _resolve_dotted(settings)
     secret1 = settings['bookie.secret']
     settings.setdefault('bookie.secret2', secret1)
+    return settings
 
+
+def configure(global_config, **settings):
+    settings = load_settings(global_config, **settings)
     # We'll process ``pyramid_includes`` later by hand, to allow
     # overrides of configuration from ``bookie.base_includes``:
     pyramid_includes = settings.pop('pyramid.includes', '')
@@ -130,8 +135,6 @@ def base_configure(global_config, **settings):
 
 
 def includeme(config):
-    settings = config.get_settings()
-
     config.add_translation_dirs('bookie:locale')
     # NOTE: Should be reified
     from .views.helpers import add_renderer_globals
@@ -148,6 +151,6 @@ def includeme(config):
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    config = base_configure(global_config, **settings)
+    config = configure(global_config, **settings)
     config.scan()
     return config.make_wsgi_app()
