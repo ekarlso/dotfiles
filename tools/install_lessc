@@ -1,0 +1,17 @@
+#!/bin/bash
+
+VER=0.8.1
+VENV=$1
+
+wget http://nodejs.org/dist/v$VER/node-v$VER.tar.gz
+tar zxf node-v$VER.tar.gz
+cd node-v$VER/
+./configure --prefix=$VENV
+make
+make install
+
+. $VENV/bin/activate
+curl http://npmjs.org/install.sh | sh
+
+npm install less
+ln -nfs $(npm bin)/lessc $VENV/bin/lessc
