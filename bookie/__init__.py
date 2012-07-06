@@ -108,7 +108,7 @@ def load_settings(global_config, **settings):
     return settings
 
 
-def configure(global_config, **settings):
+def load_config(global_config, **settings):
     settings = load_settings(global_config, **settings)
     # We'll process ``pyramid_includes`` later by hand, to allow
     # overrides of configuration from ``bookie.base_includes``:
@@ -144,13 +144,12 @@ def includeme(config):
                         "pyramid.events.BeforeRender")
     config.add_subscriber("bookie.utils.add_localizer",
                         "pyramid.events.NewRequest")
-
     return config
 
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    config = configure(global_config, **settings)
+    config = load_config(global_config, **settings)
     config.scan()
     return config.make_wsgi_app()
