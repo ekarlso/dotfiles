@@ -15,6 +15,7 @@ CONF_DEFAULTS = {
     'bookie.configurators': '',
     "bookie.base_includes": " ".join([
         "bookie",
+        "bookie.resources",
         "bookie.security",
         "bookie.views",
         "bookie.views.bookings",
@@ -144,7 +145,6 @@ def includeme(config):
                         "pyramid.events.BeforeRender")
     config.add_subscriber("bookie.utils.add_localizer",
                         "pyramid.events.NewRequest")
-
     return config
 
 

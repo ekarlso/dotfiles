@@ -8,6 +8,7 @@ pyramid_deform
 pyramid_handlers
 pyramid_tm
 pyramid_debugtoolbar
+pyramid_webassets
 simplejson
 alembic
 SQLAlchemy

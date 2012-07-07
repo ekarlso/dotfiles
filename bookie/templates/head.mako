@@ -6,18 +6,18 @@
 
 <title><%block name="head_title">${api.page_title}</%block></title>
 
+
+% for url in environment["css"].urls():
+    <link rel="stylesheet" type="text/css" href="${url}" />
+% endfor
+
+% for script in environment["js"].urls():
+    <script type="text/javascript" src="${script}"></script>
+% endfor
+
+<!-- 3rd party -->
 ${api.css_link([
-    "static/bootstrap/css/bootstrap.css",
-    "static/bootstrap/css/bootstrap-responsive.min.css",
-    "static/css/overcast/jquery-ui-1.8.20.custom.css",
     "deform:static/css/jquery-ui-timepicker-addon.css"
-])|n}
-
-
-${api.script_link([
-    "static/js/jquery-1.7.2.min.js",
-    "static/js/jquery-ui-1.8.20.custom.min.js",
-    "static/bootstrap/js/bootstrap.min.js"
 ])|n}
 
 ${api.script_link([
