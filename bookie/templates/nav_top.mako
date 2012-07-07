@@ -10,7 +10,7 @@
 menu_nav = {"check": request.user, "children": [
     {"value": "Home", "view_name": "index"},
     {"value": "Dashboard", "check": request.group,
-        "view_name": "retailer_home", "view_kw": {"group": request.group}},
+        "view_name": "retailer_dashboard", "view_kw": {"group": request.group}},
     {"value": "Booking", "check": request.group,
         "view_name": "booking_overview", "view_kw": {"group": request.group}}]}
 %>
@@ -29,7 +29,7 @@ if request.user:
     for g in request.user.retailers:
         children.append(
             {"value": g.group_name, "icon": "group",
-                "view_name": "retailer_home", "view_kw": {"group": g.group_name}})
+                "view_name": "retailer_dashboard", "view_kw": {"group": g.group_name}})
     drop_companies = {"value": _("Companies"), "icon": "dashboard", "children": children}
 
     user_value = request.user.first_name + " - " + request.user.user_name \

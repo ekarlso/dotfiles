@@ -20,15 +20,15 @@ from .helpers import menu_item, get_nav_data, get_url, create_anchor, \
 def links(request):
     d = get_nav_data(request)
     c = []
-    c.append({"value": "Dashboard", "view_name": "retailer_home",
+    c.append({"value": "Dashboard", "view_name": "retailer_dashboard",
         "view_kw": d})
     return [{"value": "Navigation", "children": c}]
 
 
-@view_config(route_name="retailer_home", renderer="retailer_home.mako")
-def home(context, request):
+@view_config(route_name="retailer_dashboard", renderer="retailer_dashboard.mako")
+def dashboard(context, request):
     return {"navtree": links(request)}
 
 
 def includeme(config):
-    config.add_route("retailer_home", "/@{group}/home")
+    config.add_route("retailer_dashboard", "/@{group}/dashboard")
