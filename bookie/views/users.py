@@ -1,21 +1,17 @@
-from pprint import pformat
 import logging
-import re
-from urllib import urlencode
 
 import colander
 import deform
 from deform import Button
 from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
-    CheckboxChoiceWidget, CheckboxChoiceWidget, PasswordWidget, SequenceWidget
-from pyramid.httpexceptions import HTTPFound
-from pyramid.exceptions import Forbidden
+    CheckboxChoiceWidget, SequenceWidget
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 from pyramid.view import view_config
 
-from .. import models
+from .. import models, security
 from ..utils import _
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item
+from .helpers import menu_item, get_url
 
 
 LOG = logging.getLogger(__name__)
@@ -37,6 +33,7 @@ def group_validator(node, value):
     if not group:
         raise colander.Invalid(node, _(u"No such group: ${group}",
                                 mapping=dict(group=value)))
+
 
 def _pk(data):
     """
@@ -66,9 +63,9 @@ def _mangle_appstruct(appstruct):
         #       looking up the name
         appstruct["groups"] = [{"group_name": models.Group.by_group_name(g).\
             group_name}for g in appstruct.pop("groups")]
-
     # NOTE: Mangle permissions
-    pk = _pk(appstruct) # NOTE: user_permissions or permissions
+    pk = _pk(appstruct)
+    # NOTE: user_permissions or permissions
     appstruct[pk] = [{"perm_name": pn} for pn in appstruct.pop(pk)]
     return appstruct
 
@@ -160,11 +157,11 @@ class UserAddForm(AddFormView):
         appstruct.pop('csrf_token', None)
         _mangle_appstruct(appstruct)
         appstruct['email'] = appstruct['email'] and appstruct['email'].lower()
-        if appstruct.pop("send_email", False):
-            security.email_set_password(get_principals()[name], self.request)
         #location = self.request.url.split('?')[0] + '?' + urlencode(
         #    {'extra': name})
         user = models.User().from_dict(appstruct).save()
+        if appstruct.pop("send_email", False):
+            security.email_set_password(user, self.request)
         self.request.session.flash(_(u'${title} added.',
                                      mapping=dict(title=user.title)),
                                      'success')
@@ -270,9 +267,46 @@ def user_edit(request):
 @view_config(route_name="user_prefs", permission="view",
             renderer="user_prefs.mako")
 def user_preferences(request):
+    """
+    Users preferences
+    """
     user = request.user
     return mk_form(UserForm, user, request,
         extra={"navtree": prefs_menu()})
+
+
+@view_config(route_name="user_tenant", permission="view")
+def user_tenant(request):
+    """
+    Method to help change tenants / groups.
+
+    It sets the tenant if a "name" is in the params list and forwards the user
+    to that tenants dashboard
+    """
+    if "id" in request.GET:
+        tenant = request.GET["id"]
+    elif "name" in request.GET:
+        tenant = request.GET["name"]
+    else:
+        tenant = None
+
+    def redirect(group):
+        location = get_url("retailer_dashboard", view_kw={"group": group})
+        return HTTPFound(location=location)
+
+    # NOTE: Check for tenant
+    # * Check > update db with new tenant > forward
+    # * No tenant > forward to current tenant or default
+    if tenant:
+        # NOTE: Ok, so if there's a group and it's valid let's update in redis
+        # and forward
+        if request.user.has_group(tenant):
+            return redirect(tenant)
+        else:
+            raise HTTPForbidden
+    else:
+        tenant = request.group or request.user.current
+        return redirect(tenant)
 
 
 def includeme(config):
@@ -280,5 +314,7 @@ def includeme(config):
     # NOTE: Group links
     config.add_route("group_edit", "@@admin/group/{group_name}/edit")
     # NOTE: User links
-    config.add_route("user_prefs", "@@prefs")
     config.add_route("user_edit", "@@admin/user/{id}/edit")
+
+    config.add_route("user_prefs", "@@prefs")
+    config.add_route("user_tenant", "@@tenant")
