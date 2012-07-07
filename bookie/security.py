@@ -1,5 +1,7 @@
 import logging
 from pyramid import httpexceptions as exception
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import unauthenticated_userid, Authenticated, Allow, \
     Everyone
 
@@ -76,7 +78,7 @@ class RootFactory(object):
 
 def includeme(config):
     settings = config.get_settings()
-# NOTE: Auth settings here
+    # NOTE: Auth settings here
     authentication_policy = settings[
         'bookie.authn_policy_factory'][0](**settings)
     authorization_policy = settings[

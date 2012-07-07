@@ -1,13 +1,11 @@
 import pkg_resources
-from pyramid.authentication import AuthTktAuthenticationPolicy
-from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.events import BeforeRender
 from pyramid.threadlocal import get_current_registry
 from pyramid.util import DottedNameResolver
 from pyramid_beaker import session_factory_from_settings
 
-from . import models, security
+from . import models
 
 
 CONF_DEFAULTS = {
@@ -29,8 +27,8 @@ CONF_DEFAULTS = {
     'bookie.use_tables': '',
     'bookie.root_factory': 'bookie.security.RootFactory',
     'bookie.populators': 'bookie.populate.populate',
-    'bookie.authn_policy_factory': 'bookie.authtkt_factory',
-    'bookie.authz_policy_factory': 'bookie.acl_factory',
+    'bookie.authn_policy_factory': 'bookie.security.authtkt_factory',
+    'bookie.authz_policy_factory': 'bookie.security.acl_factory',
     'bookie.session_factory': 'bookie.beaker_session_factory',
     'bookie.caching_policy_chooser': (
         'bookie.views.cache.default_caching_policy_chooser')}
@@ -64,15 +62,6 @@ def get_settings():
 
 def get_version():
     return pkg_resources.require("bookie")[0].version
-
-
-def authtkt_factory(**settings):
-    return AuthTktAuthenticationPolicy(
-        secret=settings['bookie.secret2'], callback=security.get_groups)
-
-
-def acl_factory(**settings):
-    return ACLAuthorizationPolicy()
 
 
 def beaker_session_factory(**settings):
