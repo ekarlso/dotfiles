@@ -20,7 +20,7 @@ def get_groups(user_id, request):
 
 def authtkt_factory(**settings):
     return AuthTktAuthenticationPolicy(
-        secret=settings['bookie.secret2'], callback=get_group)
+        secret=settings['bookie.secret2'], callback=get_groups)
 
 
 def acl_factory(**settings):
