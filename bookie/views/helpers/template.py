@@ -142,8 +142,11 @@ class TemplateAPI(object):
             func = "%s.%s" % (module, nav_name)
 
             # NOTE: So now we have the path of the function, get the data
-            nav_cls, nav_data = importutils.import_object(
+            try:
+                nav_cls, nav_data = importutils.import_object(
                     func, self.context, self.request)
+            except ImportError:
+                raise AttributeError("Navigation callable not found %s" % func)
         else:
             nav_cls = nav_name
 
