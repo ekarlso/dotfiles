@@ -306,13 +306,13 @@ def user_tenant_setter(request):
         # NOTE: Ok, so if there's a group and it's valid let's update in redis
         # and forward
         if request.user.has_group(tenant):
-            request.user.current_tenant = tenant
+            request.user.current_group = tenant
             request.user.save()
             return redirect(tenant)
         else:
             raise HTTPForbidden
     else:
-        tenant = request.group or request.user.current_tenant
+        tenant = request.group or request.user.current_group
         if tenant:
             return redirect(tenant)
         else:
