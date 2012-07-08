@@ -135,13 +135,10 @@ class TemplateAPI(object):
         :param nav_module: Override the module to lookup 'menu' in
                             Defaults: bootstrap_helpers.navigation setting
         """
-        # NOTE: If we have no nav_data we'll get it off a function
-        # 'nav_module.nav_name'. This should REturn
         if not nav_data:
             module = nav_module or self.settings["bootstrap_helpers.navigation"]
             func = "%s.%s" % (module, nav_name)
 
-            # NOTE: So now we have the path of the function, get the data
             try:
                 nav_cls, nav_data = importutils.import_object(
                     func, self.context, self.request)
