@@ -147,6 +147,7 @@ class User(Base, UserMixin):
     first_name = Column(UnicodeText, default=u'')
     middle_name = Column(UnicodeText, default=u'')
     last_name = Column(UnicodeText, default=u'')
+    current_tenant = Column(Unicode(80))
 
     @property
     def retailers(self):

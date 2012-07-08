@@ -70,6 +70,16 @@ def _mangle_appstruct(appstruct):
     return appstruct
 
 
+def tenant_from_request(request):
+    if "group_id" in request.GET:
+        tenant = request.GET["group_id"]
+    elif "group_name" in request.GET:
+        tenant = request.GET["group_name"]
+    else:
+        tenant = None
+    return tenant
+
+
 def prefs_menu():
     return [{
         "value": _("My settings"), "children": [
@@ -275,23 +285,18 @@ def user_preferences(request):
         extra={"navtree": prefs_menu()})
 
 
-@view_config(route_name="user_tenant", permission="view")
-def user_tenant(request):
+@view_config(route_name="user_tenant_setter", permission="view")
+def user_tenant_setter(request):
     """
     Method to help change tenants / groups.
 
     It sets the tenant if a "name" is in the params list and forwards the user
     to that tenants dashboard
     """
-    if "id" in request.GET:
-        tenant = request.GET["id"]
-    elif "name" in request.GET:
-        tenant = request.GET["name"]
-    else:
-        tenant = None
+    tenant = tenant_from_request(request)
 
     def redirect(group):
-        location = get_url("retailer_dashboard", view_kw={"group": group})
+        location = request.route_url("retailer_dashboard", group=group)
         return HTTPFound(location=location)
 
     # NOTE: Check for tenant
@@ -301,12 +306,25 @@ def user_tenant(request):
         # NOTE: Ok, so if there's a group and it's valid let's update in redis
         # and forward
         if request.user.has_group(tenant):
+            request.user.current_tenant = tenant
+            request.user.save()
             return redirect(tenant)
         else:
             raise HTTPForbidden
     else:
-        tenant = request.group or request.user.current
-        return redirect(tenant)
+        tenant = request.group or request.user.current_tenant
+        if tenant:
+            return redirect(tenant)
+        else:
+            return HTTPFound(location=request.route_url("user_tenants"))
+
+
+@view_config(route_name="user_tenants", permission="view",
+        renderer="user_tenants_overview.mako")
+def user_tenants(request):
+    grid = PyramidGrid(request.user.retailers,
+        ["group_name", "group_type"])
+    return {"grid": grid}
 
 
 def includeme(config):
@@ -317,4 +335,5 @@ def includeme(config):
     config.add_route("user_edit", "@@admin/user/{id}/edit")
 
     config.add_route("user_prefs", "@@prefs")
-    config.add_route("user_tenant", "@@tenant")
+    config.add_route("user_tenant_setter", "@@tenant")
+    config.add_route("user_tenants", "@@tenant/list")
