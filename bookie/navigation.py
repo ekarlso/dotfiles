@@ -19,7 +19,7 @@ def drop_companies(context, request):
         children.append(
             {"value": g.group_name, "icon": "group",
                 "view_name": "retailer_dashboard", "view_kw": {"group": g.group_name}})
-    return "dropdown", {"value": _("Companies"), "icon": "dashboard", "children": children}
+    return "dropdown_button", {"value": _("Companies"), "icon": "dashboard", "children": children}
 
 
 def drop_user(context, request):
