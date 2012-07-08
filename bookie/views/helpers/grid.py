@@ -16,7 +16,7 @@ def column_link(request, anchor_text, view, view_args=[], view_kw={}):
 
     :param request: A Request object
     :param anchor_text: The text of the anchor
-    :param view: The view_name to use
+    :param view: The view to use
     :key view_args: Args to pass down
     :key view_kw: Keywords to pass down
     """

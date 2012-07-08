@@ -11,13 +11,13 @@ STYLE_CLS = [
 ]
 
 
-def menu_item(value, view_name, *args, **kw):
+def menu_item(value, view, *args, **kw):
     """
     A simple helper for generating out menu dicts
     """
     data = {
         "value": value,
-        "view_name": view_name,
+        "view": view,
         "view_args": args,
         "view_kw": kw}
     return data
@@ -76,7 +76,7 @@ class MenuItem(MenuBase):
     :param parent: The parent of this item
     """
     def __init__(self, context, request, parent=None, check=True, children=[], value=None,
-        url=None, icon=None, view_name=None, view_args=[], view_kw={}):
+        url=None, icon=None, view=None, view_args=[], view_kw={}):
         MenuBase.__init__(self, check)
         self.context, self.request = context, request
 
@@ -92,8 +92,8 @@ class MenuItem(MenuBase):
         self.value = value
 
         # NOTE: View override url
-        if view_name:
-            url = get_url(view_name, *view_args, **view_kw)
+        if view:
+            url = get_url(view, *view_args, **view_kw)
         self.url = url
 
         if icon and not icon.startswith("icon-"):

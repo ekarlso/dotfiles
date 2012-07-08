@@ -32,7 +32,7 @@ def create_anchor(string, view=None, *args, **kw):
     """
     Create a anchor towards a route
 
-    :param view: The view_name to use
+    :param view: The view to use
     """
 
     return literal('<a href="%s">%s</a>') % \
