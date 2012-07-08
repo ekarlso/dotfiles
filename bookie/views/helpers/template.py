@@ -14,7 +14,7 @@ from pyramid.url import resource_url
 from bookie import get_settings
 from bookie.utils import _, name_to_camel, camel_to_name
 
-from . import navigation, utils
+from . import importutils, navigation, utils
 
 
 def template_api(context, request, **kwargs):
@@ -117,17 +117,39 @@ class TemplateAPI(object):
             h, urllib.urlencode(query))
         return url
 
-    def dropdown(self, data):
-        return navigation.Dropdown(self.context, self.request, data)
+    def get_nav(self, nav_name, nav_data=None, nav_module=None):
+        """
+        Support the following schemes:
+            get_nav('sidebar', data)
+            get_nav('dropdown_button', data)
 
-    def dropdown_button(self, data):
-        return navigation.DropdownButton(self.context, self.request, data)
+        Get the navigation class and data off a callable in a module
+        Only with menu name using module name in settings:
+            get_nav('dropdown_user')
+            get_nav('dropdown_user')
+        Override class where to the callable is located:
+            get_nav('dropdown_user', 'module')
 
-    def nav(self, data):
-        return navigation.Navigation(self.context, self.request, data)
+        :params menu: The function name in nav_module to get data
+                            Example: "navigation" becomes "Navigation"
+        :param nav_module: Override the module to lookup 'menu' in
+                            Defaults: bootstrap_helpers.navigation setting
+        """
+        # NOTE: If we have no nav_data we'll get it off a function
+        # 'nav_module.nav_name'. This should REturn
+        if not nav_data:
+            module = nav_module or self.settings["bootstrap_helpers.navigation"]
+            func = "%s.%s" % (module, nav_name)
 
-    def sidebar(self, data):
-        return navigation.Sidebar(self.context, self.request, data)
+            # NOTE: So now we have the path of the function, get the data
+            nav_cls, nav_data = importutils.import_object(
+                    func, self.context, self.request)
+        else:
+            nav_cls = nav_name
+
+        # TODO: Change this to be overridable?
+        cls = getattr(navigation, name_to_camel(nav_cls))
+        return cls(self.context, self.request, nav_data)
 
     @reify
     def site_title(self):

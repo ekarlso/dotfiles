@@ -4,47 +4,17 @@
 
 <a class="brand" href="/">Bookie BETA</a>
 
-<%
-#data = request.matchdict.copy()
-
-menu_nav = {"check": request.user, "children": [
-    {"value": "Home", "view_name": "index"},
-    {"value": "Dashboard", "check": request.group,
-        "view_name": "retailer_dashboard", "view_kw": {"group": request.group}},
-    {"value": "Booking", "check": request.group,
-        "view_name": "booking_overview", "view_kw": {"group": request.group}}]}
-%>
-${api.nav(menu_nav)}
+${api.get_nav("nav_top")}
 
 <%doc>
 Menu for when a user is authed
 
 NOTE: This should maybe be moved to a .py file? :p
 </%doc>
-<%
-if request.user:
-    children = []
-    children.append({"value": _("Contact a group"), "icon": "message",
-        "view_name": "contact"})
-    for g in request.user.retailers:
-        children.append(
-            {"value": g.group_name, "icon": "group",
-                "view_name": "retailer_dashboard", "view_kw": {"group": g.group_name}})
-    drop_companies = {"value": _("Companies"), "icon": "dashboard", "children": children}
-
-    user_value = request.user.first_name + " - " + request.user.user_name \
-        if request.user.first_name else request.user.user_name
-    drop_user = {
-        "value": user_value, "icon": "user", "children": [
-            {"value": _("Preferences"), "icon": "user", "view_name": "user_prefs"},
-            {"value": _("Reset password"), "icon": "wrench",
-                "view_name": "reset_password"},
-            {"value": _("Logout"), "icon": "warning-sign", "view_name": "logout"}]}
-%>
 % if request.user:
-${api.dropdown(drop_user)}
+${api.get_nav("drop_user")}
 % if request.user.retailers:
-${api.dropdown_button(drop_companies)}
+${api.get_nav("drop_companies")}
 % endif
 % endif
 
