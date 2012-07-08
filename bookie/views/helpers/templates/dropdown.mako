@@ -9,13 +9,13 @@
         <span class="caret"></span>
     </a>
     <ul class="dropdown-menu">
-        % for i in menu:
-            % if i.is_showable:
-            <% li_cls = ' class="%s"' % i.cls if i.cls else ''%>
+        % for item in menu:
+            % if item.is_showable:
+            <% li_cls = ' class="%s"' % item.cls if item.cls else ''%>
             <li${li_cls}>
-            % if i.url:
-                <a href="${i.url}">
-                    ${i.icon_html}${i.value}
+            % if item.url:
+                <a href="${item.url}">
+                    ${item.icon_html}${item.value}
                 </a>
                 % endif
             </li>

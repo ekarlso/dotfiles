@@ -1,19 +1,19 @@
 % if menu.is_showable:
 <div class="well sidebar-nav">
     <ul class="nav nav-list">
-    % for i in menu:
-        % if i.is_showable:
+    % for item in menu:
+        % if item.is_showable:
         <%
-            if i.is_parent:
-                li_cls = ' class="%s"' % (i.cls + " nav-header")
+            if item.is_parent:
+                li_cls = ' class="%s"' % (item.cls + " nav-header")
             else:
-                li_cls = ' class="%s"' % i.cls if i.cls else ''
+                li_cls = ' class="%s"' % item.cls if item.cls else ''
         %>
         <li${li_cls}>
-            % if i.is_parent:
-            ${i.value}
+            % if item.is_parent:
+            ${item.value}
             % else:
-            <a href="${i.url}">${i.icon_html}${i.value}</a>
+            <a href="${item.url}">${item.icon_html}${item.value}</a>
             % endif
         </li>
         % endif
