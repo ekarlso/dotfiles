@@ -195,7 +195,7 @@ class Navigation(TreeMenu):
     template = "navigation.mako"
 
 
-class Actions(MultiTreeMenu):
+class Actions(TreeMenu):
     template = "actions.mako"
 
 
