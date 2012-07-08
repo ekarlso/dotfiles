@@ -1,9 +1,7 @@
 from itertools import chain
 import os.path
-import re
 import urllib2
 
-from mako.template import Template
 from mako.lookup import TemplateLookup
 
 from .utils import get_url
@@ -114,7 +112,6 @@ class MenuItem(MenuBase):
     def is_parent(self):
         return len(self.children) > 0
 
-
     # TODO: FIX ME
     def levels(self):
         """
@@ -156,7 +153,7 @@ class MenuItem(MenuBase):
             yield i
 
 
-class Menu(MenuBase):
+class TreeMenu(MenuBase):
     """
     A menu structure structure that has a menu item on top which is used to
     describe the menu itself and children underneath
@@ -183,18 +180,25 @@ class Menu(MenuBase):
         return self.tree
 
 
-class Dropdown(Menu):
+class MultiTreeMenu(TreeMenu):
+    multiple = True
+
+
+class Dropdown(TreeMenu):
     template = "dropdown.mako"
 
 
-class DropdownButton(Menu):
+class DropdownButton(TreeMenu):
     template = "dropdown_button.mako"
 
 
-class Navigation(Menu):
+class Navigation(TreeMenu):
     template = "navigation.mako"
 
 
-class Sidebar(Menu):
-    multiple = True
+class Actions(MultiTreeMenu):
+    template = "actions.mako"
+
+
+class Sidebar(MultiTreeMenu):
     template = "sidebar.mako"

@@ -1,12 +1,8 @@
-from pprint import pprint
 import unittest
-
-from mock import patch
-from mock import MagicMock
 
 from bookie.testing import Dummy
 from bookie.testing import DummyRequest
-from bookie.views.helpers.navigation import MenuItem, Menu, Dropdown, Navigation, \
+from bookie.views.helpers.navigation import MenuItem, TreeMenu, Dropdown, Navigation, \
     Sidebar
 
 
@@ -22,7 +18,7 @@ MENU = {"value": "Home", "url": "#", "children": [
         ]}
 
 
-class TestMenuItem(unittest.TestCase):
+class TestMenuTreeItem(unittest.TestCase):
     def make(self, menu=MENU):
         return MenuItem(Dummy(), DummyRequest(), **menu)
 
@@ -66,8 +62,8 @@ class TestMenuItem(unittest.TestCase):
         self.assertEquals(m.children[4].is_showable, False)
 
 
-class TestMenu(unittest.TestCase):
-    cls = Menu
+class TestMenuTree(unittest.TestCase):
+    cls = TreeMenu
     menu = MENU
 
     def make(self, menu=None):
@@ -75,7 +71,7 @@ class TestMenu(unittest.TestCase):
         return self.cls(Dummy(), DummyRequest(), menu)
 
 
-class TestDropdown(TestMenu):
+class TestDropdown(TestMenuTree):
     cls = Dropdown
     menu = {"children": [MENU]}
 
@@ -84,7 +80,7 @@ class TestDropdown(TestMenu):
         m.__html__()
 
 
-class TestNavigation(TestMenu):
+class TestNavigation(TestMenuTree):
     cls = Navigation
 
     def test_html(self):
@@ -92,7 +88,7 @@ class TestNavigation(TestMenu):
         m.__html__()
 
 
-class TestSidebar(TestMenu):
+class TestSidebar(TestMenuTree):
     cls = Sidebar
     menu = [MENU]
 
