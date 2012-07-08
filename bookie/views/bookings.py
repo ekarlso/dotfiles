@@ -81,7 +81,7 @@ class BookingEditForm(EditFormView):
             renderer="add.mako")
 def booking_add(context, request):
     return mk_form(BookingAddForm, context, request,
-        extra={"navtree": booking_actions(request=request)})
+        extra={"nav_data": booking_actions(request=request)})
 
 
 @view_config(route_name="booking_edit", permission="edit",
@@ -90,7 +90,7 @@ def booking_edit(context, request):
     obj = models.Order.filter_by(
         deleted=False, id=request.matchdict["id"]).one()
     return mk_form(BookingEditForm, obj, request,
-        extra=dict(navtree=booking_actions(request=request)))
+        extra=dict(nav_data=booking_actions(request=request)))
 
 
 @view_config(route_name="booking_view", permission="view",
@@ -98,7 +98,7 @@ def booking_edit(context, request):
 def booking_view(context, request):
     obj = models.Booking.get_by(id=request.matchdict["id"])
     return {
-        "navtree": booking_actions(request=request),
+        "nav_data": booking_actions(request=request),
         "booking": obj}
 
 
@@ -117,7 +117,7 @@ def booking_overview(context, request):
         request, item["entity"], "entity_view", view_kw=item.entity.to_dict())
 
     return {
-        "navtree": booking_actions(request=request),
+        "nav_data": booking_actions(request=request),
         "booking_grid": grid}
 
 

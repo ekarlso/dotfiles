@@ -27,7 +27,7 @@ def links(request):
 
 @view_config(route_name="retailer_dashboard", renderer="retailer_dashboard.mako")
 def dashboard(context, request):
-    return {"navtree": links(request)}
+    return {"nav_data": links(request)}
 
 
 def includeme(config):

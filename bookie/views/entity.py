@@ -128,7 +128,7 @@ def entity_edit(context, request):
     obj = models.Entity.query.filter_by(
         deleted=False, id=request.matchdict["id"]).one()
     return mk_form(CarEditForm, obj, request,
-        extra=dict(navtree=entity_actions(obj, request)))
+        extra=dict(nav_data=entity_actions(obj, request)))
 
 
 @view_config(route_name="entity_view", permission="view",
@@ -144,7 +144,7 @@ def entity_view(context, request):
         models.Booking.exposed_attrs())
 
     return {
-        "navtree": entity_actions(entity, request),
+        "nav_data": entity_actions(entity, request),
         "sub_title": entity.title,
         "entity": entity,
         "b_grid_latest": b_grid_latest}
@@ -160,7 +160,7 @@ def entity_delete(context, request):
         request.session.flash(_("Delete successful"))
         return HTTPFound(location=get_url("entity_type_overview", type=entity.type))
     return {
-        "navtree": entity_actions(entity, request),
+        "nav_data": entity_actions(entity, request),
         "sub_title": entity.title}
 
 
@@ -178,7 +178,7 @@ def entity_overview(context, request):
         request, item["title"], "entity_view", view_kw=item.to_dict())
 
     return {
-        "navtree": entity_links(get_nav_data(request)),
+        "nav_data": entity_links(get_nav_data(request)),
         "entity_grid": grid}
 
 
@@ -197,7 +197,7 @@ def entity_type_overview(context, request):
                     view_kw=item.to_dict())
 
     return {
-        "navtree": entity_links(get_nav_data(request)),
+        "nav_data": entity_links(get_nav_data(request)),
         "sub_title": name_to_camel(type_, joiner=" "),
         "entity_grid": grid}
 

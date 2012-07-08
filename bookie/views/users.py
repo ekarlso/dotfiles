@@ -282,7 +282,7 @@ def user_preferences(request):
     """
     user = request.user
     return mk_form(UserForm, user, request,
-        extra={"navtree": prefs_menu()})
+        extra={"nav_data": prefs_menu()})
 
 
 @view_config(route_name="user_tenant_setter", permission="view")

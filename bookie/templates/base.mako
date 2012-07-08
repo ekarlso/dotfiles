@@ -3,8 +3,8 @@
 <%doc>A overridable left_wrapper that always provides a sidebar if sidebar_tree is available</%doc>
 <%block name="left_wrapper">
     <%block name="left">
-        % if navtree:
-            <div class="span2">${api.get_nav("sidebar", nav_data=navtree)}</div>
+        % if nav_data:
+            <div class="span2">${api.get_nav("sidebar", nav_data=nav_data)}</div>
         % endif
     </%block>
 </%block>
