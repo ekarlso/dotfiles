@@ -43,8 +43,11 @@ if request.user:
 %>
 % if request.user:
 ${api.dropdown(drop_user)}
+% if request.user.retailers:
 ${api.dropdown_button(drop_companies)}
 % endif
+% endif
+
 
 </div><!-- container -->
 </div><!-- navbar-inner-->
