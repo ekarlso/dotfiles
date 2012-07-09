@@ -5,7 +5,7 @@ import deform
 from deform import Button
 from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
     CheckboxChoiceWidget, SequenceWidget
-from pyramid.httpexceptions import HTTPFound, HTTPForbidden
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPForbidden
 from pyramid.view import view_config
 
 from .. import models, security
@@ -83,7 +83,7 @@ def tenant_from_request(request):
 def prefs_menu():
     return [{
         "value": _("My settings"), "children": [
-            menu_item(_("Preferences"), "user_prefs"),
+            menu_item(_("Preferences"), "user_account"),
             menu_item(_("Reset password"), "reset_password")]}]
 
 
@@ -175,7 +175,7 @@ class UserAddForm(AddFormView):
         self.request.session.flash(_(u'${title} added.',
                                      mapping=dict(title=user.title)),
                                      'success')
-        return HTTPFound(location=get_url("auth_settings"))
+        return HTTPFound(location=get_url("principal_manage"))
 
 
 class GroupAddForm(AddFormView):
@@ -191,7 +191,7 @@ class GroupAddForm(AddFormView):
     def add_group_success(self, appstruct):
         _mangle_appstruct(appstruct)
         models.Group().from_dict(appstruct).save()
-        return HTTPFound(location=get_url("auth_settings"))
+        return HTTPFound(location=get_url("principals_manage"))
 
 
 class UserForm(EditFormView):
@@ -221,7 +221,7 @@ class UserEditForm(UserForm):
 
     @property
     def cancel_url(self):
-        return get_url("auth_settings")
+        return get_url("principals_manage")
 
     def save_success(self, appstruct):
         _mangle_appstruct(appstruct)
@@ -235,20 +235,20 @@ class GroupEditForm(UserEditForm):
         return s
 
 
-@view_config(route_name="auth_settings", permission="system.admin",
-            renderer="admin/auth_settings.mako")
-def auth_settings(context, request):
+@view_config(route_name="principals_manage", permission="system.admin",
+            renderer="admin/principals.mako")
+def principals_manage(context, request):
     users = models.User.query.all()
     user_grid = PyramidGrid(users, ["title", "email"])
 
     groups = models.Group.query.all()
     group_grid = PyramidGrid(groups, models.Group.exposed_attrs())
 
-    user_addform = UserAddForm(context, request)()
+    user_addform = mk_form(UserAddForm, context, request)
     if request.is_response(user_addform):
         return user_addform
 
-    group_addform = GroupAddForm(context, request)()
+    group_addform = mk_form(GroupAddForm, context, request)
     if request.is_response(group_addform):
         return group_addform
 
@@ -259,24 +259,23 @@ def auth_settings(context, request):
         "group_addform": group_addform}
 
 
-@view_config(route_name="group_edit", permission="system.admin",
-            renderer="edit.mako")
-def group_edit(request):
-    group = models.Group.query.filter_by(
-        group_name=request.matchdict["group_name"]).one()
-    return mk_form(GroupEditForm, group, request)
+@view_config(route_name="principal_manage", permission="system.admin",
+        renderer="edit.mako")
+def principal_manage(context, request):
+    if "user" in request.params:
+        obj = models.User.get_by(id=request.params["user"])
+        form = mk_form(UserEditForm, obj, request)
+    elif "group" in request.params:
+        obj = models.Group.get_by(id=request.params["group"])
+        form = mk_form(GroupEditForm, obj, request)
+    else:
+        raise HTTPNotFound
+    return form
 
 
-@view_config(route_name="user_edit", permission="system.admin",
-            renderer="edit.mako")
-def user_edit(request):
-    user = models.User.query.filter_by(id=request.matchdict["id"]).one()
-    return mk_form(UserEditForm, user, request)
-
-
-@view_config(route_name="user_prefs", permission="view",
-            renderer="user_prefs.mako")
-def user_preferences(request):
+@view_config(route_name="user_account", permission="view",
+            renderer="user_account.mako")
+def user_account(context, request):
     """
     Users preferences
     """
@@ -286,7 +285,7 @@ def user_preferences(request):
 
 
 @view_config(route_name="user_tenant_setter", permission="view")
-def user_tenant_setter(request):
+def user_tenant_setter(context, request):
     """
     Method to help change tenants / groups.
 
@@ -296,7 +295,7 @@ def user_tenant_setter(request):
     tenant = tenant_from_request(request)
 
     def redirect(group):
-        location = request.route_url("retailer_dashboard", group=group)
+        location = request.route_url("retailer_home", group=group)
         return HTTPFound(location=location)
 
     # NOTE: Check for tenant
@@ -321,19 +320,21 @@ def user_tenant_setter(request):
 
 @view_config(route_name="user_tenants", permission="view",
         renderer="user_tenants_overview.mako")
-def user_tenants(request):
+def user_tenants(context, request):
     grid = PyramidGrid(request.user.retailers,
         ["group_name", "group_type"])
     return {"grid": grid}
 
 
 def includeme(config):
-    config.add_route("auth_settings", "@@admin/auth")
-    # NOTE: Group links
-    config.add_route("group_edit", "@@admin/group/{group_name}/edit")
     # NOTE: User links
-    config.add_route("user_edit", "@@admin/user/{id}/edit")
+    config.add_route("principal_manage", "/admin/principal")
+    config.add_route("principals_manage", "/admin/principals")
 
-    config.add_route("user_prefs", "@@prefs")
-    config.add_route("user_tenant_setter", "@@tenant")
-    config.add_route("user_tenants", "@@tenant/list")
+    #config.add_route("group_manage", "/g/{group}")
+    #config.add_route("user_delete", "@@admin/user/{id}/delete")
+
+    # User specific
+    config.add_route("user_account", "/settings/account")
+    config.add_route("user_tenant_setter", "/tenant/set")
+    config.add_route("user_tenants", "/tenant")

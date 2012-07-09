@@ -5,7 +5,7 @@ def nav_top(context, request):
     data = {"check": request.user, "children": [
         {"value": "Home", "view": "index"},
         {"value": "Dashboard", "check": request.group,
-            "view": "retailer_dashboard", "view_kw": {"group": request.group}},
+            "view": "retailer_home", "view_kw": {"group": request.group}},
         {"value": "Booking", "check": request.group,
             "view": "booking_overview", "view_kw": {"group": request.group}}]}
     return "navigation", data
@@ -18,7 +18,7 @@ def drop_companies(context, request):
     for g in request.user.retailers:
         children.append(
             {"value": g.group_name, "icon": "group",
-                "view": "retailer_dashboard", "view_kw": {"group": g.group_name}})
+                "view": "retailer_home", "view_kw": {"group": g.group_name}})
     return "dropdown_button", {"value": _("Companies"), "icon": "dashboard", "children": children}
 
 
@@ -27,7 +27,7 @@ def drop_user(context, request):
         if request.user.first_name else request.user.user_name
     return "dropdown", {
         "value": user_value, "icon": "user", "children": [
-            {"value": _("Preferences"), "icon": "user", "view": "user_prefs"},
+            {"value": _("Preferences"), "icon": "user", "view": "user_account"},
             {"value": _("Reset password"), "icon": "wrench",
                 "view": "reset_password"},
             {"value": _("Logout"), "icon": "warning-sign", "view": "logout"}]}
