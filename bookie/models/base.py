@@ -129,7 +129,7 @@ class BaseModel(object):
 
         See _search_query keywords
         """
-        return cls._search_query(*args, **kw).all()
+        return cls._search_query(**kw).all()
 
     def to_dict(self, deep={}, exclude=[]):
         """
