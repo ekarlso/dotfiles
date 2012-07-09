@@ -32,7 +32,6 @@ def mk_form(form_cls, ctx, request, extra={}):
     if request.is_response(form):
         return form
     form.update(extra)
-    print form
     return form
 
 
