@@ -29,22 +29,19 @@ LOG = logging.getLogger(__name__)
 zm.DBSession = DBSession
 
 
-PERMISSIONS = {
-    "add": {"title": "Add"},
-    "view": {"title": "View"},
-    "edit": {"title": "Edit"},
-    "delete": {"title": "Delete"},
-    "retailer.admin": {"title": "Retailer Admin"},
-    "system.admin": {"title": "System Admin"}}
+SECURITY_PERMISSIONS = [
+    ("admin", {"title": "Admin", "description": "Admin privileges"})
+]
+
+PERMISSIONS = SECURITY_PERMISSIONS
 
 
-def permission_names():
-    return PERMISSIONS.keys()
+def permission_names(permissions):
+    return [p[0] for p in permissions]
 
 
-def permission_pairs():
-    perms = [(n, v["title"]) for n, v in PERMISSIONS.items()]
-    return perms
+def permission_pairs(permissions):
+    return [(n, v["title"]) for n, v in permissions]
 
 
 def permission_create(perm_type, perm_name, perm_receiver):
@@ -65,8 +62,8 @@ class Group(Base, GroupMixin):
     """
     __format_string__ = "{group_name}"
     __expose_attrs__ = ["group_name"]
-    __possible_permissions__ = permission_names()
     __possible_types__ = ["retailer", "security", "system"]
+    __possible_permissions__ = permission_names(PERMISSIONS)
 
     _group_type = Column("group_type", Unicode(20), nullable=False)
     organization_id = Column(Integer)
@@ -100,6 +97,7 @@ class Retailer(Group):
 
 class Security(Group):
     __tablename__ = "groups_security"
+    __possible_permissions__ = permission_names(PERMISSIONS)
     group_name = Column(Unicode(120), ForeignKey("groups.group_name",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
@@ -144,7 +142,7 @@ class UserGroup(Base, UserGroupMixin):
 class User(Base, UserMixin):
     __format_string__ = "{first_name} {middle_name} {last_name}"
     __expose_attrs__ = ["first_name", "middle_name", "last_name"]
-    __possible_permissions__ = permission_names()
+    __possible_permissions__ = permission_names(PERMISSIONS)
     first_name = Column(UnicodeText, default=u'')
     middle_name = Column(UnicodeText, default=u'')
     last_name = Column(UnicodeText, default=u'')

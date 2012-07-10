@@ -22,16 +22,12 @@ def populate():
 def populate_samples():
     populate()
     with transaction.manager:
-        g_sadmin = GroupPermission(perm_name="system.admin")
-        g_radmin = GroupPermission(perm_name="retailer.admin")
-        g_edit = GroupPermission(perm_name="edit")
-        g_view = GroupPermission(perm_name="view")
-        g_order = GroupPermission(perm_name="order")
+        g_admin = GroupPermission(perm_name="admin")
 
         group = Group(
             group_name="System Admins",
             group_type="security",
-            permissions=[g_sadmin]).save()
+            permissions=[g_admin]).save()
 
         admin = User(user_name="admin", status=1, groups=[group],
             email="endre.karlson@gmail.com",
