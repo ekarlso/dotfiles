@@ -43,6 +43,7 @@ CONF_DOTTED = set([
     'bookie.authn_policy_factory',
     'bookie.authz_policy_factory',
     'bookie.session_factory',
+    'bookie.caching_policy_chooser'
     ])
 
 
