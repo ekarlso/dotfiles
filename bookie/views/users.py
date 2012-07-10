@@ -235,7 +235,7 @@ class GroupEditForm(UserEditForm):
         return s
 
 
-@view_config(route_name="principals_manage", permission="system.admin",
+@view_config(route_name="principals_manage", permission="admin",
             renderer="admin/principals.mako")
 def principals_manage(context, request):
     users = models.User.query.all()
@@ -259,7 +259,7 @@ def principals_manage(context, request):
         "group_addform": group_addform}
 
 
-@view_config(route_name="principal_manage", permission="system.admin",
+@view_config(route_name="principal_manage", permission="admin",
         renderer="edit.mako")
 def principal_manage(context, request):
     if "user" in request.params:
