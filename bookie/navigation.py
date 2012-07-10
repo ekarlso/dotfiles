@@ -3,8 +3,7 @@ from bookie.utils import _
 
 def nav_top(context, request):
     data = {"check": request.user, "children": [
-        {"value": "Home", "view": "index"},
-        {"value": "Dashboard", "check": request.group,
+        {"value": "Home", "check": request.group,
             "view": "retailer_home", "view_kw": {"group": request.group}},
         {"value": "Booking", "check": request.group,
             "view": "booking_overview", "view_kw": {"group": request.group}}]}
