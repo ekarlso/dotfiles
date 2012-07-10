@@ -21,6 +21,7 @@ from ziggurat_foundations import ziggurat_model_init, models as zm
 
 from .. import redis, utils
 from .base import Base, DBSession
+from .types import JSONType
 
 
 LOG = logging.getLogger(__name__)
@@ -175,6 +176,20 @@ class UserResourcePermission(Base, UserResourcePermissionMixin):
 
 class ExternalIdentity(Base, ExternalIdentityMixin):
     pass
+
+
+class Event(Base):
+    """
+    An event in the system like a User invite or similar
+    """
+    __tablename__ = "events"
+    id = Column(Unicode(40), default=utils.generate_uuid, primary_key=True)
+    data = Column(JSONType())
+
+    user_id = Column(Integer, ForeignKey("resources.resource_id",
+                    onupdate="CASCADE", ondelete="CASCADE"))
+    group_id = Column(Integer, ForeignKey("resources.resource_id",
+                    onupdate="CASCADE", ondelete="CASCADE"))
 
 
 # NOTE: Map categories >< entities
