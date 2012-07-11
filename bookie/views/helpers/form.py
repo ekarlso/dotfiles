@@ -13,7 +13,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid_deform import CSRFSchema, FormView
 
 from bookie.utils import _, title_to_name
-from .utils import get_url
+from .navigation import get_url
 
 
 LOG = logging.getLogger(__name__)
