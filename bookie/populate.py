@@ -52,11 +52,11 @@ def populate_samples():
         user.set_password("booker1")
         user.save()
 
-        loc_bryne = Location(name="Bryne",
-            street_address="RoadBryne 1",
+        loc_bryne = Location(
+            address="Road 1",
             city="Stavanger", postal_code=4000, retailer=retailer)
-        loc_stavanger = Location(name="Stavanger",
-            street_address="RoadStavanger 1",
+        loc_stavanger = Location(
+            address="RoadStavanger 1",
             city="Stavanger", postal_code=4035, retailer=retailer)
 
         sub_cars = category_dict(
@@ -186,11 +186,11 @@ def populate_samples():
             children=sub_bus.values(),
             owner_group_name=retailer_2.group_name).save()
 
-        loc_bryne = Location(name="Bryne",
-            street_address="RoadBryne 1",
+        loc_bryne = Location(
+            address="RoadBryne 1",
             city="Stavanger", postal_code=4000, retailer=retailer_2)
-        loc_stavanger = Location(name="Stavanger",
-            street_address="RoadStavanger 1",
+        loc_stavanger = Location(
+            address="RoadStavanger 1",
             city="Stavanger", postal_code=4035, retailer=retailer_2)
 
         entity_1 = Car(
