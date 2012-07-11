@@ -20,13 +20,13 @@ from .helpers import get_url
 @view_config(route_name="contact",
             renderer="contact.mako")
 def contact(context, request):
-    return {"nav_data": {}}
+    return {"sidebar_data": {}}
 
 
 @view_config(route_name="support",
             renderer="contact.mako")
 def contact(context, request):
-    return {"nav_data": {}}
+    return {"sidebar_data": {}}
 
 
 def includeme(config):

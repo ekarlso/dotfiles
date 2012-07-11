@@ -5,7 +5,7 @@
     <div class="span5" style="font-align: center;">
         <h2>Quick Tasks</h2>
         <br/>
-        ${api.get_nav('actions', nav_data=nav_quick)}
+        ${api.get_nav('actions', data=nav_quick)}
     </div>
     <div class="span5">
         <h2>Messages</h2>

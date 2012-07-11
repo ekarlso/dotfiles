@@ -137,7 +137,7 @@ def reset_password(context, request,
         rendered_form = form.render(request.params.items())
 
     return {"page_title": _(u"Reset your password - ${title}"),
-            "nav_data": prefs_menu(), "form": rendered_form}
+            "sidebar_data": prefs_menu(), "form": rendered_form}
 
 
 @view_config(context=HTTPForbidden, accept="text/html")

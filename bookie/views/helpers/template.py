@@ -117,7 +117,7 @@ class TemplateAPI(object):
             h, urllib.urlencode(query))
         return url
 
-    def get_nav(self, nav_name, nav_data=None, nav_module=None):
+    def get_nav(self, name, data=None, module=None):
         """
         Support the following schemes:
             get_nav('sidebar', data)
@@ -135,21 +135,21 @@ class TemplateAPI(object):
         :param nav_module: Override the module to lookup 'menu' in
                             Defaults: bootstrap_helpers.navigation setting
         """
-        if not nav_data:
-            module = nav_module or self.settings["bootstrap_helpers.navigation"]
-            func = "%s.%s" % (module, nav_name)
+        if not data:
+            module = module or self.settings["bootstrap_helpers.navigation"]
+            func = "%s.%s" % (module, name)
 
             try:
-                nav_cls, nav_data = importutils.import_object(
+                cls, data = importutils.import_object(
                     func, self.context, self.request)
             except ImportError:
                 raise AttributeError("Navigation callable not found %s" % func)
         else:
-            nav_cls = nav_name
+            cls = name
 
         # TODO: Change this to be overridable?
-        cls = getattr(navigation, name_to_camel(nav_cls))
-        return cls(self.context, self.request, nav_data)
+        cls = getattr(navigation, name_to_camel(cls))
+        return cls(self.context, self.request, data)
 
     @reify
     def site_title(self):

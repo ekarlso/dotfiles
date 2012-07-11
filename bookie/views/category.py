@@ -97,7 +97,7 @@ def category_edit(context, request):
     obj = models.Resource.query.filter_by(
         deleted=False, resource_id=request.matchdict["resource_id"]).one()
     return mk_form(CategoryEditForm, obj, request,
-        extra=dict(nav_data=category_actions(obj, request)))
+        extra=dict(sidebar_data=category_actions(obj, request)))
 
 
 @view_config(route_name="category_view", permission="view",
@@ -108,7 +108,7 @@ def category_view(context, request):
         deleted=deleted,
         resource_id=request.matchdict["resource_id"])
     return {
-        "nav_data": category_actions(obj, request),
+        "sidebar_data": category_actions(obj, request),
         "sub_title": obj.title,
         "obj": obj}
 
@@ -123,7 +123,7 @@ def category_delete(context, request):
         request.session.flash(_("Delete successful"))
         return HTTPFound(location=get_url("category_overview"))
     return {
-        "nav_data": category_actions(obj, request),
+        "sidebar_data": category_actions(obj, request),
         "sub_title": obj.title}
 
 
@@ -139,7 +139,7 @@ def category_overview(context, request):
         column_link(request, item["resource_name"], "category_view", view_kw=item.to_dict())
 
     return {
-        "nav_data": category_links(get_nav_data(request)),
+        "sidebar_data": category_links(get_nav_data(request)),
         "sub_title": _("Category management"),
         "grid": grid}
 

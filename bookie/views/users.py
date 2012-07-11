@@ -281,7 +281,7 @@ def user_account(context, request):
     """
     user = request.user
     return mk_form(UserForm, user, request,
-        extra={"nav_data": prefs_menu()})
+        extra={"sidebar_data": prefs_menu()})
 
 
 @view_config(route_name="user_tenant_setter", permission="view")
