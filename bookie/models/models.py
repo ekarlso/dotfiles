@@ -290,11 +290,12 @@ class Customer(Base):
 
 
 class Location(Base):
-    __expose_attrs__ = ["city", "address", "postal_code"]
-    __format_string__ = "{city}, {address}"
+    __expose_attrs__ = ["name", "street_address", "city", "postal_code"]
+    __format_string__ = "{name} {street_name}  {city}"
     __tablename__ = "location"
     id = Column(Integer, primary_key=True)
-    address = Column(UnicodeText, nullable=False)
+    name = Column(UnicodeText, nullable=False)
+    street_address = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
 
@@ -340,13 +341,11 @@ class Booking(Base):
 
     @property
     def start(self):
-        return "{start_location_city}, {start_location_address}: {start_at}".\
-                format(**self.format_data())
+        return "{start_at} ({start_location_name})".format(**self.format_data())
 
     @property
     def end(self):
-        return "{end_location_city} {end_location_address}: {end_at}".\
-                format(**self.format_data())
+        return "{end_at} ({end_location_name})".format(**self.format_data())
 
     @classmethod
     def search(cls, filter_by={}, **kw):

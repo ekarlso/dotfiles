@@ -3,32 +3,13 @@ import urllib2
 
 from mako.lookup import TemplateLookup
 from pyramid.security import has_permission
-from pyramid.url import route_url as _url
-from webhelpers.html import literal
+
+from .utils import get_url
 
 
 STYLE_CLS = [
     "divider"
 ]
-
-
-def get_url(request, route, *args, **kw):
-    """
-    Get a URL
-    """
-    location = "%s" % _url(route, request, *args, **kw)
-    return location
-
-
-def create_anchor(request, string, route, *args, **kw):
-    """
-    Create a anchor towards a route
-
-    :param string: The string to use as text in the link
-    :param route: The route to use
-    """
-    return literal('<a href="%s">%s</a>') % \
-            (get_url(request, route, *args, **kw), string)
 
 
 def menu_item(value, view, *args, **kw):
@@ -114,7 +95,7 @@ class MenuItem(MenuBase):
         # NOTE: View override url
         self.view, self.view_args, self.view_kw = view, view_args, view_kw
         if view:
-            url = get_url(self.request, view, *view_args, **view_kw)
+            url = get_url(view, *view_args, **view_kw)
         self.url = url
 
         if icon and not icon.startswith("icon-"):
