@@ -2,6 +2,7 @@ import os.path
 import urllib2
 
 from mako.lookup import TemplateLookup
+from pyramid.security import has_permission
 
 from .utils import get_url
 
@@ -75,7 +76,7 @@ class MenuItem(MenuBase):
     :param children: A list of children dicts
     :param parent: The parent of this item
     """
-    def __init__(self, context, request, parent=None, check=True, children=[], value=None,
+    def __init__(self, context, request, parent=None, children=[], check=True, value=None,
         url=None, icon=None, view=None, view_args=[], view_kw={}):
         MenuBase.__init__(self, check)
         self.context, self.request = context, request
@@ -92,6 +93,7 @@ class MenuItem(MenuBase):
         self.value = value
 
         # NOTE: View override url
+        self.view, self.view_args, self.view_kw = view, view_args, view_kw
         if view:
             url = get_url(view, *view_args, **view_kw)
         self.url = url
@@ -110,6 +112,10 @@ class MenuItem(MenuBase):
     @property
     def is_parent(self):
         return len(self.children) > 0
+
+    @property
+    def is_showable(self):
+        return super(MenuItem, self).is_showable
 
     # TODO: FIX ME
     def levels(self):
