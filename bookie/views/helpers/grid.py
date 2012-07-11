@@ -2,15 +2,14 @@ from webhelpers.html import grid, literal, tags, HTML
 from webhelpers import date
 
 
-from .navigation import get_nav_data
-from .utils import create_anchor
+from .navigation import create_anchor, get_nav_data
 
 
 def wrap_td(string):
     return HTML.td(literal(string))
 
 
-def column_link(request, anchor_text, view, view_args=[], view_kw={}):
+def column_link(request, value, view, view_args=[], view_kw={}):
     """
     Helpers to format a element in a column as a anchor
 
@@ -21,7 +20,7 @@ def column_link(request, anchor_text, view, view_args=[], view_kw={}):
     :key view_kw: Keywords to pass down
     """
     view_kw = get_nav_data(request, extra=view_kw)
-    a = create_anchor(anchor_text, view, **view_kw)
+    a = create_anchor(request, value, view, **view_kw)
     return wrap_td(a)
 
 
