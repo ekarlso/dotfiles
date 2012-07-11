@@ -11,6 +11,7 @@ LOG = logging.getLogger(__name__)
 
 
 def get_groups(user_id, request):
+    """Adds a group attribute to the request"""
     if user_id and hasattr(request, 'user'):
         db_groups = ['group:%s' % g.group_name for g in request.user.groups]
     groups = db_groups if len(db_groups) > 0 else []
@@ -19,15 +20,21 @@ def get_groups(user_id, request):
 
 
 def authtkt_factory(**settings):
+    """Auth factory"""
     return AuthTktAuthenticationPolicy(
         secret=settings['bookie.secret2'], callback=get_groups)
 
 
 def acl_factory(**settings):
+    """A ACL Factory"""
     return ACLAuthorizationPolicy()
 
 
 def get_user(request):
+    """
+    Method that looks up a user in the database and adds a attribute
+    to the request
+    """
     user = unauthenticated_userid(request)
     if user:
         return models.User.by_user_name(user)
@@ -49,6 +56,9 @@ def reset():
 
 
 class ResourceFactory(object):
+    """
+    A Resource ACL Factory
+    """
     def __init__(self, request):
         self.__acl__ = []
         application_id = request.matchdict.get("resource_id") \
@@ -66,6 +76,9 @@ class ResourceFactory(object):
 
 
 class RootFactory(object):
+    """
+    Standard ACL factory
+    """
     def __init__(self, request):
         self.__acl__ = [(Allow, Authenticated, u'view'), ]
         #general page factory - append custom non resource permissions
