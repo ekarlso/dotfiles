@@ -291,10 +291,10 @@ class Customer(Base):
 
 class Location(Base):
     __expose_attrs__ = ["name", "street_address", "city", "postal_code"]
-    __format_string__ = "{name} {street_name}  {city}"
+    __format_string__ = "{name} {street_address}  {city}"
     __tablename__ = "location"
     id = Column(Integer, primary_key=True)
-    name = Column(UnicodeText, nullable=False)
+    name = Column(Unicode(60), nullable=False)
     street_address = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
