@@ -136,7 +136,7 @@ def category_overview(context, request):
 
     grid = PyramidGrid(objects, models.Category.exposed_attrs())
     grid.column_formats["resource_name"] = lambda cn, i, item: \
-        column_link(request, item["resource_name"], "category_view", view_kw=item.to_dict())
+        column_link(request, item["resource_name"], "category_view", url_kw=item.to_dict())
 
     return {
         "sidebar_data": category_links(get_nav_data(request)),

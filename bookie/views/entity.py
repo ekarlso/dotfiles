@@ -176,7 +176,7 @@ def entity_overview(context, request):
 
     grid = PyramidGrid(entities, columns)
     grid.column_formats["brand"] = lambda cn, i, item: column_link(
-        request, item["title"], "entity_view", view_kw=item.to_dict())
+        request, item["title"], "entity_view", url_kw=item.to_dict())
 
     return {
         "sidebar_data": entity_links(get_nav_data(request)),
@@ -195,7 +195,7 @@ def entity_type_overview(context, request):
     grid = PyramidGrid(entities, type_model.exposed_attrs())
     grid.column_formats["brand"] = lambda cn, i, item: \
         column_link(request, item["title"], "entity_view",
-                    view_kw=item.to_dict())
+                    url_kw=item.to_dict())
 
     return {
         "sidebar_data": entity_links(get_nav_data(request)),
