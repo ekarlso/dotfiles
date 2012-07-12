@@ -15,7 +15,7 @@ from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, mk_form
 from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, get_nav_data, get_url, create_anchor
+from .helpers import menu_item, get_nav_data
 
 
 LOG = logging.getLogger(__name__)
@@ -71,7 +71,7 @@ class CategoryAddForm(AddFormView):
         obj = models.Category().from_dict(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
-        location = get_url("category_overview")
+        location = request.route_url("category_overview")
         return HTTPFound(location=location)
 
 

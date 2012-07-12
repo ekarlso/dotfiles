@@ -9,7 +9,7 @@
 
         % if request.user is None:
             <br />
-            <p>Hi, I can see you are not logged in... Click ${api.utils.create_anchor('here', 'login')} here if you wish to login</p>
+            <p>Hi, I can see you are not logged in... Click <a class="btn btn-success" href="${request.route_url('login')}">Login</a> to login!
         % endif
     </div>
 </%block>

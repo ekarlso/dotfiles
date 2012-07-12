@@ -11,7 +11,7 @@ from pyramid.view import view_config
 from .. import models, security
 from ..utils import _
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, get_url
+from .helpers import menu_item
 
 
 LOG = logging.getLogger(__name__)
@@ -175,7 +175,7 @@ class UserAddForm(AddFormView):
         self.request.session.flash(_(u'${title} added.',
                                      mapping=dict(title=user.title)),
                                      'success')
-        return HTTPFound(location=get_url("principal_manage"))
+        return HTTPFound(location=request.route_url("principal_manage"))
 
 
 class GroupAddForm(AddFormView):
@@ -191,7 +191,7 @@ class GroupAddForm(AddFormView):
     def add_group_success(self, appstruct):
         _mangle_appstruct(appstruct)
         models.Group().from_dict(appstruct).save()
-        return HTTPFound(location=get_url("principals_manage"))
+        return HTTPFound(location=request.route_url("principals_manage"))
 
 
 class UserForm(EditFormView):
@@ -221,7 +221,7 @@ class UserEditForm(UserForm):
 
     @property
     def cancel_url(self):
-        return get_url("principals_manage")
+        return request.route_url("principals_manage")
 
     def save_success(self, appstruct):
         _mangle_appstruct(appstruct)

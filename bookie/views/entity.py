@@ -15,7 +15,7 @@ from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, mk_form
 from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, get_nav_data, get_url, create_anchor
+from .helpers import menu_item, get_nav_data
 
 
 
@@ -102,7 +102,7 @@ class CarAddForm(AddFormView):
         car = models.Car().update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
-        location = get_url("entity_type_overview", type=self.item_type.lower())
+        location = request.route_url("entity_type_overview", type=self.item_type.lower())
         return HTTPFound(location=location)
 
 
@@ -158,7 +158,8 @@ def entity_delete(context, request):
     if request.params.get("do") == "yes":
         entity.delete()
         request.session.flash(_("Delete successful"))
-        return HTTPFound(location=get_url("entity_type_overview", type=entity.type))
+        return HTTPFound(location=request.route_url(
+            "entity_type_overview", type=entity.type))
     return {
         "sidebar_data": entity_actions(entity, request),
         "sub_title": entity.title}

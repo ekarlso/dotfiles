@@ -14,17 +14,14 @@ from pyramid.view import view_config
 from .. import models
 from ..utils import _
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import get_url
 
 
-@view_config(route_name="contact",
-            renderer="contact.mako")
+@view_config(route_name="contact", renderer="contact.mako")
 def contact(context, request):
     return {"sidebar_data": {}}
 
 
-@view_config(route_name="support",
-            renderer="contact.mako")
+@view_config(route_name="support", renderer="contact.mako")
 def contact(context, request):
     return {"sidebar_data": {}}
 
