@@ -6,23 +6,23 @@ from .navigation import get_nav_data
 
 
 def wrap_td(string):
-    return HTML.td(literal(string))
+    return tags.HTML.td(literal(string))
 
 
-def column_link(request, value, view, view_args=[], view_kw={}):
+def column_link(request, value, route, url_args=[], url_kw={}):
     """
     Helpers to format a element in a column as a anchor
 
     :param request: A Request object
     :param anchor_text: The text of the anchor
-    :param view: The view to use
-    :key view_args: Args to pass down
-    :key view_kw: Keywords to pass down
+    :param route: The Route to use
+    :key url_args: Args to pass down
+    :key url_kw: Keywords to pass down
     """
-    view_kw = get_nav_data(request, extra=view_kw)
-    href = request.route_url(request, value, view, **view_kw)
+    url_kw = get_nav_data(request, extra=url_kw)
+    href = request.route_url(route, *url_args, **url_kw)
     anchor = tags.HTML.tag("a", href=href, c=value)
-    return wrap_td(a)
+    return wrap_td(anchor)
 
 
 def when_normalize(col_num, i, item):
@@ -33,11 +33,11 @@ def when_normalize(col_num, i, item):
     if item.request_id:
         href = request.route_url('logs',
             _query=(('request_id', item.request_id,),), page=1)
-        return h.HTML.td(h.link_to(label, href,
+        return tags.HTML.td(h.link_to(label, href,
             title=time.strftime('%Y-%m-%d %H:%M:%S'),
             class_='c%s' % col_num))
     else:
-       return HTML.td(label, title=time.strftime('%Y-%m-%d %H:%M:%S'),
+       return tags.HTML.td(label, title=time.strftime('%Y-%m-%d %H:%M:%S'),
             class_='c%s' % col_num)
 
 

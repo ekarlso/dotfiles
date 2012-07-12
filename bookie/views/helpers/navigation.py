@@ -3,7 +3,6 @@ import urllib2
 
 from mako.lookup import TemplateLookup
 from pyramid.security import has_permission
-from pyramid.url import route_url as _url
 from webhelpers.html import HTML, literal
 
 
@@ -12,7 +11,7 @@ STYLE_CLS = [
 ]
 
 
-def menu_item(value, view, *args, **kw):
+def menu_item(value, route, *args, **kw):
     """
     A simple helper for generating out menu dicts
     """
@@ -96,7 +95,7 @@ class MenuItem(MenuBase):
         self.route, self.url_args, self.url_kw = route, url_args, url_kw
         if route:
             try:
-                url = self.request.route_url(route, self.request, *url_args, **url_kw)
+                url = self.request.route_url(route, *url_args, **url_kw)
             except KeyError:
                 msg = "Invalid", self.route, self.url_args, self.url_kw
                 raise ValueError(msg)
