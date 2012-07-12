@@ -96,7 +96,7 @@ class MenuItem(MenuBase):
         self.route, self.url_args, self.url_kw = route, url_args, url_kw
         if route:
             try:
-                url = self.request.route_url(self.request, route, *url_args, **url_kw)
+                url = self.request.route_url(route, self.request, *url_args, **url_kw)
             except KeyError:
                 msg = "Invalid", self.route, self.url_args, self.url_kw
                 raise ValueError(msg)
