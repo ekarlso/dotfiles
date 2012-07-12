@@ -1,8 +1,8 @@
-from webhelpers.html import grid, literal, tags, HTML
+from webhelpers.html import grid, literal, tags
 from webhelpers import date
 
 
-from .navigation import create_anchor, get_nav_data
+from .navigation import get_nav_data
 
 
 def wrap_td(string):
@@ -20,7 +20,8 @@ def column_link(request, value, view, view_args=[], view_kw={}):
     :key view_kw: Keywords to pass down
     """
     view_kw = get_nav_data(request, extra=view_kw)
-    a = create_anchor(request, value, view, **view_kw)
+    href = request.route_url(request, value, view, **view_kw)
+    anchor = tags.HTML.tag("a", href=href, c=value)
     return wrap_td(a)
 
 

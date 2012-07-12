@@ -13,7 +13,6 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid_deform import CSRFSchema, FormView
 
 from bookie.utils import _, title_to_name
-from .navigation import get_url
 
 
 LOG = logging.getLogger(__name__)
@@ -71,7 +70,7 @@ class BaseFormView(FormView):
         return result
 
     def cancel_success(self, appstruct):
-        location = self.cancel_url or get_url(self.request.matched_route)
+        location = self.cancel_url or self.request.route_url(self.request.matched_route)
         self.request.session.flash(_(u'No changes made.'), 'info')
         return HTTPFound(location=location)
     cancel_failure = cancel_success

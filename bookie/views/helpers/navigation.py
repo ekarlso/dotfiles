@@ -4,31 +4,12 @@ import urllib2
 from mako.lookup import TemplateLookup
 from pyramid.security import has_permission
 from pyramid.url import route_url as _url
-from webhelpers.html import literal
+from webhelpers.html import HTML, literal
 
 
 STYLE_CLS = [
     "divider"
 ]
-
-
-def get_url(request, route, *args, **kw):
-    """
-    Get a URL
-    """
-    location = "%s" % _url(route, request, *args, **kw)
-    return location
-
-
-def create_anchor(request, string, route, *args, **kw):
-    """
-    Create a anchor towards a route
-
-    :param string: The string to use as text in the link
-    :param route: The route to use
-    """
-    return literal('<a href="%s">%s</a>') % \
-            (get_url(request, route, *args, **kw), string)
 
 
 def menu_item(value, view, *args, **kw):
@@ -37,9 +18,9 @@ def menu_item(value, view, *args, **kw):
     """
     data = {
         "value": value,
-        "view": view,
-        "view_args": args,
-        "view_kw": kw}
+        "route": route,
+        "url_args": args,
+        "url_kw": kw}
     return data
 
 
@@ -96,7 +77,7 @@ class MenuItem(MenuBase):
     :param parent: The parent of this item
     """
     def __init__(self, context, request, parent=None, children=[], check=True, value=None,
-        url=None, icon=None, view=None, view_args=[], view_kw={}):
+        url=None, icon=None, route=None, url_args=[], url_kw={}):
         MenuBase.__init__(self, check)
         self.context, self.request = context, request
 
@@ -112,9 +93,13 @@ class MenuItem(MenuBase):
         self.value = value
 
         # NOTE: View override url
-        self.view, self.view_args, self.view_kw = view, view_args, view_kw
-        if view:
-            url = get_url(self.request, view, *view_args, **view_kw)
+        self.route, self.url_args, self.url_kw = route, url_args, url_kw
+        if route:
+            try:
+                url = self.request.route_url(self.request, route, *url_args, **url_kw)
+            except KeyError:
+                msg = "Invalid", self.route, self.url_args, self.url_kw
+                raise ValueError(msg)
         self.url = url
 
         if icon and not icon.startswith("icon-"):
