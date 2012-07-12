@@ -34,7 +34,6 @@ def mk_form(form_cls, ctx, request, extra={}):
     return form
 
 
-
 class Form(deform.Form):
     """A deform Form that allows 'appstruct' to be set on the instance.
     """
