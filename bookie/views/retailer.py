@@ -21,10 +21,10 @@ from . import helpers, users
 def sidebar_links(request):
     d = get_nav_data(request)
     links = []
-    links.append({"value": "Dashboard", "view": "retailer_home",
-        "view_kw": d})
-    links.append({"value": "Settings", "view": "retailer_settings",
-        "view_kw": d})
+    links.append({"value": "Dashboard", "route": "retailer_home",
+        "url_kw": d})
+    links.append({"value": "Settings", "route": "retailer_settings",
+        "url_kw": d})
     return [{"value": "Navigation", "children": links}]
 
 
@@ -32,11 +32,11 @@ def quick_links(request):
     d = get_nav_data(request)
     links = []
     links.append({"icon": "plus", "value": _("New Booking"),
-        "view": "booking_add", "view_kw": d})
+        "route": "booking_add", "url_kw": d})
     links.append({"value": _("New Entity"), "icon": "plus",
-        "view": "entity_add", "view_kw": d})
+        "route": "entity_add", "url_kw": d})
     links.append({"value": _("Invite User"), "icon": "plus",
-        "view": "retailer_invite_user", "view_kw": d})
+        "route": "retailer_invite_user", "url_kw": d})
     return {"children": links}
 
 
