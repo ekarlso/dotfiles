@@ -87,7 +87,7 @@ class Retailer(Group):
     __tablename__ = "groups_retailer"
 
     organization_id = Column(Unicode(40))
-    group_name = Column(Unicode(120), ForeignKey("groups.group_name",
+    id = Column(Integer, ForeignKey("groups.id",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
 
@@ -98,7 +98,7 @@ class Retailer(Group):
 class Security(Group):
     __tablename__ = "groups_security"
     __possible_permissions__ = permission_names(PERMISSIONS)
-    group_name = Column(Unicode(120), ForeignKey("groups.group_name",
+    id = Column(Integer, ForeignKey("groups.id",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
 
@@ -184,10 +184,13 @@ class Event(Base):
     id = Column(Unicode(40), default=utils.generate_uuid, primary_key=True)
     data = Column(JSONType())
 
-    user_id = Column(Integer, ForeignKey("resources.resource_id",
+    group_id = Column(Integer, ForeignKey("groups.id",
                     onupdate="CASCADE", ondelete="CASCADE"))
-    group_id = Column(Integer, ForeignKey("resources.resource_id",
+    group = relationship("Group", backref="events")
+
+    user_id = Column(Integer, ForeignKey("users.id",
                     onupdate="CASCADE", ondelete="CASCADE"))
+    group = relationship("User", backref="events")
 
 
 # NOTE: Map categories >< entities
@@ -243,7 +246,7 @@ class Entity(Base):
     produced = Column(Integer)
 
     # NOTE: Change to Int and ID
-    retailer_name = Column(Unicode, ForeignKey('groups.group_name'))
+    retailer_id = Column(Integer, ForeignKey('groups.id'))
 
     @declared_attr
     def __mapper_args__(cls):
@@ -285,7 +288,7 @@ class Customer(Base):
     phone = Column(Unicode(20))
 
     # NOTE: Change to Int and ID
-    retailer_name = Column(Unicode, ForeignKey('groups.group_name',
+    retailer_id = Column(Integer, ForeignKey('groups.id',
                     onupdate="CASCADE", ondelete="CASCADE"))
 
 
@@ -299,7 +302,7 @@ class Location(Base):
     postal_code = Column(Integer, nullable=False)
 
     # NOTE: Change to Int and ID
-    retailer_name = Column(Unicode, ForeignKey("groups.group_name"))
+    retailer_id = Column(Integer, ForeignKey("groups.id"))
     retailer = relationship("Group", backref="locations")
 
 
@@ -361,6 +364,7 @@ class Booking(Base):
         if retailer:
             # NOTE: Booking is linked to a Customer which is linked to a
             #       Retailer group
+            # TODO: Change to Customer.retailer_id
             q = q.filter_by(customer_id=Customer.id).\
                 join(Customer).filter(Customer.retailer_name==retailer)
         return q.all()

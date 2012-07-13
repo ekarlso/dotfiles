@@ -10,9 +10,9 @@ from .models import Retailer, Customer, Booking, Location
 from .models import Category, Entity, Property, DrivableEntity, Car
 
 
-def category_dict(names, owner_group_name=True):
+def category_dict(names, owner_group_id):
     return dict([(n, Category(resource_name=n,
-                owner_group_name=owner_group_name)) for n in names])
+                owner_group_id=owner_group_id)) for n in names])
 
 
 def populate():
@@ -62,17 +62,15 @@ def populate_samples():
         sub_cars = category_dict(
             ["Sedan", "Stationwagon", "SUV", "Coupe", "Pickup", "7 seats",
                 "9 seats"],
-            owner_group_name=retailer.group_name)
+            retailer.id)
         top_cars = Category(
             resource_name="Cars",
-            owner_group_name=retailer.group_name,
+            owner_group_id=retailer.id,
             children=sub_cars.values()).save()
-        sub_transport = category_dict(
-            ["Caddy", "6m 3", "11 m3", "18 m3"],
-            owner_group_name=retailer.group_name)
+        sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"], retailer.id)
         top_transport = Category(
             resource_name="Transport",
-            owner_group_name=retailer.group_name,
+            owner_group_id=retailer.id,
             children=sub_transport.values()).save()
 
         focus_1 = Car(
@@ -155,7 +153,7 @@ def populate_samples():
                 phone="+47 xxxxxxxx").save()
 
         retailer_2 = Retailer(
-            group_name="TransportVehicles Inc",
+            group_name='TransportVehicles Inc',
             group_type="retailer",
             organization_id=3232,
             customers=[customer]).save()
@@ -173,18 +171,18 @@ def populate_samples():
 
         sub_truck = category_dict(
             ["18 m3", "22 m3", "26 m3", "35 m3"],
-            owner_group_name=retailer_2.group_name)
+            owner_group_id=retailer_2.id)
         top_truck = Category(
             resource_name="Truck",
             children=sub_truck.values(),
-            owner_group_name=retailer_2.group_name).save()
+            owner_group_id=retailer_2.id).save()
         sub_bus = category_dict(
             ["9 seats", "17 seats"],
-            owner_group_name=retailer_2.group_name)
+            owner_group_id=retailer_2.id)
         top_bus = Category(
             resource_name="Mini bus",
             children=sub_bus.values(),
-            owner_group_name=retailer_2.group_name).save()
+            owner_group_id=retailer_2.id).save()
 
         loc_bryne = Location(
             address="RoadBryne 1",
