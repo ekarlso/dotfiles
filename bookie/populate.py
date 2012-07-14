@@ -7,7 +7,7 @@ import transaction
 
 from .models import User, UserPermission, Group, GroupPermission, Resource
 from .models import Retailer, Customer, Booking, Location
-from .models import Category, Entity, Property, DrivableEntity, Car
+from .models import Category, Entity, EntityMetadata, DrivableEntity, Car
 
 
 def category_dict(names, owner_group_id):

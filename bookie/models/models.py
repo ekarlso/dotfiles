@@ -181,7 +181,7 @@ class Event(Base):
     An event in the system like a User invite or similar
     """
     __tablename__ = "events"
-    id = Column(Unicode(40), default=utils.generate_uuid, primary_key=True)
+    id = Column(Unicode(36), default=utils.generate_uuid, primary_key=True)
     data = Column(JSONType())
 
     group_id = Column(Integer, ForeignKey("groups.id",
@@ -196,7 +196,7 @@ class Event(Base):
 # NOTE: Map categories >< entities
 category_entity_map = Table('category_entity_map', Base.metadata,
     Column('category_id', Integer, ForeignKey('resources.resource_id')),
-    Column('entity_id', Unicode(40), ForeignKey('entity.id'))
+    Column('entity_id', Unicode(36), ForeignKey('entity.id'))
 )
 
 
@@ -217,17 +217,17 @@ class Category(Resource):
                             backref="categories")
 
 
-category_meta_table = Table('category_meta_map', Base.metadata,
+category_metadata_table = Table('category_metadata_map', Base.metadata,
     Column('category_id', Integer, ForeignKey('resources.resource_id')),
-    Column('meta_id', Integer, ForeignKey('category_meta.id'))
+    Column('metadata_id', Unicode(36), ForeignKey('category_meta.id'))
 )
 
 
 class CategoryMeta(Base):
     __tablename__ = "category_meta"
     __expose_attrs__ = ["name", "value"]
-    id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255))
+    id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
+    name = Column(Unicode(60), index=True, nullable=False)
     value = Column(UnicodeText, nullable=True)
 
 
@@ -239,7 +239,7 @@ class Entity(Base):
     __expose_attrs__ = ["brand", "model", "produced", "identifier"]
     __format_string__ = '{brand} {model} - {produced} {identifier}'
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
-    type = Column(Unicode(50))
+    type = Column(Unicode(40))
     brand = Column(UnicodeText)
     model = Column(UnicodeText)
     identifier = Column(UnicodeText, unique=True)
@@ -254,14 +254,14 @@ class Entity(Base):
         return {"polymorphic_on": "type", "polymorphic_identity": name}
 
 
-class Property(Base):
-    __tablename__ = "entity_property"
-    id = Column(Unicode(40), primary_key=True, default=utils.generate_uuid)
-    name = Column(Unicode(255), index=True, nullable=False)
+class EntityMetadata(Base):
+    __tablename__ = "entity_metadata"
+    id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
+    name = Column(Unicode(60), index=True, nullable=False)
     value = Column(UnicodeText, nullable=True)
 
-    entity_id = Column(Unicode(40), ForeignKey("entity.id"))
-    entity = relationship("Entity", backref="properties")
+    entity_id = Column(Unicode(36), ForeignKey("entity.id"))
+    entity = relationship("Entity", backref="metadata")
 
 
 class DrivableEntity(Entity):
@@ -280,12 +280,12 @@ class Car(DrivableEntity):
 class Customer(Base):
     __format_string__ = "{name}"
     __tablename__ = "customer"
-    id = Column(Integer, primary_key=True)
-    name = Column(UnicodeText)
-    organization_id = Column(Unicode(40))
+    id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
+    name = Column(Unicode(40))
+    organization_id = Column(Unicode(60))
     contact = Column(UnicodeText)
-    email = Column(UnicodeText)
-    phone = Column(Unicode(20))
+    email = Column(Unicode(40))
+    phone = Column(Unicode(40))
 
     # NOTE: Change to Int and ID
     retailer_id = Column(Integer, ForeignKey('groups.id',
@@ -296,7 +296,7 @@ class Location(Base):
     __expose_attrs__ = ["city", "address", "postal_code"]
     __format_string__ = "{city}, {address}"
     __tablename__ = "location"
-    id = Column(Integer, primary_key=True)
+    id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     address = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
     postal_code = Column(Integer, nullable=False)
@@ -317,7 +317,7 @@ class Booking(Base):
         DateTime,
         default=datetime.datetime.utcnow,
         nullable=False)
-    start_location_id = Column(Integer)
+    start_location_id = Column(Unicode(36))
     start_location = relationship(
         "Location",
         backref="bookings_start_here",
@@ -328,17 +328,17 @@ class Booking(Base):
         DateTime,
         default=lambda: datetime.datetime.utcnow() + datetime.timedelta(1),
         nullable=False)
-    end_location_id = Column(Integer)
+    end_location_id = Column(Unicode(36))
     end_location = relationship(
         "Location",
         backref="bookings_end_here",
         primaryjoin="Booking.end_location_id==Location.id",
         foreign_keys=[end_location_id])
 
-    customer_id = Column(Integer, ForeignKey('customer.id'))
+    customer_id = Column(Unicode(36), ForeignKey('customer.id'))
     customer = relationship("Customer", backref="orders")
 
-    entity_id = Column(Unicode(40), ForeignKey('entity.id'))
+    entity_id = Column(Unicode(36), ForeignKey('entity.id'))
     entity = relationship("Entity", backref="orders")
 
     @property
