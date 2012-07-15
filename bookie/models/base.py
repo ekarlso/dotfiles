@@ -94,6 +94,7 @@ class BaseModel(object):
     def items(self):
         return dict([(k, getattr(self, k)) for k in self])
 
+    # NOTE: Search alike stuff below here
     @classmethod
     def get_by(cls, *args, **kw):
         """
@@ -131,49 +132,7 @@ class BaseModel(object):
         """
         return cls._search_query(**kw).all()
 
-    def to_dict(self, deep={}, exclude=[]):
-        """
-        Make a dict of the object
-
-        :key deep: A dict containing what to expand on the attribute
-        :key exclude: What to excluse on the remote attribute
-        """
-        data = dict([(k, getattr(self, k)) \
-            for k in get_prop_names(self, exclude=exclude)[0]])
-
-        for rname, rdeep in deep.items():
-            data.update(self.remote_to_dict(rname, rdeep))
-        return data
-
-    def remote_to_dict(self, attr, deep={}, exclude=[]):
-        """
-        This is basically a part of "Elixir's" to_dict method.
-        I took it out into remote_to_dict to be able to use it elsewhere as
-        well.
-
-        See 'self.to_dict' for 'deep' and 'exclude'
-
-        :param attr: The remote attribute to dict
-        """
-        data = {}
-        db_data = getattr(self, attr)
-        #FIXME: use attribute names (ie coltoprop) instead of column names
-        fks = self.__mapper__.get_property(attr).remote_side
-        exclude = exclude + [c.name for c in fks]
-
-        def is_dictable(obj):
-            return hasattr(obj, "to_dict")
-
-        if db_data is None:
-            data[attr] = None
-        elif isinstance(db_data, list):
-            data[attr] = [row.to_dict(deep=deep, exclude=exclude) \
-                for row in db_data if is_dictable(row)]
-        else:
-            if is_dictable(db_data):
-                data[attr] = db_data.to_dict(deep=deep, exclude=exclude)
-        return data
-
+    # NOTE: Format helpers below here
     @classmethod
     def exposed_attrs(cls):
         """
@@ -230,12 +189,56 @@ class BaseModel(object):
         """
         return self.format_self()
 
+    # NOTE: Utility functions below
     @classmethod
     def get_schema(cls):
         """
         If using ColandarAlchemy this will wrap a mapping around me
         """
         return SQLAlchemyMapping(cls)
+
+    def to_dict(self, deep={}, exclude=[]):
+        """
+        Make a dict of the object
+
+        :key deep: A dict containing what to expand on the attribute
+        :key exclude: What to excluse on the remote attribute
+        """
+        data = dict([(k, getattr(self, k)) \
+            for k in get_prop_names(self, exclude=exclude)[0]])
+
+        for rname, rdeep in deep.items():
+            data.update(self.remote_to_dict(rname, rdeep))
+        return data
+
+    def remote_to_dict(self, attr, deep={}, exclude=[]):
+        """
+        This is basically a part of "Elixir's" to_dict method.
+        I took it out into remote_to_dict to be able to use it elsewhere as
+        well.
+
+        See 'self.to_dict' for 'deep' and 'exclude'
+
+        :param attr: The remote attribute to dict
+        """
+        data = {}
+        db_data = getattr(self, attr)
+        #FIXME: use attribute names (ie coltoprop) instead of column names
+        fks = self.__mapper__.get_property(attr).remote_side
+        exclude = exclude + [c.name for c in fks]
+
+        def is_dictable(obj):
+            return hasattr(obj, "to_dict")
+
+        if db_data is None:
+            data[attr] = None
+        elif isinstance(db_data, list):
+            data[attr] = [row.to_dict(deep=deep, exclude=exclude) \
+                for row in db_data if is_dictable(row)]
+        else:
+            if is_dictable(db_data):
+                data[attr] = db_data.to_dict(deep=deep, exclude=exclude)
+        return data
 
     def from_dict(self, data):
         """
