@@ -66,13 +66,13 @@ class ResourceFactory(object):
 
         #if not application_id:
         #    raise exception.HTTPNotFound
-        self.resource = models.Resource.by_resource_id(application_id)
-        if not self.resource:
+        resource = models.Resource.by_resource_id(application_id)
+        if not resource:
             raise exception.HTTPNotFound
-        if self.resource and request.user:
-            self.__acl__ = self.resource.__acl__
-            for perm_user, perm_name in self.resource.perms_for_user(request.user):
-                self.__acl__.append((Allow, perm_user, perm_name,))
+        if resource and request.user:
+            self.__acl__ = resource.__acl__
+            for principal, perm_name in resource.perms_for_user(request.user):
+                self.__acl__.append((Allow, principal, perm_name,))
 
 
 class RootFactory(object):
@@ -85,8 +85,8 @@ class RootFactory(object):
         if request.user:
             if request.group and not request.user.has_group(request.group):
                 raise exception.HTTPNotFound
-            for perm_user, perm_name in request.user.permissions:
-                self.__acl__.append((Allow, perm_user, perm_name,))
+            for principal, perm_name in request.user.permissions:
+                self.__acl__.append((Allow, principal, perm_name,))
 
 
 def includeme(config):
