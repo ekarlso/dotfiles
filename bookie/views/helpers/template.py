@@ -97,9 +97,6 @@ class TemplateAPI(object):
     def script_link(self, resource, format=SCRIPT_LINK):
         return self._resource_html(format, resource)
 
-    def route_url(self, route, *args, **kw):
-        return utils.get_url(route, *args, **kw)
-
     def resource_url(self, context=None, *elements, **kwargs):
         if context is None:
             context = self.context

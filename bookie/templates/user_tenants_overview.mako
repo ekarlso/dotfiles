@@ -21,7 +21,7 @@
                 <td>${group}</td>
                 <td>${api.name_to_camel(group.group_type)}</td>
                 <td>
-                    <% url = api.route_url('user_tenant_setter', _query={'name': group.group_name}) %>
+                    <% url = request.route_url('user_tenant_setter', _query={'name': group.group_name}) %>
                     <a class="btn disabled" href="${url}">Set to current</a>
                 </td>
             % endfor
