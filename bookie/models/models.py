@@ -241,7 +241,7 @@ class Entity(Base):
     """
     __tablename__ = "entity"
     __expose_attrs__ = ["brand", "model", "produced", "identifier"]
-    __format_string__ = '{brand} {model} - {produced} {identifier}'
+    __format_string__ = '{brand}: {model} - {produced} - {identifier}'
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     type = Column(Unicode(40))
     brand = Column(UnicodeText)
