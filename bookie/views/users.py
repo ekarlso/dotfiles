@@ -70,14 +70,14 @@ def _mangle_appstruct(appstruct):
     return appstruct
 
 
-def tenant_from_request(request):
+def group_from_request(request):
     if "group_id" in request.GET:
-        tenant = request.GET["group_id"]
+        group = request.GET["group_id"]
     elif "group_name" in request.GET:
-        tenant = request.GET["group_name"]
+        group = request.GET["group_name"]
     else:
-        tenant = None
-    return tenant
+        group = None
+    return group
 
 
 def prefs_menu():
@@ -292,7 +292,7 @@ def user_tenant_setter(context, request):
     It sets the tenant if a "name" is in the params list and forwards the user
     to that tenants dashboard
     """
-    tenant = tenant_from_request(request)
+    tenant = group_from_request(request)
 
     def redirect(group):
         location = request.route_url("retailer_home", group=group)
