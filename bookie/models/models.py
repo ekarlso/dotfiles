@@ -7,6 +7,7 @@ from pprint import pformat
 from UserDict import UserDict
 
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.sql.expression import cast
 from sqlalchemy.orm import relationship, backref, exc, object_mapper, \
     synonym, validates
 from sqlalchemy import Column, Integer, Unicode, BigInteger, \
@@ -244,13 +245,18 @@ class Entity(Base):
     __format_string__ = '{brand}: {model} - {produced} - {identifier}'
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     type = Column(Unicode(40))
-    brand = Column(UnicodeText)
-    model = Column(UnicodeText)
-    identifier = Column(UnicodeText, unique=True)
+    brand = Column(Unicode(100))
+    model = Column(Unicode(100))
+    identifier = Column(Unicode(100))
     produced = Column(Integer)
 
     # NOTE: Change to Int and ID
     retailer_id = Column(Integer, ForeignKey('groups.id'))
+
+    @hybrid_property
+    def name(self):
+        return self.brand + ": " + self.model + " - " + cast(self.produced, Unicode) + " - " \
+                + self.identifier
 
     @declared_attr
     def __mapper_args__(cls):
