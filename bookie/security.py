@@ -2,8 +2,8 @@ import logging
 from pyramid import httpexceptions as exception
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.security import unauthenticated_userid, Authenticated, Allow, \
-    Everyone
+from pyramid.security import unauthenticated_userid, Authenticated, Allow
+from sqlalchemy.orm import exc
 
 from . import models
 
@@ -44,8 +44,16 @@ def get_group(request):
     """
     Return the current working group
     """
-    if request.matchdict:
-        return request.matchdict.get("group", None)
+    g = request.matchdict.get("group", None) if request.matchdict else None
+    if g:
+        if type(g) == int:
+            filter_by = {"group_id": g}
+        else:
+            filter_by = {"group_name": g}
+        try:
+            return models.Group.query.filter_by(**filter_by).one()
+        except exc.NoResultFound:
+            raise exception.HTTPNotFound
 
 
 def reset():
@@ -83,7 +91,7 @@ class RootFactory(object):
         self.__acl__ = [(Allow, Authenticated, u'view'), ]
         #general page factory - append custom non resource permissions
         if request.user:
-            if request.group and not request.user.has_group(request.group):
+            if request.group and not request.user.has_group(request.group.id):
                 raise exception.HTTPNotFound
             for principal, perm_name in request.user.permissions:
                 self.__acl__.append((Allow, principal, perm_name,))
