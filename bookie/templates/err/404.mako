@@ -11,7 +11,7 @@
         <div>
             It looks like you have requested a resource which I can't find for you.
 
-            If you think it should exist please contact <a href="${request.route_url('contact_support')}" class="btn btn-info">Support</a>
+            If you think it should exist please contact <a href="${request.route_url('support')}" class="btn btn-info">Support</a>
         </div>
     </div>
 </div>

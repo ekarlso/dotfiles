@@ -16,12 +16,12 @@ from ..utils import _
 from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
 
 
-@view_config(route_name="contact", renderer="contact.mako")
+@view_config(route_name="contact", renderer="misc/contact.mako")
 def contact(context, request):
     return {"sidebar_data": {}}
 
 
-@view_config(route_name="support", renderer="contact.mako")
+@view_config(route_name="support", renderer="misc/support.mako")
 def support(context, request):
     return {"sidebar_data": {}}
 
