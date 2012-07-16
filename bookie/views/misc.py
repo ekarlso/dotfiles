@@ -22,7 +22,7 @@ def contact(context, request):
 
 
 @view_config(route_name="support", renderer="contact.mako")
-def contact(context, request):
+def support(context, request):
     return {"sidebar_data": {}}
 
 
