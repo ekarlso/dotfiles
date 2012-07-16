@@ -304,7 +304,7 @@ class Customer(Base):
 
 class Location(Base):
     __expose_attrs__ = ["city", "address", "postal_code"]
-    __format_string__ = "{city}, {address}"
+    __format_string__ = "{city}: {address}"
     __tablename__ = "location"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     address = Column(UnicodeText, nullable=False)
@@ -315,11 +315,22 @@ class Location(Base):
     retailer_id = Column(Integer, ForeignKey("groups.id"))
     retailer = relationship("Group", backref="locations")
 
+    @hybrid_property
+    def name(self):
+        return self.city + ": " + self.address
+
+    @classmethod
+    def by_name(cls, name, retailer=None):
+        q = cls.query.filter(cls.name==name)
+        if retailer:
+            q = q.filter_by(retailer=retailer)
+        return q.one()
+
 
 class Booking(Base):
     __format_string__ = "{customer_name} - {start_at} > {end_at}"
-    __expose_attrs__ = ["customer", "start", "end"]
-    __tablename__ = "order"
+    __expose_attrs__ = ["customer", "start_location", "start_at", "end_location", "end_at"]
+    __tablename__ = "bookings"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     price = Column(Integer)
 
@@ -346,20 +357,10 @@ class Booking(Base):
         foreign_keys=[end_location_id])
 
     customer_id = Column(Unicode(36), ForeignKey('customer.id'))
-    customer = relationship("Customer", backref="orders")
+    customer = relationship("Customer", backref="bookings")
 
     entity_id = Column(Unicode(36), ForeignKey('entity.id'))
-    entity = relationship("Entity", backref="orders")
-
-    @property
-    def start(self):
-        return "{start_location_city}, {start_location_address}: {start_at}".\
-                format(**self.format_data())
-
-    @property
-    def end(self):
-        return "{end_location_city} {end_location_address}: {end_at}".\
-                format(**self.format_data())
+    entity = relationship("Entity", backref="bookings")
 
     @classmethod
     def _search_query(cls, filter_by={}, **kw):
