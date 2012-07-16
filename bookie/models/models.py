@@ -83,6 +83,7 @@ class Group(Base, GroupMixin):
         self._group_type = value
 
 
+
 class Retailer(Group):
     __tablename__ = "groups_retailer"
 
@@ -93,6 +94,9 @@ class Retailer(Group):
 
     customers = relationship("Customer", backref="retailer")
     entities = relationship("Entity", backref="retailer")
+
+    def __repr__(self):
+        return self.group_name
 
 
 class Security(Group):
@@ -152,9 +156,9 @@ class User(Base, UserMixin):
     def retailers(self):
         return [g for g in self.groups if g.group_type == "retailer"]
 
-    def has_group(self, group_name, group_type="retailer"):
+    def has_group(self, group_id, group_type="retailer"):
         count = self.groups_dynamic.filter_by(
-                group_name=group_name, group_type=group_type).count()
+                id=group_id, group_type=group_type).count()
         return True and count == 1 or False
 
 
@@ -352,22 +356,26 @@ class Booking(Base):
                 format(**self.format_data())
 
     @classmethod
-    def search(cls, filter_by={}, **kw):
+    def _search_query(cls, filter_by={}, **kw):
         """
         Search bookings
 
         :param retailer: Narrow this search down to a certain retailer
         """
         retailer = filter_by.pop("retailer", None)
-        q = cls._search_query(filter_by=filter_by, **kw)
+        query = super(Booking, cls)._search_query(filter_by=filter_by, **kw)
 
         if retailer:
             # NOTE: Booking is linked to a Customer which is linked to a
             #       Retailer group
             # TODO: Change to Customer.retailer_id
-            q = q.filter_by(customer_id=Customer.id).\
-                join(Customer).filter(Customer.retailer_name==retailer)
-        return q.all()
+            query = query.filter_by(customer_id=Customer.id).\
+                join(Customer).filter(Customer.retailer==retailer)
+        return query
+
+    @classmethod
+    def search(cls, **kw):
+        return cls._search_query(**kw).all()
 
     @classmethod
     def latest(cls, limit=5, time_since=1, filter_by={}):
