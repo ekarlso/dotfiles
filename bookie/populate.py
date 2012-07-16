@@ -157,7 +157,7 @@ def populate_samples():
             group_type="retailer",
             organization_id=3232,
             customers=[customer]).save()
-        user = User(user_name="booker2", status=1, groups=[retailer],
+        user = User(user_name="booker2", status=1, groups=[retailer_2],
                     email="booker2@random.com").save()
         user.set_password("booker2")
         user.save()
