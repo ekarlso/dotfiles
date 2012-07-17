@@ -255,6 +255,11 @@ class Entity(Base):
 
     @hybrid_property
     def name(self):
+        return self.brand + ": " + self.model + " - " + str(self.produced) + " - " \
+                + self.identifier
+
+    @name.expression
+    def name_expr(self):
         return self.brand + ": " + self.model + " - " + cast(self.produced, Unicode) + " - " \
                 + self.identifier
 
