@@ -1,0 +1,18 @@
+Short notes on the terms used in the application:
+What is Bookie?
+An social media inspired approach / multi tenant application for Rental companies where some users can be members of n organizations.
+
+User:
+A User is a plain user that has connections to one or more companies / customer groups.
+
+It can also be a customer on it's own without having to be in a Customer group.
+
+
+A Tenant:
+The term tenant is used to situate a grouping of users but that is not really a group.
+
+It's more of a logical container for putting groups / users within where the owner of all the resources is the Tenant.
+
+
+So a URL like http://randomdomain.tld/g,{group} resolves down to a Tenant of {group} in the URL. 
+Menu's are always generated out based on the current Tenant in the URL
