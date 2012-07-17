@@ -66,7 +66,7 @@ class PyramidGrid(grid.Grid):
         self.additional_kw['order_col'] = column
         self.additional_kw['order_dir'] = new_order_dir
         # generate new url
-        new_url = self.url_generator(**self.additional_kw)
+        new_url = self.url_generator(_query=self.additional_kw)
         # set label for header with link
         label_text = tags.HTML.tag("a", href=new_url, c=label_text)
         # Is the current column the one we're ordering on?
