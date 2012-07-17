@@ -6,7 +6,9 @@ def nav_top(context, request):
         {"value": "Home", "check": request.group,
             "route": "retailer_home", "url_kw": {"group": request.group}},
         {"value": "Booking", "check": request.group,
-            "route": "booking_overview", "url_kw": {"group": request.group}}]}
+            "route": "booking_overview", "url_kw": {"group": request.group}},
+        {"value": "Entity", "check": request.group,
+            "route": "entity_overview", "url_kw": {"group": request.group}}]}
     return "navigation", data
 
 
