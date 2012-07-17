@@ -25,24 +25,24 @@ from .helpers import form
 
 LOG = logging.getLogger(__name__)
 
-PATTERN = r"^(?P<brand>\S+): (?P<model>\S+) - (?P<produced>\d{4}) - (?P<identifier>\S+)$"
-
 
 def booking_actions(obj=None, request=None):
-    menu = [] + booking_links(obj, request)
-    return menu
+    data = get_nav_data(request)
+
+    links = booking_links(obj, request)
+    actions = []
+    return links + actions
 
 
 def booking_links(obj=None, request=None):
     data = get_nav_data(request)
 
-    nav_children = []
-    nav_children.append(menu_came_from(request))
-    nav_children.append({"value": "divider"})
-    nav_children.append(menu_item(_("Bookings"), "booking_overview", **data))
-    nav_children.append(menu_item(_("Create"), "booking_add", **data))
-    navigation = [{"value": "Navigation", "children": nav_children}]
-    return navigation
+    children = []
+    children.append(menu_came_from(request))
+    children.append({"value": "divider"})
+    children.append(menu_item(_("Bookings"), "booking_overview", **data))
+    children.append(menu_item(_("Create"), "booking_add", **data))
+    return [{"value": "Navigation", "children": children}]
 
 
 def customer_validate(node, value):
@@ -193,7 +193,7 @@ def booking_add(context, request):
         extra={"sidebar_data": booking_actions(request=request)})
 
 
-@view_config(route_name="booking_view", permission="view",
+@view_config(route_name="booking_manage", permission="view",
             renderer="booking_manage.mako")
 def booking_manage(context, request):
     obj = models.Booking.get_by(id=request.matchdict["id"])
@@ -222,7 +222,7 @@ def booking_overview(context, request):
         request, unicode(item.entity), "entity_view", url_kw=item.entity.to_dict())
 
     grid.column_formats["id"] = lambda cn, i, item: column_link(
-        request, "View", "booking_view", url_kw=item.to_dict())
+        request, "Manage", "booking_manage", url_kw=item.to_dict())
     grid.labels["id"] = ""
     grid.exclude_ordering = ("id")
 
@@ -233,6 +233,5 @@ def booking_overview(context, request):
 
 def includeme(config):
     config.add_route("booking_add", "/g,{group}/booking/add")
-    config.add_route("booking_edit", "/g,{group}/booking/{id}/edit")
-    config.add_route("booking_view", "/g,{group}/booking/{id}/view")
+    config.add_route("booking_manage", "/g,{group}/booking/{id}")
     config.add_route("booking_overview", "/g,{group}/booking")
