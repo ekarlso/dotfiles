@@ -9,19 +9,19 @@ def wrap_td(string):
     return tags.HTML.td(literal(string))
 
 
-def column_link(request, value, route, url_args=[], url_kw={}):
+def column_link(request, value, route, url_args=[], url_kw={}, class_=""):
     """
     Helpers to format a element in a column as a anchor
 
     :param request: A Request object
-    :param anchor_text: The text of the anchor
+    :param value: The text to use
     :param route: The Route to use
     :key url_args: Args to pass down
     :key url_kw: Keywords to pass down
     """
     url_kw = get_nav_data(request, extra=url_kw)
     href = request.route_url(route, *url_args, **url_kw)
-    anchor = tags.HTML.tag("a", href=href, c=value)
+    anchor = tags.HTML.tag("a", href=href, c=value, class_=class_)
     return wrap_td(anchor)
 
 
