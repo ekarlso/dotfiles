@@ -19,6 +19,7 @@ CONF_DEFAULTS = {
         "bookie.views.bookings",
         "bookie.views.cache",
         "bookie.views.category",
+        "bookie.views.customer",
         "bookie.views.entity",
         "bookie.views.misc",
         "bookie.views.login",
