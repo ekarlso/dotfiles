@@ -105,7 +105,7 @@ class Retailer(Group):
         return self.group_name
 
 
-class Security(Group):
+class SecurityGroup(Group):
     __tablename__ = "groups_security"
     __possible_permissions__ = permission_names(PERMISSIONS)
     id = Column(Integer, ForeignKey("groups.id",
