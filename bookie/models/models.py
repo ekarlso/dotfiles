@@ -293,6 +293,7 @@ class Car(DrivableEntity):
 
 
 class Customer(Base):
+    __expose_attrs__ = ["name", "organization_id", "contact", "email", "phone"]
     __format_string__ = "{name}"
     __tablename__ = "customer"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
