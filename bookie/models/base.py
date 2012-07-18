@@ -2,6 +2,8 @@ from datetime import datetime
 import logging
 
 from colanderalchemy import SQLAlchemyMapping
+import sqlalchemy as sqla
+import sqlalchemy.orm
 from sqlalchemy import Column, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import class_mapper, object_mapper, scoped_session, sessionmaker
@@ -28,7 +30,6 @@ def get_prop_names(obj, exclude=[]):
             if isinstance(p, RelationshipProperty):
                 remote.append(p.key)
     return local, remote
-
 
 
 class BaseModel(object):
@@ -109,28 +110,150 @@ class BaseModel(object):
         """
         return cls.query.filter_by(*args, **kw).all()
 
+    @staticmethod
+    def paginate_query(query, model, limit, order_cols, marker=None,
+            order_dir=None, order_dirs=None):
+        """
+        Pagination helper borrowed from OpenStack Glance code
+
+        Pagination works by requiring a unique sort_key, specified by sort_keys.
+        (If sort_keys is not unique, then we risk looping through values.)
+        We use the last row in the previous page as the 'marker' for pagination.
+        So we must return values that follow the passed marker in the order.
+        With a single-valued sort_key, this would be easy: sort_key > X.
+        With a compound-values sort_key, (k1, k2, k3) we must do this to repeat
+        the lexicographical ordering:
+            (k1 > X1) or (k1 == X1 && k2 > X2)
+            (k1 == X1 && k2 == X2 && k3 > X3)
+
+        We also have to cope with different sort_directions.
+
+        Typically, the id of the last row is used as the client-facing pagination
+        marker, then the actual marker object must be fetched from the db and
+        passed in to us as marker.
+
+        :param query: the query object to which we should add paging/sorting
+        :param model: the ORM model class
+        :param limit: maximum number of items to return
+        :param sort_keys: array of attributes by which results should be sorted
+        :param marker: the last item of the previous page; we returns the next
+                results after this value.
+        :param sort_dir: direction in which results should be sorted (asc, desc)
+        :param sort_dirs: per-column array of sort_dirs, corresponding to sort_keys
+
+        :rtype: sqlalchemy.orm.query.Query
+        :return: The query with sorting/pagination added.
+        """
+        if 'id' not in order_cols:
+            LOG.warn(_('Id not in sort_keys; is sort_keys unique?'))
+
+        assert(not (order_dir and order_dirs))
+
+        # Default the sort direction to ascending
+        if order_dirs is None and order_dir is None:
+            order_dir = 'asc'
+
+        # Ensure a per-column sort direction
+        if order_dirs is None:
+            order_dirs = [order_dir for _order_col in order_cols]
+
+        assert(len(order_dirs) == len(order_cols))
+
+        # Add sorting
+        for current_order_col, current_order_dir in zip(order_cols, order_dirs):
+            order_dir_func = {
+                'asc': sqlalchemy.asc,
+                'desc': sqlalchemy.desc,
+            }[current_order_dir]
+
+            try:
+                order_col_attr = getattr(model, current_order_col)
+            except AttributeError:
+                raise AtributeError("Invalid order column")
+            query = query.order_by(order_dir_func(order_col_attr))
+
+        # Add pagination
+        if marker is not None:
+            marker_values = []
+            for order_col in order_cols:
+                v = getattr(marker, order_col)
+                marker_values.append(v)
+
+            # Build up an array of sort criteria as in the docstring
+            criteria_list = []
+            for i in xrange(0, len(order_cols)):
+                crit_attrs = []
+                for j in xrange(0, i):
+                    model_attr = getattr(model, order_cols[j])
+                    crit_attrs.append((model_attr == marker_values[j]))
+
+                model_attr = getattr(model, order_cols[i])
+                if order_dirs[i] == 'desc':
+                    crit_attrs.append((model_attr < marker_values[i]))
+                elif order_dirs[i] == 'asc':
+                    crit_attrs.append((model_attr > marker_values[i]))
+                else:
+                    raise ValueError(_("Unknown sort direction, "
+                        "must be 'desc' or 'asc'"))
+
+                criteria = sqlalchemy.sql.and_(*crit_attrs)
+                criteria_list.append(criteria)
+
+            f = sqlalchemy.sql.or_(*criteria_list)
+            query = query.filter(f)
+
+        if limit is not None:
+            query = query.limit(limit)
+
+        return query
+
     @classmethod
-    def _search_query(cls, filters=[], filter_by={}, limit=10):
+    def _paginate_search(cls, query, marker_id=None):
+        """
+        Helper that get's the marker object by marker_id and passes it
+        to paginate_query
+
+        Useful to use when one is building a search query but wants to override _prepare_
+        """
+
+    @classmethod
+    def _prepare_search(cls, filters=[], filter_by={}, marker_id=None,
+            limit=10, order_col="created_at", order_dir="desc", query=None):
         """
         A Search helper method
 
-        :key filters: Filters to apply
+        :key filters: List / Set of filter expressions to use
+        :key filter_by: Set of filter_by keywords
+        :key marker: A marker ID
         :key limit: Limit to apply
+        :key order_col: What column to order by
+        :key order_dir: Which direction
+
+        :key query: Override query
         """
-        q = cls.query.filter_by(**filter_by)
-        q = q.filter(*filters)
-        if limit:
-            q.limit(limit)
-        return q
+        query = query or cls.query
+
+        query = query.filter(*filters)
+        query = query.filter_by(**filter_by)
+
+        marker_obj = None
+        if marker_id is not None:
+            marker_obj = cls.get_by(id=marker_id)
+
+        # NOTE: Add pagination!!
+        query = cls.paginate_query(query, cls, limit,
+                [order_col, "created_at", "id"], marker=marker_obj,
+                order_dir=order_dir)
+        return query
 
     @classmethod
-    def search(cls, **kw):
+    def search(cls, *args, **kw):
         """
         Helper for searching, get it?
 
-        See _search_query keywords
+        See _prepare_search keywords
         """
-        return cls._search_query(**kw).all()
+        return cls._prepare_search(*args, **kw).all()
 
     # NOTE: Format helpers below here
     @classmethod
