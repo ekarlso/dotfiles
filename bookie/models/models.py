@@ -1,5 +1,6 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
+import re
 import sys
 import datetime
 import logging
@@ -35,6 +36,10 @@ SECURITY_PERMISSIONS = [
 ]
 
 PERMISSIONS = SECURITY_PERMISSIONS
+
+
+ENTITY = r"^(?P<brand>\S+): (?P<model>\S+) - " + \
+        "(?P<year>\d{4}) - (?P<identifier>\S+)$"
 
 
 def permission_names(permissions):
@@ -241,17 +246,22 @@ class Entity(Base):
     A Entity is a product / thing to be rented out to a customer
     """
     __tablename__ = "entity"
-    __expose_attrs__ = ["brand", "model", "produced", "identifier"]
+    __expose_attrs__ = ["id", "brand", "model", "produced", "identifier", "color"]
     __format_string__ = '{brand}: {model} - {produced} - {identifier}'
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     type = Column(Unicode(40))
     brand = Column(Unicode(100))
     model = Column(Unicode(100))
-    identifier = Column(Unicode(100))
     produced = Column(Integer)
+    identifier = Column(Unicode(100))
 
     # NOTE: Change to Int and ID
     retailer_id = Column(Integer, ForeignKey('groups.id'))
+
+    @declared_attr
+    def __mapper_args__(cls):
+        name = unicode(utils.camel_to_name(cls.__name__))
+        return {"polymorphic_on": "type", "polymorphic_identity": name}
 
     @hybrid_property
     def name(self):
@@ -263,11 +273,34 @@ class Entity(Base):
         return self.brand + ": " + self.model + " - " + cast(self.produced, Unicode) + " - " \
                 + self.identifier
 
-    @declared_attr
-    def __mapper_args__(cls):
-        name = unicode(utils.camel_to_name(cls.__name__))
-        return {"polymorphic_on": "type", "polymorphic_identity": name}
+    @name.setter
+    def name_set(self, value):
+        data = re.match(ENTITY, value).groupdict()
+        self.update(data)
 
+    @hybrid_property
+    def color(self):
+        meta = self.get_meta("color")
+        return meta.value if meta else ""
+
+    @color.setter
+    def color_set(self, value):
+        return self.set_meta("color", value)
+
+    def set_meta(self, name, value):
+        # NOTE: Get all metadata matching key
+        obj = self.get_meta(name)
+        if obj:
+            obj.name, obj.value = name, value
+        else:
+            obj = EntityMetadata(name=name, value=value, entity=self)
+        return obj.save()
+
+    def get_meta(self, name):
+        try:
+            return self.metadata.filter_by(name=name).one()
+        except exc.NoResultFound:
+            return None
 
 class EntityMetadata(Base):
     __tablename__ = "entity_metadata"
@@ -276,7 +309,8 @@ class EntityMetadata(Base):
     value = Column(UnicodeText, nullable=True)
 
     entity_id = Column(Unicode(36), ForeignKey("entity.id"))
-    entity = relationship("Entity", backref="metadata")
+    entity = relationship("Entity", backref=backref("metadata", lazy='dynamic'))
+
 
 
 class DrivableEntity(Entity):
@@ -369,26 +403,29 @@ class Booking(Base):
     entity = relationship("Entity", backref="bookings")
 
     @classmethod
-    def _search_query(cls, filter_by={}, **kw):
+    def _prepare_search(cls, filter_by={}, *args, **kw):
         """
         Search bookings
 
         :param retailer: Narrow this search down to a certain retailer
         """
-        retailer = filter_by.pop("retailer", None)
-        query = super(Booking, cls)._search_query(filter_by=filter_by, **kw)
+        query = cls.query
 
+        # NOTE:
+        retailer = filter_by.pop("retailer", None)
         if retailer:
             # NOTE: Booking is linked to a Customer which is linked to a
             #       Retailer group
             # TODO: Change to Customer.retailer_id
             query = query.filter_by(customer_id=Customer.id).\
-                join(Customer).filter(Customer.retailer==retailer)
+                        join(Customer).filter(Customer.retailer==retailer)
+
+        query = super(Booking, cls)._prepare_search(*args, filter_by=filter_by, query=query, **kw)
         return query
 
     @classmethod
     def search(cls, **kw):
-        return cls._search_query(**kw).all()
+        return cls._prepare_search(**kw).all()
 
     @classmethod
     def latest(cls, limit=5, time_since=1, filter_by={}):
