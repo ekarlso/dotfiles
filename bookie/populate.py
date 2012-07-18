@@ -5,7 +5,7 @@ from pprint import pformat
 from random import choice
 import transaction
 
-from .models import User, UserPermission, Group, GroupPermission, Resource
+from .models import User, UserPermission, Group, SecurityGroup, GroupPermission, Resource
 from .models import Retailer, Customer, Booking, Location
 from .models import Category, Entity, EntityMetadata, DrivableEntity, Car
 
@@ -24,7 +24,7 @@ def populate_samples():
     with transaction.manager:
         g_admin = GroupPermission(perm_name="admin")
 
-        group = Group(
+        group = SecurityGroup(
             group_name="System Admins",
             group_type="security",
             permissions=[g_admin]).save()
@@ -73,62 +73,40 @@ def populate_samples():
             owner_group_id=retailer.id,
             children=sub_transport.values()).save()
 
-        focus_1 = Car(
-            brand="Ford",
-            model="Focus",
-            identifier="DF00005",
-            produced=2012,
-            retailer=retailer,
-            categories=[sub_cars["Sedan"]]).save()
-        focus_2 = Car(
-            brand="Ford",
-            model="Focus",
-            identifier="DF00006",
-            produced=2012,
-            retailer=retailer,
-            categories=[sub_cars["Sedan"]]).save()
-        s60_1 = Car(
-            brand="Volvo",
-            model="S60",
-            identifier="DL00007",
-            produced=2011,
-            retailer=retailer,
-            categories=[sub_cars["Sedan"]]).save()
-        s60_2 = Car(
-            brand="Volvo",
-            model="S60",
-            identifier="DL00008",
-            produced=2011,
-            retailer=retailer,
-            categories=[sub_cars["Sedan"]]).save()
-        xc60_1 = Car(
-            brand="Volvo",
-            model="V60",
-            identifier="DL00003",
-            produced=2012,
+        focus_1 = Car(retailer=retailer, categories=[sub_cars["Sedan"]])
+        focus_1.name = "Ford: Focus - 2012 - DF00005"
+        focus_1.color = "black"
+
+        focus_2 = Car(retailer=retailer, categories=[sub_cars["Sedan"]]).save()
+        focus_2.name = "Ford: Focus - 2012 - DF00006"
+        focus_2.color = "black"
+
+        s60_1 = Car(retailer=retailer, categories=[sub_cars["Sedan"]]).save()
+        s60_1.name = "Volvo: S60 - 2011 - DL00007"
+        s60_1.color = "black"
+
+        s60_2 = Car(retailer=retailer, categories=[sub_cars["Sedan"]]).save()
+        s60_2.name = "Volvo: S60 - 2011 - DL00008"
+        s60_2.color = "black"
+
+        v60_1 = Car(
             retailer=retailer,
             categories=[sub_cars["Stationwagon"]]).save()
-        xc60_2 = Car(
-            brand="Volvo",
-            model="V60",
-            identifier="DL00004",
-            produced=2012,
-            retailer=retailer,
-            categories=[sub_cars["Stationwagon"]]).save()
-        outlander_1 = Car(
-            brand="Mitsubishi",
-            model="Outlander",
-            identifier="DL00001",
-            produced=2011,
-            retailer=retailer,
-            categories=[sub_cars["SUV"]]).save()
-        outlander_2 = Car(
-            brand="Mitsubishi",
-            model="Outlander",
-            identifier="DL00002",
-            produced=2011,
-            retailer=retailer,
-            categories=[sub_cars["SUV"]]).save()
+        v60_1.name = "Volvo: V60 - 2012 - DL00003"
+        v60_1.color = "black"
+
+        v60_2 = Car(retailer=retailer, categories=[sub_cars["Stationwagon"]])
+        v60_2.name = "Volvo: V60 - 2012 - DL00004"
+        v60_2.color = "black"
+
+        outlander_1 = Car(retailer=retailer, categories=[sub_cars["SUV"]])
+        outlander_1.name = "Mitsubishi: Outlander - 2011 - DL00001"
+        outlander_1.color = "black"
+
+        outlander_2 = Car(retailer=retailer, categories=[sub_cars["SUV"]])
+        outlander_2.name = "Mitsubishi: Outlander - 2011 - DL00002"
+        outlander_2.color = "black"
+        outlander_2.save()
 
 
         Booking(price=5, customer=customer, entity=focus_1,
@@ -192,19 +170,15 @@ def populate_samples():
             city="Stavanger", postal_code=4035, retailer=retailer_2)
 
         entity_1 = Car(
-            brand="Brand-A",
-            model="Model-A",
-            identifier="ID-A",
-            produced=2004,
             retailer=retailer_2,
             categories=[sub_truck["18 m3"]]).save()
+        entity_1.name = "Brand-A: Model-A - 2011 - ID-A"
+        entity_1.color = "red"
         entity_2 = Car(
-            brand="Brand-B",
-            model="Model-B",
-            identifier="ID-B",
-            produced=2011,
             retailer=retailer_2,
             categories=[sub_bus["9 seats"]]).save()
+        entity_2.name = "Brand-B: Model-B - 2012 - ID-B"
+        entity_2.color = "yellow"
 
         Booking(price=5, customer=customer, entity=entity_1,
             created_at=(datetime.now() - timedelta(5)),
