@@ -37,6 +37,7 @@ class BaseModel(object):
     Base class to make ones life working with models and python easier
     """
     __expose_attrs__ = None
+    __format_string__ = None
 
     __table_args__ = {"mysql_engine": "InnoDB"}
     __table__initialized__ = False
@@ -297,7 +298,7 @@ class BaseModel(object):
         :key format_string: Optionally override self.__format_string__
         """
         format = format_string or self.__format_string__
-        return format.format(**self.format_data())
+        return format.format(**self.format_data()) if format else None
 
     @property
     def title(self):
