@@ -169,37 +169,23 @@ def entity_delete(context, request):
             renderer="entity_overview.mako")
 def entity_overview(context, request):
     deleted = request.params.get("deleted", False)
-    entities = models.Entity.query.filter_by(deleted=deleted).all()
 
-    columns = models.Entity.exposed_attrs()
-    columns.append("type")
+    filter_by = dict(
+            retailer=request.group)
+    entities = models.Entity.search(filter_by=filter_by)
 
-    grid = PyramidGrid(entities, columns)
-    grid.column_formats["brand"] = lambda cn, i, item: column_link(
-        request, item["title"], "entity_view", url_kw=item.to_dict())
+    columns = ["id"] + models.Entity.exposed_attrs()
+    grid = PyramidGrid(entities, columns, request=request,
+            url=request.current_route_url)
 
-    return {
-        "sidebar_data": entity_links(get_nav_data(request)),
-        "entity_grid": grid}
-
-
-@view_config(route_name="entity_type_overview", permission="view",
-            renderer="entity_type_overview.mako")
-def entity_type_overview(context, request):
-    deleted = request.params.get("deleted", False)
-    type_ = get_type(request)
-    type_model = get_model(request)
-
-    entities = type_model.query.filter_by(deleted=deleted).all()
-
-    grid = PyramidGrid(entities, type_model.exposed_attrs())
-    grid.column_formats["brand"] = lambda cn, i, item: \
-        column_link(request, item["title"], "entity_view",
-                    url_kw=item.to_dict())
+    grid.column_formats["id"] = lambda cn, i, item: column_link(
+        request, "Manage", "entity_view", url_kw=item.to_dict(),
+        class_="btn btn-primary")
+    grid.exclude_ordering = ["id"]
+    grid.labels["id"] = ""
 
     return {
         "sidebar_data": entity_links(get_nav_data(request)),
-        "sub_title": name_to_camel(type_, joiner=" "),
         "entity_grid": grid}
 
 
@@ -209,4 +195,3 @@ def includeme(config):
     config.add_route("entity_view", "/@{group}/entity/{id}/view")
     config.add_route("entity_delete", "/@{group}/entity/{id}/delete")
     config.add_route("entity_overview", "/@{group}/entity")
-    config.add_route("entity_type_overview", "/@{group}/entity/{type}")
