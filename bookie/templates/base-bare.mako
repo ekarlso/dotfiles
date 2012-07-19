@@ -3,7 +3,22 @@
 <%include file="head.mako"/>
 
 <body>
-<%include file="nav_top.mako"/>
+<%block name="navbar_wrapper">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="/">Bookie BETA</a>
+
+            <%block name="navbar_global">
+            ${api.get_nav("nav_top")}
+            </%block>
+
+            ${api.get_nav("drop_user")}
+            <%block name="navbar_local"/>
+        </div>
+    </div>
+</div><!-- navbar -->
+</%block>
 
 <div class="container-fluid">
     <div class="row-fluid">

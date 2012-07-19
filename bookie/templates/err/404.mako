@@ -1,4 +1,4 @@
-<%inherit file="/base.mako"/>
+<%inherit file="/base-bare.mako"/>
 
 <%block name="heading_wrapper"/>
 <%block name="content">
