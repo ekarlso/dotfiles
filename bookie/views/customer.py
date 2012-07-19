@@ -108,15 +108,18 @@ def customer_manage(context, request):
 @view_config(route_name="customer_overview", permission="view",
         renderer="customer_overview.mako")
 def customer_overview(context, request):
-    customers = models.Customer.all_by(retailer=request.group)
 
-    columns = models.Customer.exposed_attrs()
+    filter_by = dict(
+            retailer=request.group)
+    customers = models.Customer.search(filter_by=filter_by)
+
+    columns = ["id"] + models.Customer.exposed_attrs()
     grid = PyramidGrid(customers, columns, request=request, url=request.current_route_url)
 
     grid.exclude_ordering = ["id"]
-
-    grid.column_formats["name"] = lambda cn, i, item: column_link(
-        request, unicode(item), "customer_manage", url_kw=item.to_dict())
+    grid.column_formats["id"] = lambda cn, i, item: column_link(
+        request, "Manage", "customer_manage", url_kw=item.to_dict(),
+        class_="btn btn-primary")
 
 
     return {"sidebar_data": customer_actions(request=request),
