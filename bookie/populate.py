@@ -26,7 +26,6 @@ def populate_samples():
 
         group = SecurityGroup(
             group_name="System Admins",
-            group_type="security",
             permissions=[g_admin]).save()
 
         admin = User(user_name="admin", status=1, groups=[group],
@@ -43,7 +42,6 @@ def populate_samples():
 
         retailer = Retailer(
             group_name="RentOurWrecks Inc",
-            group_type="retailer",
             organization_id=3232,
             customers=[customer]).save()
 
@@ -132,7 +130,6 @@ def populate_samples():
 
         retailer_2 = Retailer(
             group_name='TransportVehicles Inc',
-            group_type="retailer",
             organization_id=3232,
             customers=[customer]).save()
         user = User(user_name="booker2", status=1, groups=[retailer_2],
