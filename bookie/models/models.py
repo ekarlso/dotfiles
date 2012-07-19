@@ -68,7 +68,6 @@ class Group(Base, GroupMixin):
     """
     __format_string__ = "{group_name}"
     __expose_attrs__ = ["group_name"]
-    __possible_types__ = ["retailer", "security", "system"]
     __possible_permissions__ = permission_names(PERMISSIONS)
 
     _group_type = Column("group_type", Unicode(20), nullable=False)
@@ -85,7 +84,6 @@ class Group(Base, GroupMixin):
 
     @group_type.setter
     def set_type(self, value):
-        assert value in self.__possible_types__
         self._group_type = value
 
 
