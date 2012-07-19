@@ -1,4 +1,6 @@
 import logging
+import re
+
 from pyramid import httpexceptions as exception
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
@@ -46,12 +48,10 @@ def get_group(request):
     """
     g = request.matchdict.get("group", None) if request.matchdict else None
     if g:
-        if type(g) == int:
-            filter_by = {"group_id": g}
-        else:
-            filter_by = {"group_name": g}
+        filter_by = {"id": int(g)} if g.isdigit() else {"group_name": g}
         try:
-            return models.Group.query.filter_by(**filter_by).one()
+            return models.Group.query.filter_by(**filter_by).\
+                    filter(models.UserGroup.user_id==request.user.id).one()
         except exc.NoResultFound:
             raise exception.HTTPNotFound
 
