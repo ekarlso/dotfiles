@@ -39,7 +39,7 @@ PERMISSIONS = SECURITY_PERMISSIONS
 
 
 ENTITY = r"^(?P<brand>\S+): (?P<model>\S+) - " + \
-        "(?P<year>\d{4}) - (?P<identifier>\S+)$"
+        "(?P<produced>\d{4}) - (?P<identifier>\S+)$"
 
 
 def permission_names(permissions):
