@@ -88,13 +88,13 @@ class BaseModel(object):
         return n, getattr(self, n)
 
     def keys(self):
-        return [k for k in self.__dict__.keys()]
+        return [k for k in self.__dict__.keys() if not k.startswith("_sa")]
 
     def values(self, attrs=None):
         return self.__dict__.values()
 
     def items(self):
-        return dict([(k, getattr(self, k)) for k in self])
+        return dict([(k, getattr(self, k)) for k in self.keys()])
 
     # NOTE: Search alike stuff below here
     @classmethod
