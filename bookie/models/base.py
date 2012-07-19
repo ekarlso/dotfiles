@@ -209,15 +209,6 @@ class BaseModel(object):
         return query
 
     @classmethod
-    def _paginate_search(cls, query, marker_id=None):
-        """
-        Helper that get's the marker object by marker_id and passes it
-        to paginate_query
-
-        Useful to use when one is building a search query but wants to override _prepare_
-        """
-
-    @classmethod
     def _prepare_search(cls, filters=[], filter_by={}, marker_id=None,
             limit=10, order_col="created_at", order_dir="desc", query=None):
         """
