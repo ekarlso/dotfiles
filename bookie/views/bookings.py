@@ -216,16 +216,19 @@ def booking_overview(context, request):
         filter_by={"deleted": deleted, "retailer": request.group})
 
     columns = ["id"] + models.Booking.exposed_attrs() + ["entity"]
-    grid = PyramidGrid(bookings, columns, request=request, url=request.current_route_url)
+    grid = PyramidGrid(bookings, columns, request=request,
+            url=request.current_route_url)
 
     grid.exclude_ordering = ("id")
     grid.labels["id"] = ""
 
     grid.column_formats["entity"] = lambda cn, i, item: column_link(
-        request, unicode(item.entity), "entity_view", url_kw=item.entity.to_dict())
+        request, unicode(item.entity), "entity_view",
+        url_kw=item.entity.to_dict())
 
     grid.column_formats["id"] = lambda cn, i, item: column_link(
-        request, "Manage", "booking_manage", url_kw=item.to_dict())
+        request, "Manage", "booking_manage", url_kw=item.to_dict(),
+        class_="btn btn-primary")
 
     return {
         "sidebar_data": booking_actions(request=request),
