@@ -26,23 +26,22 @@ from .helpers import form
 LOG = logging.getLogger(__name__)
 
 
-def booking_actions(obj=None, request=None):
+def booking_actions(request, obj=None):
     data = get_nav_data(request)
 
-    links = booking_links(obj, request)
+    links = booking_links(request, obj)
     actions = []
-    return links + actions
+    return links + [{"value": "Actions", "children": actions}]
 
 
-def booking_links(obj=None, request=None):
+def booking_links(request, obj=None):
     data = get_nav_data(request)
 
-    children = []
-    children.append(menu_came_from(request))
-    children.append({"value": "divider"})
-    children.append(menu_item(_("Bookings"), "booking_overview", **data))
-    children.append(menu_item(_("Create"), "booking_add", **data))
-    return [{"value": "Navigation", "children": children}]
+    links = []
+    links.append(menu_came_from(request))
+    links.append(menu_item(_("Overview"), "booking_overview", **data))
+    links.append(menu_item(_("Add"), "booking_add", **data))
+    return [{"value": "Navigation", "children": links}]
 
 
 def customer_validate(node, value):
@@ -149,20 +148,22 @@ class BookingAddForm(form.AddFormView):
         pre_render(self.request, schema)
         return schema
 
+    @property
+    def cancel_url(self):
+        return self.request.route_url("booking_overview",
+                **get_nav_data(self.request))
+
     def add_booking_success(self, appstruct):
         appstruct.pop('csrf_token', None)
         presave(self, appstruct)
-        obj = models.Booking().update(appstruct).save()
+        obj = models.Booking(retailer=request.group).\
+                update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
         location = self.request.route_url(
             "booking_overview", **get_nav_data(self.request))
         return HTTPFound(location=location)
 
-    @property
-    def cancel_url(self):
-        return self.request.route_url("booking_overview",
-                **get_nav_data(self.request))
 
 
 class BookingForm(form.EditFormView):
@@ -175,11 +176,7 @@ class BookingForm(form.EditFormView):
     def cancel_url(self):
         return self.request.route_url("booking_overview",
                 **get_nav_data(self.request))
-
-    @property
-    def success_url(self):
-        return self.request.route_url("booking_overview",
-                **get_nav_data(self.request))
+    success_url = cancel_url
 
     def save_success(self, appstruct):
         presave(self, appstruct)
@@ -190,7 +187,7 @@ class BookingForm(form.EditFormView):
             renderer="add.mako")
 def booking_add(context, request):
     return mk_form(BookingAddForm, context, request,
-        extra={"sidebar_data": booking_actions(request=request)})
+        extra={"sidebar_data": booking_links(request)})
 
 
 @view_config(route_name="booking_manage", permission="view",
@@ -203,7 +200,7 @@ def booking_manage(context, request):
         return form
 
     return {
-        "sidebar_data": booking_actions(request=request),
+        "sidebar_data": booking_actions(request),
         "form": form}
 
 
@@ -212,8 +209,9 @@ def booking_manage(context, request):
 def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
-    bookings = models.Booking.search(
-        filter_by={"deleted": deleted, "retailer": request.group})
+    filter_by = dict(
+            retailer=request.group)
+    bookings = models.Booking.search(filter_by=filter_by)
 
     columns = ["id"] + models.Booking.exposed_attrs() + ["entity"]
     grid = PyramidGrid(bookings, columns, request=request,
@@ -231,7 +229,7 @@ def booking_overview(context, request):
         class_="btn btn-primary")
 
     return {
-        "sidebar_data": booking_actions(request=request),
+        "sidebar_data": booking_links(request),
         "booking_grid": grid}
 
 

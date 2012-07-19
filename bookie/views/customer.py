@@ -16,7 +16,6 @@ from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, mk_form
 from .helpers import PyramidGrid, column_link, wrap_td
 from .helpers import menu_item, menu_came_from, get_nav_data
-from .helpers import form
 
 
 LOG = logging.getLogger(__name__)
@@ -27,20 +26,23 @@ Manage Customers for Retailers
 """
 
 
-def customer_actions(obj=None, request=None):
+def customer_actions(request, obj=None):
     data = get_nav_data(request)
 
-    links = customer_links(obj, request)
+    links = customer_links(request, obj)
     actions = []
-    return links + actions
+    actions.append(menu_item(_("Manage"), "customer_manage", **data))
+    return links + [{"value": _("Actions"), "children": actions}]
 
 
-def customer_links(obj=None, request=None):
+def customer_links(request, obj=None):
     data = get_nav_data(request)
 
-    children = []
-    children.append(menu_item(_("Overview"), "customer_overview", **data))
-    return [{"value": "Navigation", "children": children}]
+    links = []
+    links.append(menu_came_from(request))
+    links.append(menu_item(_("Overview"), "customer_overview", **data))
+    links.append(menu_item(_("Add"), "customer_add", **data))
+    return [{"value": _("Navigation"), "children": links}]
 
 
 class CustomerSchema(colander.Schema):
@@ -77,7 +79,6 @@ class CustomerAddForm(AddFormView):
 
     def add_customer_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        # NOTE: Pass retailer for ownership :)
         obj = models.Customer(retailer=self.request.group).\
             update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
@@ -101,9 +102,11 @@ class CustomerForm(EditFormView):
         return super(CustomerForm, self).save_success(appstruct)
 
 
-@view_config(route_name="customer_add", permission="view", renderer="add.mako")
+@view_config(route_name="customer_add", permission="view",
+        renderer="add.mako")
 def customer_add(context, request):
-    return mk_form(CustomerAddForm, context, request)
+    return mk_form(CustomerAddForm, context, request,
+            extra={"sidebar_data": customer_links(request)})
 
 
 @view_config(route_name="customer_manage", permission="view", renderer="customer_manage.mako")
@@ -114,7 +117,7 @@ def customer_manage(context, request):
     if request.is_response(form):
         return form
 
-    return {"sidebar_data": customer_actions(request=request), "form": form}
+    return {"sidebar_data": customer_actions(request),"form": form}
 
 
 @view_config(route_name="customer_overview", permission="view",
@@ -136,7 +139,7 @@ def customer_overview(context, request):
         request, "Manage", "customer_manage", url_kw=item.to_dict(),
         class_="btn btn-primary")
 
-    return {"sidebar_data": customer_actions(request=request),
+    return {"sidebar_data": customer_links(request),
             "grid": grid}
 
 

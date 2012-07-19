@@ -15,7 +15,7 @@ from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, mk_form
 from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, get_nav_data
+from .helpers import menu_item, menu_came_from, get_nav_data
 
 
 
@@ -47,30 +47,35 @@ def get_model(obj):
 
 
 # TODO: Make these better?
-def entity_actions(obj, request):
+def entity_actions(request, obj=None):
     """
     Entity actions - on a entity page
     """
     # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
-    d = get_nav_data(request, extra={"type": obj.type})
+    data = get_nav_data(request)
 
-    links = entity_links(d)
+    links = entity_links(request, obj)
     actions = []
-    actions.append(menu_item(_("View"), "entity_view", **d))
-    actions.append(menu_item(_("Edit"), "entity_edit", **d))
-    actions.append(menu_item(_("Delete"), "entity_delete", **d))
+    actions.append(menu_item(_("View"), "entity_view", **data))
+    actions.append(menu_item(_("Edit"), "entity_edit", **data))
+    actions.append(menu_item(_("Delete"), "entity_delete", **data))
     actions.append(menu_item(_("Book me"), "booking_add",
-                _query=dict(came_from=request.url, entity=d["id"]), **d))
-    links.append({"value": _("Entity Actions"), "children": actions})
+                _query=dict(came_from=request.url, entity=data["id"]), **data))
+    links.append({"value": _("Actions"), "children": actions})
     return links
 
-def entity_links(data):
+
+def entity_links(request, obj=None):
     """
     Return some navigation links
     """
-    children = []
-    children.append(menu_item(_("Overview"), "entity_overview", **data))
-    return [{"value": _("Navigation"), "children": children}]
+    data = get_nav_data(request)
+
+    links = []
+    links.append(menu_came_from(request))
+    links.append(menu_item(_("Overview"), "entity_overview", **data))
+    links.append(menu_item(_("Add"), "entity_add", **data))
+    return [{"value": _("Navigation"), "children": links}]
 
 
 class CarSchema(colander.Schema):
@@ -97,38 +102,54 @@ class CarAddForm(AddFormView):
         schema = CarSchema()
         return schema
 
+    @property
+    def cancel_url(self):
+        return self.request.route_url("entity_overview",
+                **get_nav_data(self.request))
+
     def add_car_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        car = models.Car().update(appstruct).save()
+        car = models.Car(retailer=request.group).\
+                update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
-        location = request.route_url("entity_type_overview", type=self.item_type.lower())
+        location = request.route_url("entity_view"
+                **get_nav_data(self.request))
         return HTTPFound(location=location)
 
 
-class CarEditForm(EditFormView):
-    @property
-    def success_url(self):
-        return self.request.url
 
+class CarForm(EditFormView):
     def schema_factory(self):
         return CarSchema()
 
+    @property
+    def cancel_url(self):
+        return self.request.route_url("entity_view",
+                **get_nav_data(self.request))
+    success_url = cancel_url
 
-@view_config(route_name="entity_add", permission="add",
+    def save_success(self, appstruct):
+        return super(CarForm, self).save_success(appstruct)
+
+
+
+@view_config(route_name="entity_add", permission="view",
         renderer="add.mako")
 def entity_add(context, request):
+    type_ = request.GET.get("type")
+
     return mk_form(CarAddForm, context, request,
-        extra={"page_title": _("Add"), "sub_title": type_.title()})
+            extra={"sidebar_data": entity_links(request), "page_title": _("Add")})
 
 
-@view_config(route_name="entity_edit", permission="edit",
+@view_config(route_name="entity_edit", permission="view",
             renderer="edit.mako")
 def entity_edit(context, request):
     obj = models.Entity.query.filter_by(
-        deleted=False, id=request.matchdict["id"]).one()
-    return mk_form(CarEditForm, obj, request,
-        extra=dict(sidebar_data=entity_actions(obj, request)))
+        id=request.matchdict["id"], retailer=request.group).one()
+    return mk_form(CarForm, obj, request,
+        extra=dict(sidebar_data=entity_actions(request, obj)))
 
 
 @view_config(route_name="entity_view", permission="view",
@@ -144,7 +165,7 @@ def entity_view(context, request):
         models.Booking.exposed_attrs())
 
     return {
-        "sidebar_data": entity_actions(entity, request),
+        "sidebar_data": entity_actions(request, entity),
         "sub_title": entity.title,
         "entity": entity,
         "b_grid_latest": b_grid_latest}
@@ -161,7 +182,7 @@ def entity_delete(context, request):
         return HTTPFound(location=request.route_url(
             "entity_type_overview", type=entity.type))
     return {
-        "sidebar_data": entity_actions(entity, request),
+        "sidebar_data": entity_actions(request, obj),
         "sub_title": entity.title}
 
 
@@ -186,13 +207,13 @@ def entity_overview(context, request):
         class_="btn btn-primary")
 
     return {
-        "sidebar_data": entity_links(get_nav_data(request)),
+        "sidebar_data": entity_links(request),
         "entity_grid": grid}
 
 
 def includeme(config):
-    config.add_route("entity_add", "/@{group}/entity/add")
-    config.add_route("entity_edit", "/@{group}/entity/{id}/edit")
-    config.add_route("entity_view", "/@{group}/entity/{id}/view")
-    config.add_route("entity_delete", "/@{group}/entity/{id}/delete")
-    config.add_route("entity_overview", "/@{group}/entity")
+    config.add_route("entity_add", "/g,{group}/entity/add")
+    config.add_route("entity_edit", "/g,{group}/entity/{id}/edit")
+    config.add_route("entity_view", "/g,{group}/entity/{id}/view")
+    config.add_route("entity_delete", "/g,{group}/entity/{id}/delete")
+    config.add_route("entity_overview", "/g,{group}/entity")
