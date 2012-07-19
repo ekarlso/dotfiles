@@ -1,6 +1,10 @@
 <%inherit file="base-bare.mako"/>
-<%block name="navbar_local">${api.get_nav("drop_companies")}</%block>
 
+<%block name="navbar_local">
+    % if request.user:
+        ${api.get_nav("drop_companies")}
+    % endif
+</%block>
 
 <%doc>A overridable left_wrapper that always provides a sidebar if sidebar_tree is available</%doc>
 <%block name="left_wrapper">

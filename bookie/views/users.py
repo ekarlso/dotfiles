@@ -71,10 +71,8 @@ def _mangle_appstruct(appstruct):
 
 
 def group_from_request(request):
-    if "group_id" in request.GET:
-        group = request.GET["group_id"]
-    elif "group_name" in request.GET:
-        group = request.GET["group_name"]
+    if "id" in request.GET:
+        group = request.GET["id"]
     else:
         group = None
     return group
@@ -284,15 +282,15 @@ def user_account(context, request):
         extra={"sidebar_data": prefs_menu()})
 
 
-@view_config(route_name="user_tenant_setter", permission="view")
-def user_tenant_setter(context, request):
+@view_config(route_name="user_tenant_set", permission="view")
+def user_tenant_set(context, request):
     """
     Method to help change tenants / groups.
 
     It sets the tenant if a "name" is in the params list and forwards the user
     to that tenants dashboard
     """
-    tenant = group_from_request(request)
+    id_ = group_from_request(request)
 
     def redirect(group):
         location = request.route_url("retailer_home", group=group)
@@ -301,19 +299,19 @@ def user_tenant_setter(context, request):
     # NOTE: Check for tenant
     # * Check > update db with new tenant > forward
     # * No tenant > forward to current tenant or default
-    if tenant:
+    if id_:
         # NOTE: Ok, so if there's a group and it's valid let's update in redis
         # and forward
-        if request.user.has_group(tenant):
-            request.user.current_group = tenant
+        if request.user.has_group(id_):
+            request.user.current_group_id = id_
             request.user.save()
-            return redirect(tenant)
+            return redirect(id_)
         else:
             raise HTTPForbidden
     else:
-        tenant = request.group or request.user.current_group
+        id_ = request.group or request.user.current_group
         if tenant:
-            return redirect(tenant)
+            return redirect(id_)
         else:
             return HTTPFound(location=request.route_url("user_tenants"))
 
@@ -336,5 +334,5 @@ def includeme(config):
 
     # User specific
     config.add_route("user_account", "/settings/account")
-    config.add_route("user_tenant_setter", "/tenant/set")
+    config.add_route("user_tenant_set", "/tenant/set")
     config.add_route("user_tenants", "/tenant")

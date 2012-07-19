@@ -5,8 +5,10 @@
 % if not request.user.retailers:
     <p>You do not have any tenants</p>
 % else:
-    <p>${request.user.current_group}
+    % if not request.user.current_group:
     <p>It doesn't look like you have any tenant set, please choose one:</p>
+    % endif
+
     <table class="table table-condensed">
         <thead>
             <tr>
@@ -21,8 +23,12 @@
                 <td>${group}</td>
                 <td>${api.name_to_camel(group.group_type)}</td>
                 <td>
-                    <% url = request.route_url('user_tenant_setter', _query={'name': group.group_name}) %>
-                    <a class="btn disabled" href="${url}">Set to current</a>
+                <% url = request.route_url("user_tenant_set", _query={"id": group.id}) %>
+                % if not request.user.is_current(group):
+                    <a class="btn" href="${url}">Set to current</a>
+                % else:
+                    Already active
+                % endif
                 </td>
             % endfor
             </tr>

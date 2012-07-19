@@ -154,15 +154,21 @@ class User(Base, UserMixin):
     first_name = Column(UnicodeText, default=u'')
     middle_name = Column(UnicodeText, default=u'')
     last_name = Column(UnicodeText, default=u'')
-    current_group = Column(Unicode(80))
+
+    current_group = relationship("Group", uselist=False)
+    current_group_id = Column(Integer, ForeignKey("groups.id"))
+
+    def is_current(self, group):
+        return group.id == self.current_group_id \
+                if self.current_group_id else False
 
     @property
     def retailers(self):
         return [g for g in self.groups if g.group_type == "retailer"]
 
-    def has_group(self, group_id, group_type="retailer"):
+    def has_group(self, id_, group_type="retailer"):
         count = self.groups_dynamic.filter_by(
-                id=group_id, group_type=group_type).count()
+                id=id_, group_type=group_type).count()
         return True and count == 1 or False
 
 

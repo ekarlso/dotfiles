@@ -1,4 +1,8 @@
+import logging
+
 from bookie.utils import _
+
+LOG = logging.getLogger(__name__)
 
 
 def nav_top(context, request):
@@ -15,6 +19,9 @@ def nav_top(context, request):
 
 
 def drop_companies(context, request):
+    # NOTE: The Tenant chooser
+    setter = {"value": "Choose a default", "route": "user_tenants"}
+
     children = []
     children.append({"value": _("Contact a group"), "icon": "message",
         "route": "contact"})
@@ -22,7 +29,21 @@ def drop_companies(context, request):
         children.append(
             {"value": g.group_name, "icon": "group",
                 "route": "retailer_home", "url_kw": {"group": g.group_name}})
-    return "dropdown_button", {"value": _("Companies"), "icon": "dashboard", "children": children}
+
+    # NOTE: Company chooser menu
+    current = request.user.current_group
+    if current:
+        menu = {
+                "value": current.group_name,
+                "route": "retailer_home",
+                "url_kw": {"group": current.id}}
+    else:
+        menu = setter
+
+    menu["icon"] = "dashboard"
+    menu["value"] = "Company: " + menu["value"]
+    menu["children"] = children
+    return "dropdown_button", menu
 
 
 def drop_user(context, request):

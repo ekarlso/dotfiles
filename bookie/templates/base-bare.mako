@@ -13,7 +13,9 @@
             ${api.get_nav("nav_top")}
             </%block>
 
+            % if request.user:
             ${api.get_nav("drop_user")}
+            % endif
             <%block name="navbar_local"/>
         </div>
     </div>
