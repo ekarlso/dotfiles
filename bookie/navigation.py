@@ -8,7 +8,9 @@ def nav_top(context, request):
         {"value": "Booking", "check": request.group,
             "route": "booking_overview", "url_kw": {"group": request.group}},
         {"value": "Entity", "check": request.group,
-            "route": "entity_overview", "url_kw": {"group": request.group}}]}
+            "route": "entity_overview", "url_kw": {"group": request.group}},
+        {"value": "Customer", "check": request.group,
+            "route": "customer_overview", "url_kw": {"group": request.group}}]}
     return "navigation", data
 
 
