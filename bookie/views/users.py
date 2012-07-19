@@ -175,7 +175,7 @@ class UserAddForm(AddFormView):
         self.request.session.flash(_(u'${title} added.',
                                      mapping=dict(title=user.title)),
                                      'success')
-        return HTTPFound(location=request.route_url("principal_manage"))
+        return HTTPFound(location=self.request.route_url("principal_manage"))
 
 
 class GroupAddForm(AddFormView):
@@ -191,7 +191,7 @@ class GroupAddForm(AddFormView):
     def add_group_success(self, appstruct):
         _mangle_appstruct(appstruct)
         models.Group().from_dict(appstruct).save()
-        return HTTPFound(location=request.route_url("principals_manage"))
+        return HTTPFound(location=self.request.route_url("principals_manage"))
 
 
 class UserForm(EditFormView):
@@ -221,7 +221,7 @@ class UserEditForm(UserForm):
 
     @property
     def cancel_url(self):
-        return request.route_url("principals_manage")
+        return self.request.route_url("principals_manage")
 
     def save_success(self, appstruct):
         _mangle_appstruct(appstruct)
