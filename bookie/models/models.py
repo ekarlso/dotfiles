@@ -246,7 +246,7 @@ class Entity(Base):
     A Entity is a product / thing to be rented out to a customer
     """
     __tablename__ = "entity"
-    __expose_attrs__ = ["id", "brand", "model", "produced", "identifier", "color"]
+    __expose_attrs__ = ["brand", "model", "produced", "identifier", "color"]
     __format_string__ = '{brand}: {model} - {produced} - {identifier}'
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     type = Column(Unicode(40))
