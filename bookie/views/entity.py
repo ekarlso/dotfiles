@@ -178,11 +178,12 @@ def entity_overview(context, request):
     grid = PyramidGrid(entities, columns, request=request,
             url=request.current_route_url)
 
+    grid.exclude_ordering = ["id"]
+    grid.labels["id"] = ""
+
     grid.column_formats["id"] = lambda cn, i, item: column_link(
         request, "Manage", "entity_view", url_kw=item.to_dict(),
         class_="btn btn-primary")
-    grid.exclude_ordering = ["id"]
-    grid.labels["id"] = ""
 
     return {
         "sidebar_data": entity_links(get_nav_data(request)),

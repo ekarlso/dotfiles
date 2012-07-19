@@ -47,6 +47,18 @@ class CustomerSchema(colander.Schema):
     name = colander.SchemaNode(
         colander.String(),
         title=_("Name"))
+    organization_id = colander.SchemaNode(
+        colander.String(),
+        title=_("Organization ID"))
+    contact = colander.SchemaNode(
+        colander.String(),
+        title=_("Contact"))
+    email = colander.SchemaNode(
+        colander.String(),
+        title=_("E-Mail"))
+    phone = colander.SchemaNode(
+        colander.String(),
+        title=_("Phone"))
 
 
 class CustomerAddForm(AddFormView):
@@ -114,13 +126,15 @@ def customer_overview(context, request):
     customers = models.Customer.search(filter_by=filter_by)
 
     columns = ["id"] + models.Customer.exposed_attrs()
-    grid = PyramidGrid(customers, columns, request=request, url=request.current_route_url)
+    grid = PyramidGrid(customers, columns, request=request,
+            url=request.current_route_url)
 
     grid.exclude_ordering = ["id"]
+    grid.labels["id"] = ""
+
     grid.column_formats["id"] = lambda cn, i, item: column_link(
         request, "Manage", "customer_manage", url_kw=item.to_dict(),
         class_="btn btn-primary")
-
 
     return {"sidebar_data": customer_actions(request=request),
             "grid": grid}
