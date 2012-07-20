@@ -4,9 +4,6 @@ import re
 
 import colander
 import deform
-from deform import Button
-from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
-    CheckboxChoiceWidget, CheckboxChoiceWidget, PasswordWidget, SequenceWidget
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.exceptions import Forbidden
 from pyramid.request import Request
@@ -20,6 +17,7 @@ from .helpers import AddFormView, EditFormView, mk_form
 from .helpers import PyramidGrid, column_link, wrap_td
 from .helpers import menu_item, menu_came_from, get_nav_data
 from .helpers import form
+from .search import search_options
 
 
 
@@ -111,12 +109,12 @@ class BookingSchema(colander.Schema):
         colander.String(),
         validator=entity_validate,
         title=_("Entity to book"),
-        widget=AutocompleteInputWidget())
+        widget=deform.widget.AutocompleteInputWidget())
     customer = colander.SchemaNode(
         colander.String(),
         validator=customer_validate,
         title=_("Customer"),
-        widget=AutocompleteInputWidget())
+        widget=deform.widget.AutocompleteInputWidget())
     price = colander.SchemaNode(
         colander.Int(),
         title=_("Price"))
@@ -124,7 +122,7 @@ class BookingSchema(colander.Schema):
         colander.String(),
         validator=location_validate,
         title=_("Start location"),
-        widget=AutocompleteInputWidget())
+        widget=deform.widget.AutocompleteInputWidget())
     start_at = colander.SchemaNode(
         colander.DateTime(None),
         title=_("Starts At"))
@@ -132,7 +130,7 @@ class BookingSchema(colander.Schema):
         colander.String(),
         validator=location_validate,
         title=_("End location"),
-        widget=AutocompleteInputWidget())
+        widget=deform.widget.AutocompleteInputWidget())
     end_at = colander.SchemaNode(
         colander.DateTime(None),
         title=_("Ends time"))
@@ -140,8 +138,8 @@ class BookingSchema(colander.Schema):
 
 class BookingAddForm(form.AddFormView):
     item_type = _(u"Booking")
-    buttons = (Button("add_booking", _("Add Booking")),
-                Button("cancel", _("Cancel")))
+    buttons = (deform.Button("add_booking", _("Add Booking")),
+                deform.Button("cancel", _("Cancel")))
 
     def schema_factory(self):
         schema = BookingSchema()
@@ -209,9 +207,9 @@ def booking_manage(context, request):
 def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
-    filter_by = dict(
-            retailer=request.group)
-    bookings = models.Booking.search(filter_by=filter_by)
+    search_opts = search_options(request)
+    search_opts["filter_by"]["retailer"] = request.group
+    bookings = models.Booking.search(**search_opts)
 
     columns = ["id"] + models.Booking.exposed_attrs() + ["entity"]
     grid = PyramidGrid(bookings, columns, request=request,

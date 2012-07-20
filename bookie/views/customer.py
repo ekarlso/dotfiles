@@ -2,8 +2,6 @@ import logging
 
 import colander
 import deform
-from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
-    CheckboxChoiceWidget, CheckboxChoiceWidget, PasswordWidget, SequenceWidget
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.exceptions import Forbidden
 from pyramid.request import Request
@@ -16,6 +14,7 @@ from ..utils import _, camel_to_name, name_to_camel
 from .helpers import AddFormView, EditFormView, mk_form
 from .helpers import PyramidGrid, column_link, wrap_td
 from .helpers import menu_item, menu_came_from, get_nav_data
+from .search import search_options
 
 
 LOG = logging.getLogger(__name__)
@@ -124,9 +123,9 @@ def customer_manage(context, request):
         renderer="customer_overview.mako")
 def customer_overview(context, request):
 
-    filter_by = dict(
-            retailer=request.group)
-    customers = models.Customer.search(filter_by=filter_by)
+    search_opts = search_options(request)
+    search_opts["filter_by"]["retailer"] = request.group
+    customers = models.Customer.search(**search_opts)
 
     columns = ["id"] + models.Customer.exposed_attrs()
     grid = PyramidGrid(customers, columns, request=request,
