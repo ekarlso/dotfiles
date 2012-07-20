@@ -3,6 +3,9 @@ import pdb
 
 import colander
 import deform
+from deform import Button
+from deform.widget import AutocompleteInputWidget, CheckedPasswordWidget, \
+    CheckboxChoiceWidget, CheckboxChoiceWidget, PasswordWidget, SequenceWidget
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.exceptions import Forbidden
 from pyramid.request import Request
@@ -54,7 +57,7 @@ def entity_actions(request, obj=None):
     links = entity_links(request, obj)
     actions = []
     actions.append(menu_item(_("View"), "entity_view", **data))
-    actions.append(menu_item(_("Edit"), "entity_manage", **data))
+    actions.append(menu_item(_("Edit"), "entity_edit", **data))
     actions.append(menu_item(_("Delete"), "entity_delete", **data))
     actions.append(menu_item(_("Book me"), "booking_add",
                 _query=dict(came_from=request.url, entity=data["id"]), **data))
@@ -72,7 +75,6 @@ def entity_links(request, obj=None):
     links.append(menu_came_from(request))
     links.append(menu_item(_("Overview"), "entity_overview", **data))
     links.append(menu_item(_("Add"), "entity_add", **data))
-    links.append(menu_item(_("Quick / Bulk Add"), "entity_bulk_add", **data))
     return [{"value": _("Navigation"), "children": links}]
 
 
@@ -93,8 +95,8 @@ class CarSchema(colander.Schema):
 
 class CarAddForm(AddFormView):
     item_type = u"Car"
-    buttons = (deform.Button("add_car", _("Add Car")),
-                deform.Button("cancel", _("Cancel")))
+    buttons = (Button("add_car", _("Add Car")),
+                Button("cancel", _("Cancel")))
 
     def schema_factory(self):
         schema = CarSchema()
@@ -107,56 +109,14 @@ class CarAddForm(AddFormView):
 
     def add_car_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        car = models.Car(retailer=self.request.group).\
+        car = models.Car(retailer=request.group).\
                 update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
-        location = self.request.route_url("entity_view",
-                id=car.id, **get_nav_data(self.request))
-        return HTTPFound(location=location)
-
-
-class Row(colander.TupleSchema):
-    brand = colander.SchemaNode(colander.String())
-    model = colander.SchemaNode(colander.String())
-    produced = colander.SchemaNode(colander.Integer())
-    identifier = colander.SchemaNode(colander.String())
-    metadata = colander.SchemaNode(colander.String(), missing={})
-
-
-class Rows(colander.SequenceSchema):
-    row = Row()
-
-
-class Schema(colander.Schema):
-    csv = Rows(widget=deform.widget.TextAreaCSVWidget(rows=20, columns=100))
-
-
-# TODO: Make it possible to choose / enter in Entity Type to load
-class CarBulkForm(CarAddForm):
-    buttons = (deform.Button("bulk_load", _("Bulk Load")),
-            deform.Button("cancel", _("Cancel")))
-
-    def schema_factory(self):
-        return Schema()
-
-    def bulk_load_success(self, appstruct):
-        appstruct.pop('csrf_token', None)
-        for row in appstruct["csv"]:
-            # NOTE: First create new Entity
-            name = "%s: %s - %s - %s" % row[:4]
-
-            entity = models.Entity(
-                    type="car", retailer=self.request.group, name=name)
-            # NOTE: Then the metadata using x.set_meta
-            meta_data = [pair.split("=") for pair in row[4].split(":")]
-            for k, v in meta_data:
-                models.EntityMetadata(name=k, value=v, entity=entity)
-            entity.save()
-
-        location = self.request.route_url("entity_overview",
+        location = request.route_url("entity_view"
                 **get_nav_data(self.request))
         return HTTPFound(location=location)
+
 
 
 class CarForm(EditFormView):
@@ -183,22 +143,11 @@ def entity_add(context, request):
             extra={"sidebar_data": entity_links(request), "page_title": _("Add")})
 
 
-@view_config(route_name="entity_bulk_add", permission="view",
-        renderer="add.mako")
-def entity_bulk_add(context, request):
-    form = mk_form(CarBulkForm, context, request,
-            extra={"sidebar_data": entity_links(request),
-                "page_title": _("Bulk / Quick add")})
-    return form
-
-
-@view_config(route_name="entity_manage", permission="view",
+@view_config(route_name="entity_edit", permission="view",
             renderer="edit.mako")
-def entity_manage(context, request):
-    obj = models.Entity.get_by(
-            id=request.matchdict["id"],
-            retailer=request.group)
-
+def entity_edit(context, request):
+    obj = models.Entity.query.filter_by(
+        id=request.matchdict["id"], retailer=request.group).one()
     return mk_form(CarForm, obj, request,
         extra=dict(sidebar_data=entity_actions(request, obj)))
 
@@ -206,9 +155,9 @@ def entity_manage(context, request):
 @view_config(route_name="entity_view", permission="view",
             renderer="entity_view.mako")
 def entity_view(context, request):
-    entity = models.Entity.get_by(
-            id=request.matchdict["id"],
-            retailer=request.group)
+    deleted = request.params.get("deleted", False)
+    entity = models.Entity.query.filter_by(
+        deleted=deleted, id=request.matchdict["id"]).one()
 
     ##b_latest = models.Booking.latest(entity=entity)
     b_grid_latest = PyramidGrid(
@@ -225,10 +174,8 @@ def entity_view(context, request):
 @view_config(route_name="entity_delete", permission="delete",
             renderer="delete.mako")
 def entity_delete(context, request):
-    entity = models.Entity.get_by(
-            id=request.matchdict["id"],
-            retailer=request.group).one()
-
+    entity = models.Entity.query.filter_by(
+        deleted=False, id=request.matchdict["id"]).one()
     if request.params.get("do") == "yes":
         entity.delete()
         request.session.flash(_("Delete successful"))
@@ -266,8 +213,7 @@ def entity_overview(context, request):
 
 def includeme(config):
     config.add_route("entity_add", "/g,{group}/entity/add")
-    config.add_route("entity_bulk_add", "/g,{group}/entity/bulk_add")
-    config.add_route("entity_manage", "/g,{group}/entity/{id}/manage")
+    config.add_route("entity_edit", "/g,{group}/entity/{id}/edit")
     config.add_route("entity_view", "/g,{group}/entity/{id}/view")
     config.add_route("entity_delete", "/g,{group}/entity/{id}/delete")
     config.add_route("entity_overview", "/g,{group}/entity")
