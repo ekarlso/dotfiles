@@ -11,14 +11,15 @@
     <link rel="stylesheet" type="text/css" href="${url}" />
 % endfor
 
-% for script in environment["js"].urls():
-    <script type="text/javascript" src="${script}"></script>
-% endfor
-
 <!-- 3rd party -->
 ${api.css_link([
     "deform:static/css/jquery-ui-timepicker-addon.css"
 ])|n}
+
+% for script in environment["js"].urls():
+    <script type="text/javascript" src="${script}"></script>
+% endfor
+
 
 ${api.script_link([
     "deform:static/scripts/jquery-ui-timepicker-addon.js",
