@@ -17,7 +17,10 @@ def _construct(data):
     opts = {}
     for key in ["order_col", "order_dir", "limit", "marker_id"]:
         if key in data:
-            opts[key] = data[key]
+            value = data[key]
+            if key == "order_dir" and value == "dsc":
+                value = "desc"
+            opts[key] = value
     return filter_by, opts
 
 
