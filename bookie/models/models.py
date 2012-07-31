@@ -37,6 +37,11 @@ SECURITY_PERMISSIONS = [
 
 PERMISSIONS = SECURITY_PERMISSIONS
 
+STATUS = {
+    0: "unread",
+    1: "read"
+}
+
 
 ENTITY = r"^(?P<brand>\S+): (?P<model>\S+) - " + \
         "(?P<produced>\d{4}) - (?P<identifier>\S+)$"
@@ -71,7 +76,7 @@ class Group(Base, GroupMixin):
     __possible_permissions__ = permission_names(PERMISSIONS)
 
     _group_type = Column("group_type", Unicode(20), nullable=False)
-    organization_id = Column(Integer)
+    uuid = Column(Unicode(36), default=utils.generate_uuid)
 
     @declared_attr
     def __mapper_args__(cls):
@@ -83,9 +88,8 @@ class Group(Base, GroupMixin):
         return self._group_type
 
     @group_type.setter
-    def set_type(self, value):
+    def group_type_set(self, value):
         self._group_type = value
-
 
 
 class Retailer(Group):
@@ -158,6 +162,19 @@ class User(Base, UserMixin):
     current_group = relationship("Group", uselist=False)
     current_group_id = Column(Integer, ForeignKey("groups.id"))
 
+    message_associations = relationship("MessageAssociation", backref="user")
+
+    def __unicode__(self):
+        return self.title
+
+    @property
+    def title(self):
+        """
+        Override in case our parents title() returns spaces
+        """
+        if re.search("^(\s+|)$", super(User, self).title):
+            return self.user_name
+
     def is_current(self, group):
         return group.id == self.current_group_id \
                 if self.current_group_id else False
@@ -204,7 +221,45 @@ class Event(Base):
 
     user_id = Column(Integer, ForeignKey("users.id",
                     onupdate="CASCADE", ondelete="CASCADE"))
-    group = relationship("User", backref="events")
+    user = relationship("User", backref="events")
+
+
+class MessageAssociation(Base):
+    """
+    A Mapping of pr user data towards the message
+    """
+    __tablename__ = "messages_map"
+
+    _status = Column("status", Integer, default=0)
+    extra = Column(JSONType())
+
+    user_id = Column(Integer, ForeignKey("users.id",
+        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+
+    message_id = Column(Unicode(36), ForeignKey("messages.id",
+        onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    message = relationship("Message", backref="associations")
+
+    @hybrid_property
+    def status(self):
+        return STATUS[self._status]
+
+    @status.setter
+    def status_set(self, value):
+        assert(value in STATUS.values(), True)
+
+class Message(Base):
+    """
+    A Message that simply holds the content of the message for now.
+    """
+    __tablename__ = "messages"
+    id = Column(Unicode(36), default=utils.generate_uuid, primary_key=True)
+    content = Column(UnicodeText)
+    extra = Column(JSONType())
+
+    sender_id = Column(Integer, ForeignKey("users.id"))
+    sender = relationship("User", backref="messages")
+    receivers = Column(JSONType())
 
 
 # NOTE: Map categories >< entities
@@ -306,6 +361,7 @@ class Entity(Base):
         except exc.NoResultFound:
             return None
 
+
 class EntityMetadata(Base):
     __tablename__ = "entity_metadata"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
@@ -314,7 +370,6 @@ class EntityMetadata(Base):
 
     entity_id = Column(Unicode(36), ForeignKey("entity.id"))
     entity = relationship("Entity", backref=backref("metadata", lazy='dynamic'))
-
 
 
 class DrivableEntity(Entity):
@@ -426,10 +481,6 @@ class Booking(Base):
 
         query = super(Booking, cls)._prepare_search(*args, filter_by=filter_by, query=query, **kw)
         return query
-
-    @classmethod
-    def search(cls, **kw):
-        return cls._prepare_search(**kw).all()
 
     @classmethod
     def latest(cls, limit=5, time_since=1, filter_by={}):

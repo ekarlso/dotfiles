@@ -7,6 +7,8 @@ LOG = logging.getLogger(__name__)
 
 def nav_top(context, request):
     data = {"check": request.user, "children": [
+        #{"values": "Dashboard", "check": request.user,
+        #    "route": "dashboard"},
         {"value": "Home", "check": request.group,
             "route": "retailer_home", "url_kw": {"group": request.group}},
         {"value": "Booking", "check": request.group,
@@ -54,4 +56,6 @@ def drop_user(context, request):
             {"value": _("Preferences"), "icon": "user", "route": "user_account"},
             {"value": _("Reset password"), "icon": "wrench",
                 "route": "reset_password"},
+            {"value": _("Messages"), "icon": "envelope",
+                "route": "message_overview"},
             {"value": _("Logout"), "icon": "warning-sign", "route": "logout"}]}
