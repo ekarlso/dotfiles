@@ -40,68 +40,73 @@ def populate_samples():
                     contact="Steffen Soma", email="stefsoma@gmail.com",
                     phone="+47 xxxxxxxx")
 
-        retailer = Retailer(
+        retailer_1 = Retailer(
             group_name="RentOurWrecks Inc",
             organization_id=3232,
             customers=[customer]).save()
 
-        user = User(user_name="booker1", status=1, groups=[retailer],
-                    email="booker1@random.com")
-        user.set_password("booker1")
+        user = User(user_name="r1_booker", status=1, groups=[retailer_1],
+                    email="r1_booker@random.com")
+        user.set_password("r1_booker")
+        user.save()
+
+        user = User(user_name="r1_admin", status=1, groups=[retailer_1],
+                    email="r1_admin@random.com")
+        user.set_password("r1_admin")
         user.save()
 
         loc_bryne = Location(
             address="Road 1",
-            city="Stavanger", postal_code=4000, retailer=retailer)
+            city="Stavanger", postal_code=4000, retailer=retailer_1)
         loc_stavanger = Location(
             address="RoadStavanger 1",
-            city="Stavanger", postal_code=4035, retailer=retailer)
+            city="Stavanger", postal_code=4035, retailer=retailer_1)
 
         sub_cars = category_dict(
             ["Sedan", "Stationwagon", "SUV", "Coupe", "Pickup", "7 seats",
                 "9 seats"],
-            retailer.id)
+            retailer_1.id)
         top_cars = Category(
             resource_name="Cars",
-            owner_group_id=retailer.id,
+            owner_group_id=retailer_1.id,
             children=sub_cars.values()).save()
-        sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"], retailer.id)
+        sub_transport = category_dict(["Caddy", "6m 3", "11 m3", "18 m3"], retailer_1.id)
         top_transport = Category(
             resource_name="Transport",
-            owner_group_id=retailer.id,
+            owner_group_id=retailer_1.id,
             children=sub_transport.values()).save()
 
-        focus_1 = Car(retailer=retailer, categories=[sub_cars["Sedan"]])
+        focus_1 = Car(retailer=retailer_1, categories=[sub_cars["Sedan"]])
         focus_1.name = "Ford: Focus - 2012 - DF00005"
         focus_1.color = "black"
 
-        focus_2 = Car(retailer=retailer, categories=[sub_cars["Sedan"]]).save()
+        focus_2 = Car(retailer=retailer_1, categories=[sub_cars["Sedan"]]).save()
         focus_2.name = "Ford: Focus - 2012 - DF00006"
         focus_2.color = "black"
 
-        s60_1 = Car(retailer=retailer, categories=[sub_cars["Sedan"]]).save()
+        s60_1 = Car(retailer=retailer_1, categories=[sub_cars["Sedan"]]).save()
         s60_1.name = "Volvo: S60 - 2011 - DL00007"
         s60_1.color = "black"
 
-        s60_2 = Car(retailer=retailer, categories=[sub_cars["Sedan"]]).save()
+        s60_2 = Car(retailer=retailer_1, categories=[sub_cars["Sedan"]]).save()
         s60_2.name = "Volvo: S60 - 2011 - DL00008"
         s60_2.color = "black"
 
         v60_1 = Car(
-            retailer=retailer,
+            retailer=retailer_1,
             categories=[sub_cars["Stationwagon"]]).save()
         v60_1.name = "Volvo: V60 - 2012 - DL00003"
         v60_1.color = "black"
 
-        v60_2 = Car(retailer=retailer, categories=[sub_cars["Stationwagon"]])
+        v60_2 = Car(retailer=retailer_1, categories=[sub_cars["Stationwagon"]])
         v60_2.name = "Volvo: V60 - 2012 - DL00004"
         v60_2.color = "black"
 
-        outlander_1 = Car(retailer=retailer, categories=[sub_cars["SUV"]])
+        outlander_1 = Car(retailer=retailer_1, categories=[sub_cars["SUV"]])
         outlander_1.name = "Mitsubishi: Outlander - 2011 - DL00001"
         outlander_1.color = "black"
 
-        outlander_2 = Car(retailer=retailer, categories=[sub_cars["SUV"]])
+        outlander_2 = Car(retailer=retailer_1, categories=[sub_cars["SUV"]])
         outlander_2.name = "Mitsubishi: Outlander - 2011 - DL00002"
         outlander_2.color = "black"
         outlander_2.save()
@@ -132,9 +137,15 @@ def populate_samples():
             group_name='TransportVehicles Inc',
             organization_id=3232,
             customers=[customer]).save()
-        user = User(user_name="booker2", status=1, groups=[retailer_2],
-                    email="booker2@random.com").save()
-        user.set_password("booker2")
+
+        user = User(user_name="r2_admin", status=1, groups=[retailer_2],
+                    email="r2_admin@random.com").save()
+        user.set_password("r2_admin")
+        user.save()
+
+        user = User(user_name="r2_booker", status=1, groups=[retailer_2],
+                    email="r2_booker@random.com").save()
+        user.set_password("r2_booker")
         user.save()
 
         user = User(user_name="steffen", status=1, groups=[retailer_2],
@@ -188,3 +199,9 @@ def populate_samples():
             start_location=loc_bryne, end_location=loc_stavanger)
         Booking(price=5, customer=customer, entity=entity_2,
             start_location=loc_stavanger, end_location=loc_bryne)
+
+
+        user = User(user_name="booker", status=1, groups=[retailer_1, retailer_2],
+                    email="booker@random.com")
+        user.set_password("booker")
+        user.save()
