@@ -13,7 +13,7 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _
-from . import helpers
+from . import helpers, search
 
 
 def possible_recipients(request):
@@ -65,7 +65,7 @@ def message_links(request, obj=None):
     return [{"value": _("Navigation"), "children": [
         {"value": _("Inbox"), "route": "message_overview"},
         {"value": _("Sent"), "route": "message_overview",
-            "url_kw": dict(_query=dict(action="sent"))}
+            "url_kw": dict(_query=dict(show="sent"))}
         ]}]
 
 @view_config(route_name="contact", renderer="misc/contact.mako")
@@ -158,29 +158,36 @@ def message_send(context, request):
 @view_config(route_name="message_overview", permission="view",
         renderer="grid.mako")
 def message_overview(context, request):
-    show = request.params.get("action", "inbox")
+    params = request.params.copy()
+    show = params.pop("show", "inbox")
+
+    # NOTE: Let us use search_opts
+    search_opts = search.search_options(params)
 
     cols = ["id", "created_at"]
     if show == "inbox":
-        filters = [models.MessageAssociation.user_id==request.user.id]
+        search_opts["filters"] =  [models.MessageAssociation.user_id==request.user.id]
         cols.append("sender")
     elif show == "sent":
-        filters = [models.Message.sender==request.user]
+        search_opts["filters"] = [models.Message.sender==request.user]
         cols.append("receivers")
-    messages = models.Message.search(filters=filters)
+
+    # NOTE: Add in User model.
+    query = models.Message.query.join(models.User).\
+            filter(models.User.id==models.MessageAssociation.user_id)
+    messages = models.Message.search(query=query, **search_opts)
 
     grid = helpers.PyramidGrid(messages, cols)
     grid.labels["id"] = ""
     grid.labels["created_at"] = _("Sent at")
 
-    came_from = {"came_from": request.current_route_url()}
-
     grid.column_formats["id"] = lambda cn, i, item: helpers.column_link(
         request, "View", "message_view",
-        url_kw=dict(came_from.items() + item.to_dict().items()),
+        url_kw=dict(came_from=request.current_route_url(), id=item.id),
         class_="btn btn-primary")
 
-    return {"sidebar_data": message_links(request), "page_title": "Messages", "sub_title": show.title(), "grid": grid}
+    return {"sidebar_data": message_links(request),
+            "page_title": "Messages", "sub_title": show.title(), "grid": grid}
 
 
 @view_config(route_name="message_view", permission="view",
