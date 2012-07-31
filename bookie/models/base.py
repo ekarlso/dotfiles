@@ -232,8 +232,8 @@ class BaseModel(object):
         if marker_id is not None:
             marker_obj = cls.get_by(id=marker_id)
 
-        # NOTE: Add pagination!!
-        query = cls.paginate_query(query, cls, limit,
+            # NOTE: Add pagination!!
+            query = cls.paginate_query(query, cls, limit,
                 [order_col, "created_at", "id"], marker=marker_obj,
                 order_dir=order_dir)
         return query
