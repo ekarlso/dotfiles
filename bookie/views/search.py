@@ -1,6 +1,7 @@
-from bookie.models.models import *
+from pyramid.request import Request
 import re
 
+from bookie.models.models import *
 
 def _construct(data):
     def _fkey(key):
@@ -24,11 +25,12 @@ def _construct(data):
     return filter_by, opts
 
 
-def search_options(request):
+def search_options(obj):
     """
     Helper function that extracts filters from request.params and reached down
     into Model code and verifies them
     """
-    filter_by, opts = _construct(request.params.copy())
+    params = obj.params.copy() if isinstance(obj, Request) else obj
+    filter_by, opts = _construct(obj)
     opts["filter_by"] = filter_by
     return opts
