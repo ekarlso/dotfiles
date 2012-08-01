@@ -7,7 +7,7 @@ import deform_bootstrap.widget as db_widget
 import sqlalchemy
 import sqlalchemy.orm
 
-from pyramid.httpexceptions import HTTPFound
+import pyramid.httpexceptions as exceptions
 from pyramid.threadlocal import get_current_request
 from pyramid.view import view_config
 
@@ -28,7 +28,7 @@ def possible_recipients(request):
         recipients["g:" + group.uuid] = group.group_name
 
         for user in group.users:
-            recipients["u:" + user.user_name] = user.title
+            recipients["u:" + user.user_name] = user.display_name
     return recipients
 
 
@@ -62,11 +62,13 @@ def message_links(request, obj=None):
     """
     Global message links
     """
-    return [{"value": _("Navigation"), "children": [
-        {"value": _("Inbox"), "route": "message_overview"},
-        {"value": _("Sent"), "route": "message_overview",
-            "url_kw": dict(_query=dict(show="sent"))}
-        ]}]
+    links = []
+    links.append({"value": _("New"), "route": "message_send"})
+    links.append({"value": "divider"})
+    links.append({"value": _("Inbox"), "route": "message_overview"})
+    links.append({"value": _("Sent"), "route": "message_overview",
+        "url_kw": dict(_query=dict(show="sent"))})
+    return [{"value": _("Navigation"), "children": links}]
 
 @view_config(route_name="contact", renderer="misc/contact.mako")
 def contact(context, request):
@@ -107,25 +109,21 @@ class MessageForm(helpers.AddFormView):
         return schema
 
     def send_message_success(self, appstruct):
-        users = []
-        def _append(user):
-            """
-            Append if the user isnt already in the list of receivers
-            """
-            if not user in users:
-                users.append(user)
-
         # NOTE: Determine whats groups and users
-        groups = []
+        users = set()
+        groups = set()
         for string, type_ in map(recipient_resolve, appstruct["recipients"]):
-            _append(string) if type_ == "user" else groups.append(string)
+            if type_ == "user":
+                users.add(string)
+            elif type_ == "group":
+                groups.add(string)
 
         # NOTE: Translate user_name into id
         db_users = [u.id for u in models.User.query.filter(
             models.User.user_name.in_(users))]
 
         assert(len(users) == len(db_users))
-        user_ids = db_users
+        user_ids = set(db_users)
 
         # NOTE: Lets only care for getting the users from groups if there
         # actually are groups...
@@ -134,11 +132,11 @@ class MessageForm(helpers.AddFormView):
             query = models.Retailer.query.options(
                     sqlalchemy.orm.joinedload("users"))
             for group in groups:
-                query = query.filter(models.Retailer.uuid==group)
+                query = query.filter_by(uuid=group)
 
             for group in query:
                 for user in group.users:
-                    _append(user.id)
+                    user_ids.add(user.id)
 
         message = models.Message(
                 content=appstruct["message"],
@@ -146,13 +144,14 @@ class MessageForm(helpers.AddFormView):
         for id_ in user_ids:
             models.MessageAssociation(user_id=id_, message=message)
         message.save()
-        return HTTPFound(location=self.request.route_url("message_overview"))
+        return exceptions.HTTPFound(location=self.request.route_url("message_overview"))
 
 
 @view_config(route_name="message_send", permission="view",
         renderer="message_send.mako")
 def message_send(context, request):
-    return helpers.mk_form(MessageForm, context, request)
+    return helpers.mk_form(MessageForm, context, request,
+            extra={"sidebar_data": message_links(request)})
 
 
 @view_config(route_name="message_overview", permission="view",
@@ -166,20 +165,25 @@ def message_overview(context, request):
 
     cols = ["id", "created_at"]
     if show == "inbox":
-        search_opts["filters"] =  [models.MessageAssociation.user_id==request.user.id]
+        filters = []
+        filters.append(models.Message.id==models.MessageAssociation.message_id)
+        filters.append(models.MessageAssociation.user==request.user)
+        search_opts["filters"] = filters
         cols.append("sender")
     elif show == "sent":
         search_opts["filters"] = [models.Message.sender==request.user]
-        cols.append("receivers")
+        cols.append("receivers_string")
+    cols.append("short")
 
     # NOTE: Add in User model.
-    query = models.Message.query.join(models.User).\
-            filter(models.User.id==models.MessageAssociation.user_id)
-    messages = models.Message.search(query=query, **search_opts)
+    messages = models.Message.search(**search_opts)
 
     grid = helpers.PyramidGrid(messages, cols)
+    # NOTE: This (id) becomes a buttoned link
     grid.labels["id"] = ""
-    grid.labels["created_at"] = _("Sent at")
+    grid.labels["created_at"] = _("Time")
+    grid.labels["receivers_string"] = _("Receivers")
+    grid.labels["short"] = _("Short contents")
 
     grid.column_formats["id"] = lambda cn, i, item: helpers.column_link(
         request, "View", "message_view",
@@ -194,10 +198,11 @@ def message_overview(context, request):
         renderer="message_view.mako")
 def message_view(context, request):
     msg_id = request.matchdict["id"]
-    query = models.Message.query.filter(
-            models.MessageAssociation.user_id==request.user.id,
-            models.Message.id==msg_id)
-    obj = query.one()
+    obj = models.Message.get_by(id=msg_id)
+    if obj.sender == request.user or obj.user_is_recipient(request.user):
+        pass
+    else:
+        raise exceptions.HTTPNotFound
     return {"sidebar_data": message_actions(request), "obj": obj}
 
 

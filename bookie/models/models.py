@@ -162,31 +162,36 @@ class User(Base, UserMixin):
     current_group = relationship("Group", uselist=False)
     current_group_id = Column(Integer, ForeignKey("groups.id"))
 
-    message_associations = relationship("MessageAssociation", backref="user")
+    message_associations = relationship("MessageAssociation", backref=backref("user", lazy="joined"))
 
     def __unicode__(self):
-        return self.title
+        return str(self.display_name)
 
-    @property
-    def title(self):
-        """
-        Override in case our parents title() returns spaces
-        """
-        if re.search("^(\s+|)$", super(User, self).title):
-            return self.user_name
+    @hybrid_property
+    def display_name(self):
+        if not re.search("^(\s+|)$", self.full_name):
+            name = self.full_name + ": " + self.user_name
+        else:
+            name = self.user_name
+        return name
 
-    def is_current(self, group):
-        return group.id == self.current_group_id \
-                if self.current_group_id else False
+    @hybrid_property
+    def full_name(self):
+        return self.first_name + " " + self.middle_name + " " + self.last_name
 
     @property
     def retailers(self):
         return [g for g in self.groups if g.group_type == "retailer"]
 
+    def is_current_group(self, group):
+        return group.id == self.current_group_id \
+                if self.current_group_id else False
+
     def has_group(self, id_, group_type="retailer"):
         count = self.groups_dynamic.filter_by(
                 id=id_, group_type=group_type).count()
         return True and count == 1 or False
+
 
 
 class UserPermission(Base, UserPermissionMixin):
@@ -238,7 +243,7 @@ class MessageAssociation(Base):
 
     message_id = Column(Unicode(36), ForeignKey("messages.id",
         onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-    message = relationship("Message", backref="associations")
+    message = relationship("Message", backref=backref("associations", lazy="joined"))
 
     @hybrid_property
     def status(self):
@@ -247,6 +252,7 @@ class MessageAssociation(Base):
     @status.setter
     def status_set(self, value):
         assert(value in STATUS.values(), True)
+
 
 class Message(Base):
     """
@@ -259,7 +265,33 @@ class Message(Base):
 
     sender_id = Column(Integer, ForeignKey("users.id"))
     sender = relationship("User", backref="messages")
-    receivers = Column(JSONType())
+
+    @property
+    def short(self):
+        """
+        Return the messages contents in short.
+        """
+        return self.content[-40:] + "..."
+
+    @property
+    def receivers(self):
+        """
+        Returns all of the receivers
+        """
+        return [assoc.user for assoc in self.associations]
+
+    @property
+    def receivers_string(self):
+        """
+        Return a string of receivers
+        """
+        return ", ".join([u.display_name for u in self.receivers])
+
+    def user_is_recipient(self, user):
+        """
+        Expression to see if a user is a receiver
+        """
+        return user in self.receivers
 
 
 # NOTE: Map categories >< entities

@@ -1,13 +1,14 @@
 <%inherit file="base.mako"/>
 
 <%block name="content">
-From: ${obj.sender}<br/>
-To: ${obj.receivers}
-<br/>
+<em>From</em>: ${obj.sender}<br/>
+% if not obj.receivers:
+    To: ${obj.receivers}
+% endif
 <br/>
 
 
-Content:<br/>
+<em>Content:</em><br/>
 <blockquote>
     ${obj.content}
 </blockquote>
