@@ -69,7 +69,7 @@
                     msg_level, msg_string = data
             %>
             <div class="alert alert-${msg_level|n} fade in">
-                <a class="close" href="#">×</a>
+                <a class="close" href="#">x</a>
                     ${msg_string|n}
             </div>
         % endfor
