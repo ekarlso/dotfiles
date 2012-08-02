@@ -144,7 +144,12 @@ class MessageForm(helpers.AddFormView):
         for id_ in user_ids:
             models.MessageAssociation(user_id=id_, message=message)
         message.save()
-        return exceptions.HTTPFound(location=self.request.route_url("message_overview"))
+
+        self.request.session.flash("Your message was delivered to %d users!" % \
+                len(user_ids))
+        location = self.request.route_url("message_overview",
+                _query={"show": "sent"})
+        return exceptions.HTTPFound(location=location)
 
 
 @view_config(route_name="message_send", permission="view",
