@@ -12,14 +12,11 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item, get_nav_data, \
-    wrap_td
-from . import helpers, users
+from . import helpers as h, search, users
 
 
 def sidebar_links(request):
-    d = get_nav_data(request)
+    d = h.get_nav_data(request)
     links = []
     links.append({"value": "Dashboard", "route": "retailer_home",
         "url_kw": d})
@@ -29,7 +26,7 @@ def sidebar_links(request):
 
 
 def quick_links(request):
-    d = get_nav_data(request)
+    d = h.get_nav_data(request)
     links = []
     links.append({"icon": "plus", "value": _("New Booking"),
         "route": "booking_add", "url_kw": d})
@@ -57,7 +54,7 @@ class InviteSchema(colander.Schema):
             title=_("Invititational message"))
 
 
-class InviteForm(helpers.AddFormView):
+class InviteForm(h.AddFormView):
     item_type = "Invite"
 
     def schema_factory(self):
@@ -91,7 +88,7 @@ def invite(context, request):
     Ivite a User to join this retailer.
     Simply give membership if the user is already registered.
     """
-    form = mk_form(InviteForm, context, request)
+    form = h.mk_form(InviteForm, context, request)
     return {"form": form}
 
 

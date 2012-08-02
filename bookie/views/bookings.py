@@ -13,11 +13,7 @@ from sqlalchemy.orm import exc
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, mk_form
-from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, menu_came_from, get_nav_data
-from .helpers import form
-from .search import search_options
+from . import helpers as h, search
 
 
 
@@ -25,20 +21,22 @@ LOG = logging.getLogger(__name__)
 
 
 def booking_actions(request, obj=None):
-    data = get_nav_data(request)
+    data = h.get_nav_data(request)
 
     links = booking_links(request, obj)
     actions = []
+    actions.append({"value": "Manage", "route": "booking_manage",
+        "url_kw": data})
     return links + [{"value": "Actions", "children": actions}]
 
 
 def booking_links(request, obj=None):
-    data = get_nav_data(request)
+    data = h.get_nav_data(request)
 
     links = []
-    links.append(menu_came_from(request))
-    links.append(menu_item(_("Overview"), "booking_overview", **data))
-    links.append(menu_item(_("Add"), "booking_add", **data))
+    links.append(h.menu_came_from(request))
+    links.append(h.menu_item(_("Overview"), "booking_overview", **data))
+    links.append(h.menu_item(_("Add"), "booking_add", **data))
     return [{"value": "Navigation", "children": links}]
 
 
@@ -136,7 +134,7 @@ class BookingSchema(colander.Schema):
         title=_("Ends time"))
 
 
-class BookingAddForm(form.AddFormView):
+class BookingAddForm(h.AddFormView):
     item_type = _(u"Booking")
     buttons = (deform.Button("add_booking", _("Add Booking")),
                 deform.Button("cancel", _("Cancel")))
@@ -149,7 +147,7 @@ class BookingAddForm(form.AddFormView):
     @property
     def cancel_url(self):
         return self.request.route_url("booking_overview",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
 
     def add_booking_success(self, appstruct):
         appstruct.pop('csrf_token', None)
@@ -159,12 +157,12 @@ class BookingAddForm(form.AddFormView):
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
         location = self.request.route_url(
-            "booking_overview", **get_nav_data(self.request))
+            "booking_overview", **h.get_nav_data(self.request))
         return HTTPFound(location=location)
 
 
 
-class BookingForm(form.EditFormView):
+class BookingForm(h.EditFormView):
     def schema_factory(self):
         schema = BookingSchema()
         pre_render(self.request, schema)
@@ -173,7 +171,7 @@ class BookingForm(form.EditFormView):
     @property
     def cancel_url(self):
         return self.request.route_url("booking_overview",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
     success_url = cancel_url
 
     def save_success(self, appstruct):
@@ -184,7 +182,7 @@ class BookingForm(form.EditFormView):
 @view_config(route_name="booking_add", permission="view",
             renderer="add.mako")
 def booking_add(context, request):
-    return mk_form(BookingAddForm, context, request,
+    return h.mk_form(BookingAddForm, context, request,
         extra={"sidebar_data": booking_links(request)})
 
 
@@ -193,7 +191,7 @@ def booking_add(context, request):
 def booking_manage(context, request):
     obj = models.Booking.get_by(id=request.matchdict["id"])
 
-    form = mk_form(BookingForm, obj, request)
+    form = h.mk_form(BookingForm, obj, request)
     if request.is_response(form):
         return form
 
@@ -207,22 +205,22 @@ def booking_manage(context, request):
 def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
-    search_opts = search_options(request)
+    search_opts = search.search_options(request)
     search_opts["filter_by"]["retailer"] = request.group
     bookings = models.Booking.search(**search_opts)
 
     columns = ["id"] + models.Booking.exposed_attrs() + ["entity"]
-    grid = PyramidGrid(bookings, columns, request=request,
+    grid = h.PyramidGrid(bookings, columns, request=request,
             url=request.current_route_url)
 
     grid.exclude_ordering = ("id")
     grid.labels["id"] = ""
 
-    grid.column_formats["entity"] = lambda cn, i, item: column_link(
+    grid.column_formats["entity"] = lambda cn, i, item: h.column_link(
         request, unicode(item.entity), "entity_view",
         url_kw=item.entity.to_dict())
 
-    grid.column_formats["id"] = lambda cn, i, item: column_link(
+    grid.column_formats["id"] = lambda cn, i, item: h.column_link(
         request, "Manage", "booking_manage", url_kw=item.to_dict(),
         class_="btn btn-primary")
 

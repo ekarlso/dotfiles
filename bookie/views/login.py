@@ -40,8 +40,7 @@ def login(context, request):
             user.check_password(password)):
             headers = remember(request, login)
             request.session.flash(
-                _(u"Welcome, ${user}!",
-                  mapping=dict(user=unicode(user) or user.user_name)), 'success')
+                _(u"Welcome, ${user}!", mapping=dict(user=user.display_name)))
             user.last_login_date = datetime.now()
             return HTTPFound(location=came_from, headers=headers)
         LOG.debug("Failed login attempt %s" % user)

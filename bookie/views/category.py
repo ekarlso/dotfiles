@@ -13,9 +13,7 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, mk_form
-from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, get_nav_data
+from . import helpers as h, search
 
 
 LOG = logging.getLogger(__name__)
@@ -27,13 +25,13 @@ def category_actions(obj, request):
     Category actions - on a category page
     """
     # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
-    d = get_nav_data(request, extra={})
+    d = h.get_nav_data(request, extra={})
 
     links = category_links(d)
     actions = []
-    actions.append(menu_item(_("View"), "category_view", **d))
-    actions.append(menu_item(_("Edit"), "category_edit", **d))
-    actions.append(menu_item(_("Delete"), "category_delete", **d))
+    actions.append(h.menu_item(_("View"), "category_view", **d))
+    actions.append(h.menu_item(_("Edit"), "category_edit", **d))
+    actions.append(h.menu_item(_("Delete"), "category_delete", **d))
     links.append({"value": _("Category Actions"), "children": actions})
     return links
 
@@ -43,7 +41,7 @@ def category_links(data):
     Return some navigation links
     """
     children = []
-    children.append(menu_item(_("Overview"), "category_overview", **data))
+    children.append(h.menu_item(_("Overview"), "category_overview", **data))
     return [{"value": _("Navigation"), "children": children}]
 
 
@@ -57,7 +55,7 @@ class CategorySchema(colander.Schema):
         title=_("Description"))
 
 
-class CategoryAddForm(AddFormView):
+class CategoryAddForm(h.AddFormView):
     item_type = u"Category"
     buttons = (Button("add_category", _("Add Category")),
                 Button("cancel", _("Cancel")))
@@ -75,7 +73,7 @@ class CategoryAddForm(AddFormView):
         return HTTPFound(location=location)
 
 
-class CategoryEditForm(EditFormView):
+class CategoryEditForm(h.EditFormView):
     @property
     def success_url(self):
         return self.request.url
@@ -87,7 +85,7 @@ class CategoryEditForm(EditFormView):
 @view_config(route_name="category_add", permission="add",
         renderer="add.mako")
 def category_add(context, request):
-    return mk_form(CategoryAddForm, context, request,
+    return h.mk_form(CategoryAddForm, context, request,
         extra={"page_title": _("Add")})
 
 
@@ -96,7 +94,7 @@ def category_add(context, request):
 def category_edit(context, request):
     obj = models.Resource.query.filter_by(
         deleted=False, resource_id=request.matchdict["resource_id"]).one()
-    return mk_form(CategoryEditForm, obj, request,
+    return h.mk_form(CategoryEditForm, obj, request,
         extra=dict(sidebar_data=category_actions(obj, request)))
 
 
@@ -134,13 +132,13 @@ def category_overview(context, request):
     objects = models.Category.query.filter_by(deleted=deleted).\
         filter(models.Resource.owner_group_name==request.group).all()
 
-    grid = PyramidGrid(objects, models.Category.exposed_attrs())
+    grid = h.PyramidGrid(objects, models.Category.exposed_attrs())
     grid.column_formats["resource_name"] = lambda cn, i, item: \
-        column_link(request, item["resource_name"], "category_view",
+        h.column_link(request, item["resource_name"], "category_view",
                 url_kw=item.to_dict())
 
     return {
-        "sidebar_data": category_links(get_nav_data(request)),
+        "sidebar_data": category_links(h.get_nav_data(request)),
         "sub_title": _("Category management"),
         "grid": grid}
 

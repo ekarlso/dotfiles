@@ -10,9 +10,7 @@ from pyramid.view import view_config
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, mk_form
-from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, menu_came_from, get_nav_data
+from . import helpers as h, search
 from .search import search_options
 
 
@@ -50,14 +48,14 @@ def entity_actions(request, obj=None):
     Entity actions - on a entity page
     """
     # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
-    data = get_nav_data(request)
+    data = h.get_nav_data(request)
 
     links = entity_links(request, obj)
     actions = []
-    actions.append(menu_item(_("View"), "entity_view", **data))
-    actions.append(menu_item(_("Edit"), "entity_manage", **data))
-    actions.append(menu_item(_("Delete"), "entity_delete", **data))
-    actions.append(menu_item(_("Book me"), "booking_add",
+    actions.append(h.menu_item(_("View"), "entity_view", **data))
+    actions.append(h.menu_item(_("Edit"), "entity_manage", **data))
+    actions.append(h.menu_item(_("Delete"), "entity_delete", **data))
+    actions.append(h.menu_item(_("Book me"), "booking_add",
                 _query=dict(came_from=request.url, entity=data["id"]), **data))
     links.append({"value": _("Actions"), "children": actions})
     return links
@@ -67,13 +65,13 @@ def entity_links(request, obj=None):
     """
     Return some navigation links
     """
-    data = get_nav_data(request)
+    data = h.get_nav_data(request)
 
     links = []
-    links.append(menu_came_from(request))
-    links.append(menu_item(_("Overview"), "entity_overview", **data))
-    links.append(menu_item(_("Add"), "entity_add", **data))
-    links.append(menu_item(_("Quick / Bulk Add"), "entity_bulk_add", **data))
+    links.append(h.menu_came_from(request))
+    links.append(h.menu_item(_("Overview"), "entity_overview", **data))
+    links.append(h.menu_item(_("Add"), "entity_add", **data))
+    links.append(h.menu_item(_("Quick / Bulk Add"), "entity_bulk_add", **data))
     return [{"value": _("Navigation"), "children": links}]
 
 
@@ -92,7 +90,7 @@ class CarSchema(colander.Schema):
         title=_("Identifier"))
 
 
-class CarAddForm(AddFormView):
+class CarAddForm(h.AddFormView):
     item_type = u"Car"
     buttons = (deform.Button("add_car", _("Add Car")),
                 deform.Button("cancel", _("Cancel")))
@@ -160,7 +158,7 @@ class CarBulkForm(CarAddForm):
         return HTTPFound(location=location)
 
 
-class CarForm(EditFormView):
+class CarForm(h.EditFormView):
     def schema_factory(self):
         return CarSchema()
 
@@ -180,14 +178,14 @@ class CarForm(EditFormView):
 def entity_add(context, request):
     type_ = request.GET.get("type")
 
-    return mk_form(CarAddForm, context, request,
+    return h.mk_form(CarAddForm, context, request,
             extra={"sidebar_data": entity_links(request), "page_title": _("Add")})
 
 
 @view_config(route_name="entity_bulk_add", permission="view",
         renderer="add.mako")
 def entity_bulk_add(context, request):
-    form = mk_form(CarBulkForm, context, request,
+    form = h.mk_form(CarBulkForm, context, request,
             extra={"sidebar_data": entity_links(request),
                 "page_title": _("Bulk / Quick add")})
     return form
@@ -200,7 +198,7 @@ def entity_manage(context, request):
             id=request.matchdict["id"],
             retailer=request.group)
 
-    return mk_form(CarForm, obj, request,
+    return h.mk_form(CarForm, obj, request,
         extra=dict(sidebar_data=entity_actions(request, obj)))
 
 
@@ -212,7 +210,7 @@ def entity_view(context, request):
             retailer=request.group)
 
     ##b_latest = models.Booking.latest(entity=entity)
-    b_grid_latest = PyramidGrid(
+    b_grid_latest = h.PyramidGrid(
         models.Booking.latest(filter_by={"entity": entity}),
         models.Booking.exposed_attrs())
 
@@ -245,18 +243,18 @@ def entity_delete(context, request):
 def entity_overview(context, request):
     deleted = request.params.get("deleted", False)
 
-    search_opts = search_options(request)
+    search_opts = search.search_options(request)
     search_opts["filter_by"]["retailer"] = request.group
     entities = models.Entity.search(**search_opts)
 
     columns = ["id"] + models.Entity.exposed_attrs()
-    grid = PyramidGrid(entities, columns, request=request,
+    grid = h.PyramidGrid(entities, columns, request=request,
             url=request.current_route_url)
 
     grid.exclude_ordering = ["id", "color"]
     grid.labels["id"] = ""
 
-    grid.column_formats["id"] = lambda cn, i, item: column_link(
+    grid.column_formats["id"] = lambda cn, i, item: h.column_link(
         request, "Manage", "entity_view", url_kw=item.to_dict(),
         class_="btn btn-primary")
 

@@ -36,7 +36,6 @@ CONF_DEFAULTS = {
 
 
 CONF_DOTTED = set([
-    'bookie.templates.api',
     'bookie.configurators',
     'bookie.base_includes',
     'bookie.root_factory',

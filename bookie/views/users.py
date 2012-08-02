@@ -10,8 +10,7 @@ from pyramid.view import view_config
 
 from .. import models, security
 from ..utils import _
-from .helpers import AddFormView, EditFormView, PyramidGrid, mk_form
-from .helpers import menu_item
+from . import helpers as h, search
 
 
 LOG = logging.getLogger(__name__)
@@ -81,8 +80,8 @@ def group_from_request(request):
 def prefs_menu():
     return [{
         "value": _("My settings"), "children": [
-            menu_item(_("Preferences"), "user_account"),
-            menu_item(_("Reset password"), "reset_password")]}]
+            h.menu_item(_("Preferences"), "user_account"),
+            h.menu_item(_("Reset password"), "reset_password")]}]
 
 
 class Groups(colander.SequenceSchema):
@@ -146,7 +145,7 @@ class GroupSchema(colander.Schema):
         widget=CheckboxChoiceWidget())
 
 
-class UserAddForm(AddFormView):
+class UserAddForm(h.AddFormView):
     item_type = _(u'User')
     buttons = (Button('add_user', _(u'Add User')),
                Button('cancel', _(u'Cancel')))
@@ -176,7 +175,7 @@ class UserAddForm(AddFormView):
         return HTTPFound(location=self.request.route_url("principal_manage"))
 
 
-class GroupAddForm(AddFormView):
+class GroupAddForm(h.AddFormView):
     item_type = _(u'Group')
     buttons = (Button('add_group', _(u'Add Group')),
                Button('cancel', _(u'Cancel')))
@@ -192,7 +191,7 @@ class GroupAddForm(AddFormView):
         return HTTPFound(location=self.request.route_url("principals_manage"))
 
 
-class UserForm(EditFormView):
+class UserForm(h.EditFormView):
     @property
     def success_url(self):
         return self.request.url
@@ -237,16 +236,16 @@ class GroupEditForm(UserEditForm):
             renderer="admin/principals.mako")
 def principals_manage(context, request):
     users = models.User.query.all()
-    user_grid = PyramidGrid(users, ["title", "email"])
+    user_grid = h.PyramidGrid(users, ["title", "email"])
 
     groups = models.Group.query.all()
-    group_grid = PyramidGrid(groups, models.Group.exposed_attrs())
+    group_grid = h.PyramidGrid(groups, models.Group.exposed_attrs())
 
-    user_addform = mk_form(UserAddForm, context, request)
+    user_addform = h.mk_form(UserAddForm, context, request)
     if request.is_response(user_addform):
         return user_addform
 
-    group_addform = mk_form(GroupAddForm, context, request)
+    group_addform = h.mk_form(GroupAddForm, context, request)
     if request.is_response(group_addform):
         return group_addform
 
@@ -262,10 +261,10 @@ def principals_manage(context, request):
 def principal_manage(context, request):
     if "user" in request.params:
         obj = models.User.get_by(id=request.params["user"])
-        form = mk_form(UserEditForm, obj, request)
+        form = h.mk_form(UserEditForm, obj, request)
     elif "group" in request.params:
         obj = models.Group.get_by(id=request.params["group"])
-        form = mk_form(GroupEditForm, obj, request)
+        form = h.mk_form(GroupEditForm, obj, request)
     else:
         raise HTTPNotFound
     return form
@@ -278,7 +277,7 @@ def user_account(context, request):
     Users preferences
     """
     user = request.user
-    return mk_form(UserForm, user, request,
+    return h.mk_form(UserForm, user, request,
         extra={"sidebar_data": prefs_menu()})
 
 
@@ -319,7 +318,7 @@ def user_tenant_set(context, request):
 @view_config(route_name="user_tenants", permission="view",
         renderer="user_tenants_overview.mako")
 def user_tenants(context, request):
-    grid = PyramidGrid(request.user.retailers,
+    grid = h.PyramidGrid(request.user.retailers,
         ["group_name", "group_type"])
     return {"grid": grid}
 

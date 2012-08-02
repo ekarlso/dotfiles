@@ -9,7 +9,7 @@ from pyramid.decorator import reify
 from pyramid.location import inside, lineage
 from pyramid.renderers import get_renderer, render
 from pyramid.threadlocal import get_current_registry, get_current_request
-from pyramid.url import resource_url
+from webhelpers_extra import TemplateAPI as BaseTemplateAPI, template_api, add_renderer_globals
 
 from bookie import get_settings
 from bookie.utils import _, name_to_camel, camel_to_name
@@ -17,136 +17,12 @@ from bookie.utils import _, name_to_camel, camel_to_name
 from . import importutils, navigation, utils
 
 
-def template_api(context, request, **kwargs):
-    return get_settings()['bookie.templates.api'][0](
-        context, request, **kwargs)
-
-
 def is_root(context, request):
     return context is TemplateAPI(context, request).root
 
 
-def add_renderer_globals(event):
-    if event['renderer_name'] != 'json':
-        request = event['request']
-        api = getattr(request, 'template_api', None)
-        if api is None and request is not None:
-            api = template_api(event['context'], event['request'])
-        event['api'] = api
-        if not "sub_title" in event:
-            event["sub_title"] = None
-
-
-CSS_LINK = '<link rel="stylesheet" type="text/css" href="%s"/>'
-SCRIPT_LINK = '<script src="%s"></script>'
-
-
-class TemplateStructure(object):
-    def __init__(self, html):
-        self.html = html
-
-    def __html__(self):
-        return self.html
-    __unicode__ = __html__
-
-    def __getattr__(self, key):
-        return getattr(self.html, key)
-
-
-class TemplateAPI(object):
-    """This implements the 'api' object that's passed to all
-    templates.
-
-    Use dict-access as a shortcut to retrieve template macros from
-    templates.
-    """
-    def __init__(self, context, request, bare=None, **kwargs):
-        self.context, self.request = context, request
-
-        if getattr(request, 'template_api', None) is None:
-            request.template_api = self
-
-        self.settings = get_settings()
-        if request.is_xhr and bare is None:
-            bare = True  # use bare template that renders just the content area
-        self.bare = bare
-        self.__dict__.update(kwargs)
-
+class TemplateAPI(BaseTemplateAPI):
     utils = utils
-
-    # NOTE: HTML / Link helpers
-    def _resource_html(self, format, resource):
-        def _link(p):
-            has_package = re.search("^\w+:", p)
-            if not has_package:
-                p = "%s:%s" % (self.__module__.split(".")[0], p)
-            return self.request.static_url(p)
-
-        def _html(p):
-            return format % _link(p)
-
-        if type(resource) == list:
-            string = "\n".join([_html(p) for p in resource])
-        else:
-            string = _html(string)
-        return string
-
-    def css_link(self, resource, format=CSS_LINK):
-        return self._resource_html(format, resource)
-
-    def script_link(self, resource, format=SCRIPT_LINK):
-        return self._resource_html(format, resource)
-
-    def resource_url(self, context=None, *elements, **kwargs):
-        if context is None:
-            context = self.context
-        return self.request.resource_url(context, *elements, **kwargs)
-
-    def avatar_url(self, user=None, size="14", default_image='identicon'):
-        if user is None:
-            user = self.request.user
-        email = user.email
-        if not email:
-            email = user.name
-        h = hashlib.md5(email).hexdigest()
-        query = {'default': default_image, 'size': str(size)}
-        url = 'https://secure.gravatar.com/avatar/%s?%s' % (
-            h, urllib.urlencode(query))
-        return url
-
-    def get_nav(self, name, data=None, module=None):
-        """
-        Support the following schemes:
-            get_nav('sidebar', data)
-            get_nav('dropdown_button', data)
-
-        Get the navigation class and data off a callable in a module
-        Only with menu name using module name in settings:
-            get_nav('dropdown_user')
-            get_nav('dropdown_user')
-        Override class where to the callable is located:
-            get_nav('dropdown_user', 'module')
-
-        :params menu: The function name in nav_module to get data
-                            Example: "navigation" becomes "Navigation"
-        :param nav_module: Override the module to lookup 'menu' in
-                            Defaults: bootstrap_helpers.navigation setting
-        """
-        if not data:
-            module = module or self.settings["bootstrap_helpers.navigation"]
-            func = "%s.%s" % (module, name)
-
-            try:
-                cls, data = importutils.import_object(
-                    func, self.context, self.request)
-            except ImportError:
-                raise AttributeError("Navigation callable not found %s" % func)
-        else:
-            cls = name
-
-        # TODO: Change this to be overridable?
-        cls = getattr(navigation, name_to_camel(cls))
-        return cls(self.context, self.request, data)
 
     @reify
     def site_title(self):
@@ -221,30 +97,6 @@ class TemplateAPI(object):
     def locale_name(self):
         return get_locale_name(self.request)
 
-    def format_date(self, d, format=None):
-        if format is None:
-            format = self.settings['bookie.date_format']
-        return format_date(d, format=format, locale=self.locale_name)
-
-    def format_datetime(self, dt, format=None):
-        if format is None:
-            format = self.settings['bookie.datetime_format']
-        if not isinstance(dt, datetime):
-            dt = datetime.fromtimestamp(dt)
-        return format_datetime(dt, format=format, locale=self.locale_name)
-
-    def format_time(self, t, format=None):
-        if format is None:
-            format = self.settings['bookie.time_format']
-        return format_time(t, format=format, locale=self.locale_name)
-
-    def name_to_camel(self, *args, **kw):
-        return name_to_camel(*args, **kw)
-
-    def camel_to_name(self, *args, **kw):
-        return camel_to_name(*args, **kw)
-
-
 
 __all__ = ["template_api", "add_renderer_globals", "is_root",
-           "TemplateAPI", "CSS_LINK", "SCRIPT_LINK"]
+           "TemplateAPI"]

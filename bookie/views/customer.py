@@ -11,10 +11,7 @@ from sqlalchemy.orm import exc
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
-from .helpers import AddFormView, EditFormView, mk_form
-from .helpers import PyramidGrid, column_link, wrap_td
-from .helpers import menu_item, menu_came_from, get_nav_data
-from .search import search_options
+from . import helpers as h, search
 
 
 LOG = logging.getLogger(__name__)
@@ -26,21 +23,21 @@ Manage Customers for Retailers
 
 
 def customer_actions(request, obj=None):
-    data = get_nav_data(request)
+    data = h.get_nav_data(request)
 
     links = customer_links(request, obj)
     actions = []
-    actions.append(menu_item(_("Manage"), "customer_manage", **data))
+    actions.append(h.menu_item(_("Manage"), "customer_manage", **data))
     return links + [{"value": _("Actions"), "children": actions}]
 
 
 def customer_links(request, obj=None):
-    data = get_nav_data(request)
+    data = h.get_nav_data(request)
 
     links = []
-    links.append(menu_came_from(request))
-    links.append(menu_item(_("Overview"), "customer_overview", **data))
-    links.append(menu_item(_("Add"), "customer_add", **data))
+    links.append(h.menu_came_from(request))
+    links.append(h.menu_item(_("Overview"), "customer_overview", **data))
+    links.append(h.menu_item(_("Add"), "customer_add", **data))
     return [{"value": _("Navigation"), "children": links}]
 
 
@@ -62,7 +59,7 @@ class CustomerSchema(colander.Schema):
         title=_("Phone"))
 
 
-class CustomerAddForm(AddFormView):
+class CustomerAddForm(h.AddFormView):
     item_type = _(u"Customer")
     buttons = (deform.Button("add_customer", _("Add Customer")),
                 deform.Button("cancel", _("Cancel")))
@@ -74,7 +71,7 @@ class CustomerAddForm(AddFormView):
     @property
     def cancel_url(self):
         return self.request.route_url("customer_overview",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
 
     def add_customer_success(self, appstruct):
         appstruct.pop('csrf_token', None)
@@ -86,7 +83,7 @@ class CustomerAddForm(AddFormView):
         return HTTPFound(location=location)
 
 
-class CustomerForm(EditFormView):
+class CustomerForm(h.EditFormView):
     def schema_factory(self):
         schema = CustomerSchema()
         return schema
@@ -94,7 +91,7 @@ class CustomerForm(EditFormView):
     @property
     def cancel_url(self):
         return self.request.route_url("customer_overview",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
     success_url = cancel_url
 
     def save_success(self, appstruct):
@@ -104,7 +101,7 @@ class CustomerForm(EditFormView):
 @view_config(route_name="customer_add", permission="view",
         renderer="add.mako")
 def customer_add(context, request):
-    return mk_form(CustomerAddForm, context, request,
+    return h.mk_form(CustomerAddForm, context, request,
             extra={"sidebar_data": customer_links(request)})
 
 
@@ -112,7 +109,7 @@ def customer_add(context, request):
 def customer_manage(context, request):
     obj = models.Customer.get_by(id=request.matchdict["id"], retailer=request.group)
 
-    form = mk_form(CustomerForm, obj, request)
+    form = h.mk_form(CustomerForm, obj, request)
     if request.is_response(form):
         return form
 
@@ -123,18 +120,18 @@ def customer_manage(context, request):
         renderer="customer_overview.mako")
 def customer_overview(context, request):
 
-    search_opts = search_options(request)
+    search_opts = search.search_options(request)
     search_opts["filter_by"]["retailer"] = request.group
     customers = models.Customer.search(**search_opts)
 
     columns = ["id"] + models.Customer.exposed_attrs()
-    grid = PyramidGrid(customers, columns, request=request,
+    grid = h.PyramidGrid(customers, columns, request=request,
             url=request.current_route_url)
 
     grid.exclude_ordering = ["id"]
     grid.labels["id"] = ""
 
-    grid.column_formats["id"] = lambda cn, i, item: column_link(
+    grid.column_formats["id"] = lambda cn, i, item: h.column_link(
         request, "Manage", "customer_manage", url_kw=item.to_dict(),
         class_="btn btn-primary")
 
