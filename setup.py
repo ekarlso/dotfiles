@@ -28,6 +28,7 @@ setup(name='bookie',
       zip_safe=False,
       test_suite='bookie',
       message_extractors  = { ".": [
+        ('**/static/**', 'ignore', None),
         ('**.py',   'lingua_python', None ),
         ('**.pt',   'lingua_xml', None ),
         ('**.html',   'mako', None ),
