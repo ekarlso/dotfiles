@@ -18,7 +18,6 @@
 <%doc>We override the content_wrapper with our setup</%doc>
 <%block name="content_wrapper">
     <div class="span9">
-
     <!-- TODO: make span settable? -->
     <%doc>
         We support 2 different types of heading styles:
@@ -47,7 +46,32 @@
 
         We impose a span[0-9] on the content to limit it's width
     </%doc>
+    <%block name="info">
+        <div class="row-fluid">
+            ${self.flash_messages()}
+        </div>
+    </%block>
     <%block name="content"/>
 
     </div>
 </%block>
+
+
+<%def name="flash_messages()">
+    % if request.session.peek_flash():
+        <% flash = request.session.pop_flash() %>
+        % for message in flash:
+            <%
+                data = message.split(";")
+                if len (data) == 1:
+                    msg_level, msg_string = "info", data[0]
+                else:
+                    msg_level, msg_string = data
+            %>
+            <div class="alert alert-${msg_level|n} fade in">
+                <a class="close" href="#">×</a>
+                    ${msg_string|n}
+            </div>
+        % endfor
+    % endif
+</%def>
