@@ -18,20 +18,20 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
             % for group in request.user.retailers:
+                <tr>
                 <td>${group}</td>
                 <td>${api.name_to_camel(group.group_type)}</td>
                 <td>
                 <% url = request.route_url("user_tenant_set", _query={"id": group.id}) %>
-                % if not request.user.is_current(group):
+                % if not request.user.is_current_group(group):
                     <a class="btn" href="${url}">Set to current</a>
                 % else:
                     Already active
                 % endif
                 </td>
-            % endfor
             </tr>
+            % endfor
         </tbody>
     </table>
 % endif
