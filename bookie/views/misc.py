@@ -131,9 +131,7 @@ class MessageForm(helpers.AddFormView):
             # NOTE: Use joinedload to not use multiple queries.
             query = models.Retailer.query.options(
                     sqlalchemy.orm.joinedload("users"))
-            for group in groups:
-                query = query.filter_by(uuid=group)
-
+            query = query.filter(models.Group.uuid.in_(groups))
             for group in query:
                 for user in group.users:
                     user_ids.add(user.id)
