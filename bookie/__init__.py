@@ -51,13 +51,6 @@ def get_settings():
     """
     Allow to get settings but override with database ones
     """
-    #session = DBSession()
-    #db_settings = session.query(Settings).order_by(desc(Settings.id)).first()
-    #if db_settings is not None:
-        #reg_settings = dict(get_current_registry().settings)
-        #reg_settings.update(db_settings.data)
-        #return reg_settings
-    #else:
     return get_current_registry().settings
 
 
