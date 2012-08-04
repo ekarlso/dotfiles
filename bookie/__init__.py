@@ -13,6 +13,7 @@ CONF_DEFAULTS = {
     'bookie.configurators': '',
     "bookie.base_includes": " ".join([
         "bookie",
+        "bookie.message",
         "bookie.resources",
         "bookie.security",
         "bookie.views",
