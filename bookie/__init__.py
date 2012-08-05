@@ -56,7 +56,7 @@ def get_settings():
 
 
 def get_version():
-    return pkg_resources.require("bookie")[0].version
+    return pkg_resources.require("BookieFrontend")[0].version
 
 
 def beaker_session_factory(**settings):
@@ -122,8 +122,8 @@ def configure(global_config, **settings):
 def includeme(config):
     config.add_translation_dirs('bookie:locale')
     # NOTE: Should be reified
-    from .views.helpers import add_renderer_globals
-    config.add_subscriber(add_renderer_globals, BeforeRender)
+    config.add_subscriber("bookie.views.helpers.add_renderer_globals",
+                        "pyramid.events.BeforeRender")
 
     config.add_subscriber("bookie.utils.add_renderer_globals",
                         "pyramid.events.BeforeRender")
