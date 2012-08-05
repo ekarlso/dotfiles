@@ -1,5 +1,10 @@
+distribute>=0.6.24
+
 mock
-ipdb
+nose
+nosexcover
+pep8
+setuptools-git
 
 MySQL-python
 psycopg2
