@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bookie 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2012-06-18 23:39+0200\n"
+"POT-Creation-Date: 2012-08-04 17:52+0200\n"
 "PO-Revision-Date: 2012-06-11 13:08+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -17,349 +17,406 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 
-#: bookie/templates/forbidden.pt:5 build/lib/bookie/templates/forbidden.pt:5
-msgid "You are not allowed to view the request page."
+#: bookie/navigation.py:28
+msgid "Contact a group"
 msgstr ""
 
-#: bookie/templates/login.pt:7 build/lib/bookie/templates/login.pt:7
-msgid "Please login:"
-msgstr ""
-
-#: bookie/templates/login.pt:13 build/lib/bookie/templates/login.pt:13
-msgid "Log in"
-msgstr ""
-
-#: bookie/templates/user_prefs.pt:9 build/lib/bookie/templates/user_prefs.pt:9
-msgid "My Settings"
-msgstr ""
-
-#: bookie/templates/user_prefs.pt:10 bookie/templates/nav/dropdown_user.pt:8
-#: build/lib/bookie/templates/user_prefs.pt:10
-#: build/lib/bookie/templates/nav/dropdown_user.pt:8
+#: bookie/navigation.py:56 bookie/views/users.py:83
 msgid "Preferences"
 msgstr ""
 
-#: bookie/templates/user_prefs.pt:17
-#: build/lib/bookie/templates/user_prefs.pt:17
-msgid "Your preferences"
+#: bookie/navigation.py:57 bookie/views/users.py:84
+msgid "Reset password"
 msgstr ""
 
-#: bookie/templates/admin/auth_manage.pt:9
-#: build/lib/bookie/templates/admin/auth_manage.pt:9
-msgid "List users"
+#: bookie/navigation.py:59
+msgid "Messages"
 msgstr ""
 
-#: bookie/templates/admin/auth_manage.pt:12
-#: build/lib/bookie/templates/admin/auth_manage.pt:12
-msgid "Add user"
+#: bookie/navigation.py:61
+msgid "Logout"
 msgstr ""
 
-#: bookie/templates/admin/auth_manage.pt:15
-#: build/lib/bookie/templates/admin/auth_manage.pt:15
-msgid "List groups"
+#: bookie/models/base.py:149
+msgid "Id not in sort_keys; is sort_keys unique?"
 msgstr ""
 
-#: bookie/templates/admin/auth_manage.pt:18
-#: build/lib/bookie/templates/admin/auth_manage.pt:18
-msgid "Add group"
+#: bookie/models/base.py:197
+msgid "Unknown sort direction, must be 'desc' or 'asc'"
 msgstr ""
 
-#: bookie/templates/admin/auth_manage.pt:25
-#: build/lib/bookie/templates/admin/auth_manage.pt:25
-msgid "Users"
-msgstr ""
-
-#: bookie/templates/admin/auth_manage.pt:36 bookie/views/users.py:127
-#: build/lib/bookie/templates/admin/auth_manage.pt:36
-#: build/lib/bookie/views/users.py:122
-msgid "Groups"
-msgstr ""
-
-#: bookie/templates/admin/group_manage.pt:8
-#: build/lib/bookie/templates/admin/group_manage.pt:8
-msgid "Editing User"
-msgstr ""
-
-#: bookie/templates/admin/user_manage.pt:8
-msgid "Editing"
-msgstr ""
-
-#: bookie/templates/admin/user_manage.pt:9 bookie/views/users.py:149
-#: build/lib/bookie/views/users.py:144
-msgid "User"
-msgstr ""
-
-#: bookie/templates/booking/add.pt:12 bookie/views/bookings.py:53
-#: build/lib/bookie/templates/booking/add.pt:12
-msgid "Booking"
-msgstr ""
-
-#: bookie/templates/booking/overview.pt:12 bookie/views/bookings.py:30
-#: build/lib/bookie/templates/booking/overview.pt:12
-#: build/lib/bookie/views/bookings.py:31
-msgid "Bookings"
-msgstr ""
-
-#: bookie/templates/entity/add.pt:12
-#: build/lib/bookie/templates/entity/add.pt:12
+#: bookie/templates/index.mako:9 bookie/views/bookings.py:39
+#: bookie/views/category.py:89 bookie/views/customer.py:40
+#: bookie/views/entity.py:73 bookie/views/entity.py:182
 msgid "Add"
 msgstr ""
 
-#: bookie/templates/entity/edit.pt:12 bookie/templates/entity/view.pt:13
-#: build/lib/bookie/templates/entity/edit.pt:12
-#: build/lib/bookie/templates/entity/view.pt:13
-msgid "Viewing"
-msgstr ""
-
-#: bookie/templates/entity/overview.pt:12 bookie/views/entities.py:62
-#: build/lib/bookie/templates/entity/overview.pt:12
-#: build/lib/bookie/views/entities.py:62
+#: bookie/views/bookings.py:38 bookie/views/category.py:44
+#: bookie/views/customer.py:39 bookie/views/entity.py:72
 msgid "Overview"
 msgstr ""
 
-#: bookie/templates/entity/view.pt:19
-#: build/lib/bookie/templates/entity/view.pt:19
-msgid "Vehicle information"
+#: bookie/views/bookings.py:109
+msgid "Entity to book"
 msgstr ""
 
-#: bookie/templates/entity/view.pt:29
-msgid "Latest bookings"
+#: bookie/views/bookings.py:114 bookie/views/customer.py:63
+msgid "Customer"
 msgstr ""
 
-#: bookie/templates/nav/dropdown_user.pt:10
-#: build/lib/bookie/templates/nav/dropdown_user.pt:10
-msgid "Sign Out"
-msgstr ""
-
-#: bookie/views/bookings.py:43
+#: bookie/views/bookings.py:118
 msgid "Price"
 msgstr ""
 
-#: bookie/views/bookings.py:46
-msgid "Ends At"
+#: bookie/views/bookings.py:122
+msgid "Start location"
 msgstr ""
 
-#: bookie/views/bookings.py:49
+#: bookie/views/bookings.py:126
 msgid "Starts At"
 msgstr ""
 
-#: bookie/views/bookings.py:54
+#: bookie/views/bookings.py:130
+msgid "End location"
+msgstr ""
+
+#: bookie/views/bookings.py:134
+msgid "Ends time"
+msgstr ""
+
+#: bookie/views/bookings.py:138
+msgid "Booking"
+msgstr ""
+
+#: bookie/views/bookings.py:139
 msgid "Add Booking"
 msgstr ""
 
-#: bookie/views/bookings.py:55 bookie/views/entities.py:83
-#: bookie/views/users.py:151 bookie/views/users.py:183
-#: bookie/views/helpers/form.py:49 build/lib/bookie/views/entities.py:83
-#: build/lib/bookie/views/users.py:146 build/lib/bookie/views/users.py:179
-#: build/lib/bookie/views/helpers/form.py:49
+#: bookie/views/bookings.py:140 bookie/views/category.py:61
+#: bookie/views/customer.py:65 bookie/views/entity.py:96
+#: bookie/views/entity.py:137 bookie/views/login.py:171
+#: bookie/views/misc.py:103 bookie/views/users.py:151 bookie/views/users.py:181
+#: bookie/views/helpers/form.py:48
 msgid "Cancel"
 msgstr ""
 
-#: bookie/views/bookings.py:64 bookie/views/entities.py:92
-#: bookie/views/users.py:174 build/lib/bookie/views/entities.py:92
-#: build/lib/bookie/views/users.py:170
+#: bookie/views/bookings.py:157 bookie/views/category.py:70
+#: bookie/views/customer.py:80 bookie/views/entity.py:111
+#: bookie/views/users.py:172
 msgid "${title} added."
 msgstr ""
 
-#: bookie/views/entities.py:42 build/lib/bookie/views/entities.py:42
-msgid "Invalid type ${type} requested"
-msgstr ""
-
-#: bookie/views/entities.py:51 build/lib/bookie/views/entities.py:51
-msgid "Entity Actions"
-msgstr ""
-
-#: bookie/views/entities.py:52 build/lib/bookie/views/entities.py:52
+#: bookie/views/category.py:32 bookie/views/entity.py:55
 msgid "View"
 msgstr ""
 
-#: bookie/views/entities.py:53 build/lib/bookie/views/entities.py:53
+#: bookie/views/category.py:33 bookie/views/entity.py:56
 msgid "Edit"
 msgstr ""
 
-#: bookie/views/entities.py:54 build/lib/bookie/views/entities.py:54
+#: bookie/views/category.py:34 bookie/views/entity.py:57
 msgid "Delete"
 msgstr ""
 
-#: bookie/views/entities.py:55 build/lib/bookie/views/entities.py:55
-msgid "Book me"
+#: bookie/views/category.py:35 bookie/views/customer.py:31
+#: bookie/views/entity.py:60 bookie/views/misc.py:57
+msgid "Actions"
 msgstr ""
 
-#: bookie/views/entities.py:61 build/lib/bookie/views/entities.py:61
+#: bookie/views/category.py:45 bookie/views/customer.py:41
+#: bookie/views/entity.py:75 bookie/views/misc.py:71
 msgid "Navigation"
 msgstr ""
 
-#: bookie/views/entities.py:68 build/lib/bookie/views/entities.py:68
-msgid "Car"
+#: bookie/views/category.py:51 bookie/views/customer.py:47
+msgid "Name"
 msgstr ""
 
-#: bookie/views/entities.py:71 build/lib/bookie/views/entities.py:71
-msgid "Model"
+#: bookie/views/category.py:55
+msgid "Description"
 msgstr ""
 
-#: bookie/views/entities.py:74 build/lib/bookie/views/entities.py:74
-msgid "Produced"
+#: bookie/views/category.py:60
+msgid "Add Category"
 msgstr ""
 
-#: bookie/views/entities.py:77 build/lib/bookie/views/entities.py:77
-msgid "Identifier"
-msgstr ""
-
-#: bookie/views/entities.py:82 build/lib/bookie/views/entities.py:82
-msgid "Add Car"
-msgstr ""
-
-#: bookie/views/entities.py:151 build/lib/bookie/views/entities.py:147
+#: bookie/views/category.py:121 bookie/views/entity.py:233
 msgid "Delete successful"
 msgstr ""
 
-#: bookie/views/login.py:42 build/lib/bookie/views/login.py:42
+#: bookie/views/category.py:142
+msgid "Category management"
+msgstr ""
+
+#: bookie/views/customer.py:30
+msgid "Manage"
+msgstr ""
+
+#: bookie/views/customer.py:50
+msgid "Organization ID"
+msgstr ""
+
+#: bookie/views/customer.py:53
+msgid "Contact"
+msgstr ""
+
+#: bookie/views/customer.py:56 bookie/views/login.py:92
+#: bookie/views/login.py:148 bookie/views/users.py:118
+msgid "E-Mail"
+msgstr ""
+
+#: bookie/views/customer.py:59
+msgid "Phone"
+msgstr ""
+
+#: bookie/views/customer.py:64
+msgid "Add Customer"
+msgstr ""
+
+#: bookie/views/entity.py:40
+msgid "Invalid type ${type} requested"
+msgstr ""
+
+#: bookie/views/entity.py:58
+msgid "Book me"
+msgstr ""
+
+#: bookie/views/entity.py:74 bookie/views/entity.py:136
+#: bookie/views/entity.py:190
+msgid "Bulk add"
+msgstr ""
+
+#: bookie/views/entity.py:81
+msgid "Car"
+msgstr ""
+
+#: bookie/views/entity.py:84
+msgid "Model"
+msgstr ""
+
+#: bookie/views/entity.py:87
+msgid "Produced"
+msgstr ""
+
+#: bookie/views/entity.py:90
+msgid "Identifier"
+msgstr ""
+
+#: bookie/views/entity.py:95
+msgid "Add Car"
+msgstr ""
+
+#: bookie/views/login.py:43
 msgid "Welcome, ${user}!"
 msgstr ""
 
-#: bookie/views/login.py:47 build/lib/bookie/views/login.py:47
+#: bookie/views/login.py:47
 msgid "Login failed."
 msgstr ""
 
-#: bookie/views/login.py:56 build/lib/bookie/views/login.py:56
+#: bookie/views/login.py:56
 msgid ""
 "You should receive an email with a link to reset your password "
 "momentarily."
 msgstr ""
 
-#: bookie/views/login.py:61 build/lib/bookie/views/login.py:61
+#: bookie/views/login.py:61
 msgid "That username or email is not known to us."
 msgstr ""
 
-#: bookie/views/login.py:74 build/lib/bookie/views/login.py:74
+#: bookie/views/login.py:74
 msgid "You have been logged out."
 msgstr ""
 
-#: bookie/views/login.py:82 bookie/views/users.py:114
-#: build/lib/bookie/views/login.py:82 build/lib/bookie/views/users.py:109
+#: bookie/views/login.py:82 bookie/views/login.py:153 bookie/views/users.py:114
 msgid "Password"
 msgstr ""
 
-#: bookie/views/login.py:92 bookie/views/users.py:118
-#: build/lib/bookie/views/login.py:92 build/lib/bookie/views/users.py:113
-msgid "E-Mail"
-msgstr ""
-
-#: bookie/views/login.py:104 build/lib/bookie/views/login.py:104
+#: bookie/views/login.py:104
 msgid "You've reset your password successfully."
 msgstr ""
 
-#: bookie/views/login.py:105 build/lib/bookie/views/login.py:105
+#: bookie/views/login.py:105
 msgid "Submit"
 msgstr ""
 
-#: bookie/views/login.py:112 build/lib/bookie/views/login.py:112
+#: bookie/views/login.py:112
 msgid "There was an error."
 msgstr ""
 
-#: bookie/views/login.py:133 build/lib/bookie/views/login.py:133
+#: bookie/views/login.py:133
 msgid "Your password reset token may have expired."
 msgstr ""
 
-#: bookie/views/login.py:138 build/lib/bookie/views/login.py:138
+#: bookie/views/login.py:138
 msgid "Reset your password - ${title}"
 msgstr ""
 
-#: bookie/views/users.py:39 build/lib/bookie/views/users.py:39
-msgid "No such group: ${group}"
-msgstr ""
-
-#: bookie/views/users.py:90 bookie/views/users.py:181
-#: build/lib/bookie/views/users.py:85 build/lib/bookie/views/users.py:177
-msgid "Group"
-msgstr ""
-
-#: bookie/views/users.py:99 build/lib/bookie/views/users.py:94
+#: bookie/views/login.py:145 bookie/views/users.py:99
 msgid "Username"
 msgstr ""
 
-#: bookie/views/users.py:102 build/lib/bookie/views/users.py:97
-msgid "First Name"
-msgstr ""
-
-#: bookie/views/users.py:106 build/lib/bookie/views/users.py:101
-msgid "Middle Name"
-msgstr ""
-
-#: bookie/views/users.py:109 build/lib/bookie/views/users.py:104
-msgid "Last Name"
-msgstr ""
-
-#: bookie/views/users.py:115 build/lib/bookie/views/users.py:110
+#: bookie/views/login.py:154 bookie/views/users.py:115
 msgid "Enter password..."
 msgstr ""
 
-#: bookie/views/users.py:121 build/lib/bookie/views/users.py:116
-msgid "Active"
+#: bookie/views/login.py:158 bookie/views/users.py:102
+msgid "First Name"
 msgstr ""
 
-#: bookie/views/users.py:122 build/lib/bookie/views/users.py:117
-msgid "Untick this to deactivate the account."
+#: bookie/views/login.py:162 bookie/views/users.py:106
+msgid "Middle Name"
 msgstr ""
 
-#: bookie/views/users.py:134 bookie/views/users.py:144
-#: build/lib/bookie/views/users.py:129 build/lib/bookie/views/users.py:139
+#: bookie/views/login.py:165 bookie/views/users.py:109
+msgid "Last Name"
+msgstr ""
+
+#: bookie/views/login.py:169 bookie/views/login.py:170
+msgid "Signup"
+msgstr ""
+
+#: bookie/views/login.py:188
+msgid "Signup successful!"
+msgstr ""
+
+#: bookie/views/misc.py:66
+msgid "New"
+msgstr ""
+
+#: bookie/views/misc.py:68
+msgid "Inbox"
+msgstr ""
+
+#: bookie/views/misc.py:69
+msgid "Sent"
+msgstr ""
+
+#: bookie/views/misc.py:92
+msgid "Recipients"
+msgstr ""
+
+#: bookie/views/misc.py:97
+msgid "Message text"
+msgstr ""
+
+#: bookie/views/misc.py:101
+msgid "Message"
+msgstr ""
+
+#: bookie/views/misc.py:102
+msgid "Send message"
+msgstr ""
+
+#: bookie/views/misc.py:187
+msgid "Time"
+msgstr ""
+
+#: bookie/views/misc.py:188
+msgid "Receivers"
+msgstr ""
+
+#: bookie/views/misc.py:189
+msgid "Short contents"
+msgstr ""
+
+#: bookie/views/retailer.py:31
+msgid "New Booking"
+msgstr ""
+
+#: bookie/views/retailer.py:33
+msgid "New Entity"
+msgstr ""
+
+#: bookie/views/retailer.py:35
+msgid "Invite User"
+msgstr ""
+
+#: bookie/views/retailer.py:43
+msgid "User to invite"
+msgstr ""
+
+#: bookie/views/retailer.py:49 bookie/views/users.py:134
+#: bookie/views/users.py:144
 msgid "Permissions"
 msgstr ""
 
-#: bookie/views/users.py:139 build/lib/bookie/views/users.py:134
+#: bookie/views/retailer.py:54
+msgid "Invititational message"
+msgstr ""
+
+#: bookie/views/users.py:33
+msgid "No such group: ${group}"
+msgstr ""
+
+#: bookie/views/users.py:82
+msgid "My settings"
+msgstr ""
+
+#: bookie/views/users.py:90 bookie/views/users.py:179
+msgid "Group"
+msgstr ""
+
+#: bookie/views/users.py:121
+msgid "Active"
+msgstr ""
+
+#: bookie/views/users.py:122
+msgid "Untick this to deactivate the account."
+msgstr ""
+
+#: bookie/views/users.py:127
+msgid "Groups"
+msgstr ""
+
+#: bookie/views/users.py:139
 msgid "Group name"
 msgstr ""
 
-#: bookie/views/users.py:150 build/lib/bookie/views/users.py:145
+#: bookie/views/users.py:149
+msgid "User"
+msgstr ""
+
+#: bookie/views/users.py:150
 msgid "Add User"
 msgstr ""
 
-#: bookie/views/users.py:159 build/lib/bookie/views/users.py:154
+#: bookie/views/users.py:159
 msgid "Send password registration link"
 msgstr ""
 
-#: bookie/views/users.py:182 build/lib/bookie/views/users.py:178
+#: bookie/views/users.py:180
 msgid "Add Group"
 msgstr ""
 
-#: bookie/views/helpers/form.py:49 build/lib/bookie/views/helpers/form.py:49
+#: bookie/views/helpers/form.py:48
 msgid "Save"
 msgstr ""
 
-#: bookie/views/helpers/form.py:50 build/lib/bookie/views/helpers/form.py:50
+#: bookie/views/helpers/form.py:49
 msgid "Your changes have been saved."
 msgstr ""
 
-#: bookie/views/helpers/form.py:74 build/lib/bookie/views/helpers/form.py:74
+#: bookie/views/helpers/form.py:73
 msgid "No changes made."
 msgstr ""
 
-#: bookie/views/helpers/form.py:103
+#: bookie/views/helpers/form.py:102
 msgid "<em>${title}</em>"
 msgstr ""
 
-#: bookie/views/helpers/form.py:108 build/lib/bookie/views/helpers/form.py:108
+#: bookie/views/helpers/form.py:107
 msgid "Successfully added item."
 msgstr ""
 
-#: bookie/views/helpers/form.py:133 build/lib/bookie/views/helpers/form.py:133
+#: bookie/views/helpers/form.py:132
 msgid "Add ${type} to <em>${title}</em>"
 msgstr ""
 
-#: bookie/views/helpers/form.py:138 build/lib/bookie/views/helpers/form.py:138
+#: bookie/views/helpers/form.py:137
 msgid "Add ${type}"
 msgstr ""
 
-#: build/lib/bookie/templates/admin/user_manage.pt:7
-msgid "Editing Group"
-msgstr ""
-
-#: build/lib/bookie/templates/entity/view.pt:27
-msgid "Vehicle orders"
-msgstr ""
-
-#: build/lib/bookie/views/helpers/form.py:103
-msgid "Edit <em>${title}</em>"
-msgstr ""
+#~ msgid "Bulk / Quick add"
+#~ msgstr ""
 
