@@ -1,12 +1,11 @@
 import re
 import urllib
-import uuid
 
-from plone.i18n.normalizer import urlnormalizer
 from pyramid.i18n import get_locale_name, TranslationStringFactory, \
     get_localizer, make_localizer
 from pyramid.threadlocal import get_current_request
 from repoze.lru import LRUCache
+from webhelpers_extra.utils import *
 
 tsf = TranslationStringFactory('bookie')
 _ = tsf
@@ -83,56 +82,6 @@ def clear_cache():  # only useful for tests really
     _lru_cache.clear()
 
 
-def disambiguate_name(name):
-    parts = name.split(u'-')
-    if len(parts) > 1:
-        try:
-            index = int(parts[-1])
-        except ValueError:
-            parts.append(u'1')
-        else:
-            parts[-1] = unicode(index + 1)
-    else:
-        parts.append(u'1')
-    return u'-'.join(parts)
-
-
-def title_to_name(title, blacklist=()):
-    request = get_current_request()
-    if request is not None:
-        locale_name = get_locale_name(request)
-    else:
-        locale_name = 'en'
-    name = unicode(urlnormalizer.normalize(title, locale_name, max_length=40))
-    while name in blacklist:
-        name = disambiguate_name(name)
-    return name
-
-
-def camel_to_name(text, splitter=""):
-    """
-      >>> camel_case_to_name('FooBar')
-      'foo_bar'
-      >>> camel_case_to_name('TXTFile')
-      'txt_file'
-      >>> camel_case_to_name ('MyTXTFile')
-      'my_txt_file'
-      >>> camel_case_to_name('froBOZ')
-      'fro_boz'
-      >>> camel_case_to_name('f')
-      'f'
-    """
-    return re.sub(
-        r'((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))', r'_\1', text).lower()
-
-
-def name_to_camel(string, joiner=""):
-    """
-    Convert a string with 'test_test' to 'TestTest'
-    """
-    return joiner.join([i.title() for i in string.split("_")])
-
-
 def add_renderer_globals(event):
     request = event["request"]
     event['_'] = request.translate
@@ -142,8 +91,8 @@ def add_renderer_globals(event):
 def add_localizer(event):
     request = event.request
     localizer = get_localizer(request)
-    def auto_translate(string):
-        return localizer.translate(tsf(string))
+    def auto_translate(string, mapping={}):
+        return localizer.translate(tsf(string, mapping=mapping))
     request.localizer = localizer
     request.translate = auto_translate
 
@@ -161,7 +110,3 @@ def translate(*args, **kwargs):
     else:
         localizer = get_localizer(request)
     return localizer.translate(*args, **kwargs)
-
-
-def generate_uuid():
-    return unicode(uuid.uuid4())
