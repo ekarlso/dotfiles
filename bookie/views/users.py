@@ -78,10 +78,10 @@ def group_from_request(request):
 
 
 def prefs_menu():
-    return [{
-        "value": _("My settings"), "children": [
-            h.menu_item(_("Preferences"), "user_account"),
-            h.menu_item(_("Reset password"), "reset_password")]}]
+    links = []
+    links.append({"value": _("Preferences"), "route": "user_account"})
+    #links.append({"value": _("Reset Password"), "route": "reset_password"})
+    return [{"value": _("My settings"), "children": links}]
 
 
 class Groups(colander.SequenceSchema):
