@@ -1,5 +1,6 @@
 colander
 deform
+deform_bootstrap
 formencode
 plone.i18n
 pyramid
@@ -24,3 +25,4 @@ https://github.com/ekarlso/webhelpers_extra/zipball/master#egg=webhelpers_extra
 errormator-client
 ColanderAlchemy
 html2text
+PyYAML
