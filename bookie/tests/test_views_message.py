@@ -7,8 +7,6 @@ from bookie.testing import Dummy, DummyRequest, UnitTestBase
 
 from bookie.views import misc
 
-import ipdb
-
 
 class TestMessage(UnitTestBase):
     def make(self):

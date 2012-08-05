@@ -57,18 +57,3 @@ class TestLRUCache(TestRequestCache):
 
         super(TestLRUCache, self).setUp()
         self.cache_decorator = lru_cache
-
-
-class TestTitleToName(TestCase):
-    def test_max_length(self):
-        from bookie.utils import title_to_name
-        assert len(title_to_name(u'a' * 50)) == 40
-
-    def test_normal(self):
-        from bookie.utils import title_to_name
-        assert title_to_name(u'Foo Bar') == u'foo-bar'
-
-    def test_disambiguate_name(self):
-        from bookie.utils import disambiguate_name
-        assert disambiguate_name(u'foo') == u'foo-1'
-        assert disambiguate_name(u'foo-3') == u'foo-4'

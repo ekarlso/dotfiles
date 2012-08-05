@@ -9,12 +9,11 @@ from pyramid.decorator import reify
 from pyramid.location import inside, lineage
 from pyramid.renderers import get_renderer, render
 from pyramid.threadlocal import get_current_registry, get_current_request
-from webhelpers_extra import TemplateAPI as BaseTemplateAPI, template_api, add_renderer_globals
+from webhelpers_extra.api import TemplateAPI as BaseTemplateAPI, \
+        template_api, add_renderer_globals
 
-from bookie import get_settings
-from bookie.utils import _, name_to_camel, camel_to_name
-
-from . import importutils, navigation, utils
+from bookie import get_settings, utils
+from bookie.utils import _
 
 
 def is_root(context, request):
@@ -96,7 +95,3 @@ class TemplateAPI(BaseTemplateAPI):
     @reify
     def locale_name(self):
         return get_locale_name(self.request)
-
-
-__all__ = ["template_api", "add_renderer_globals", "is_root",
-           "TemplateAPI"]
