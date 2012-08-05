@@ -16,8 +16,6 @@ def read(fname):
 requires = setup_utils.parse_requirements()
 dependency_links = setup_utils.parse_dependency_links()
 tests_require = setup_utils.parse_requirements(['tools/test-requires'])
-import ipdb
-ipdb.set_trace()
 
 
 # Provided as an attribute, so you can append to these instead
