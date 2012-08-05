@@ -32,7 +32,7 @@ def category_actions(obj, request):
     actions.append(h.menu_item(_("View"), "category_view", **d))
     actions.append(h.menu_item(_("Edit"), "category_edit", **d))
     actions.append(h.menu_item(_("Delete"), "category_delete", **d))
-    links.append({"value": _("Category Actions"), "children": actions})
+    links.append({"value": _("Actions"), "children": actions})
     return links
 
 

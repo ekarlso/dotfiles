@@ -71,7 +71,7 @@ def entity_links(request, obj=None):
     links.append(h.menu_came_from(request))
     links.append(h.menu_item(_("Overview"), "entity_overview", **data))
     links.append(h.menu_item(_("Add"), "entity_add", **data))
-    links.append(h.menu_item(_("Quick / Bulk Add"), "entity_bulk_add", **data))
+    links.append(h.menu_item(_("Bulk add"), "entity_bulk_add", **data))
     return [{"value": _("Navigation"), "children": links}]
 
 
@@ -133,7 +133,7 @@ class Schema(colander.Schema):
 
 # TODO: Make it possible to choose / enter in Entity Type to load
 class CarBulkForm(CarAddForm):
-    buttons = (deform.Button("bulk_load", _("Bulk Load")),
+    buttons = (deform.Button("bulk_load", _("Bulk add")),
             deform.Button("cancel", _("Cancel")))
 
     def schema_factory(self):
@@ -187,7 +187,7 @@ def entity_add(context, request):
 def entity_bulk_add(context, request):
     form = h.mk_form(CarBulkForm, context, request,
             extra={"sidebar_data": entity_links(request),
-                "page_title": _("Bulk / Quick add")})
+                "page_title": _("Bulk add")})
     return form
 
 
