@@ -11,13 +11,13 @@ def get_mailer():
 
 
 def send(subject=None, sender=None, recipients=[], html=None,
-        template="mail.mako", request=None, variables={}):
+        template="mail.mako", request=None, template_variables={}):
     settings = get_settings()
 
     template = "message/%s" % template
 
     data = request.user.to_dict() if request and request.user else {}
-    data.update(variables)
+    data.update(template_variables)
 
     data["site_title"] = settings["bookie.site_title"]
 
