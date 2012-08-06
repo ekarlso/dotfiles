@@ -7,7 +7,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import unauthenticated_userid, Authenticated, Allow
 from sqlalchemy.orm import exc
 
-from . import models
+from . import message, models
 
 LOG = logging.getLogger(__name__)
 
@@ -113,3 +113,20 @@ def includeme(config):
 
     config.set_request_property(get_group, 'group', reify=True)
     config.set_request_property(get_user, 'user', reify=True)
+
+
+def email(user, request, route="reset_password", template="reset-password.mako",
+        add_query={}):
+    user.regenerate_security_code()
+    sc = user.security_code
+    user.save()
+
+    query = dict(security_code=sc, user_name=user.user_name)
+    query.update(add_query)
+    url = request.route_url(route, _query=query)
+
+    template_variables = dict(user=user, request=request, url=url)
+
+    recipients = ['"%s" <%s>' % (user.display_name, user.email)]
+    message.send(recipients=recipients, template=template, request=request,
+            template_variables=template_variables)

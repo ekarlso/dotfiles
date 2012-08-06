@@ -4,18 +4,18 @@ import sys
 import urllib
 
 import colander
-from deform import Button, Form, ValidationFailure
+import deform
 from deform.widget import CheckedPasswordWidget, HiddenWidget
 from formencode.validators import Email
 from pyramid.encode import urlencode
-from pyramid.httpexceptions import HTTPFound, HTTPForbidden
+import pyramid.httpexceptions as exceptions
 from pyramid.security import authenticated_userid, remember, forget
 from pyramid.url import resource_url
 from pyramid.view import view_config
 
-from .. import models
+from .. import models, security
 from ..utils import _
-from .users import prefs_menu
+from . import helpers as h, users
 
 LOG = logging.getLogger(__name__)
 
@@ -28,52 +28,50 @@ def login(context, request):
         referrer = '/' # never use the login form itself as came_from
     came_from = request.params.get("came_from", referrer)
 
-    login, password = u'', u''
-    #LOG.debug("User %s" % request.user.user_name)
-
+    user_name, password = u'', u''
     if 'submit' in request.POST:
-        login = request.params['login'].lower()
+        user_name = request.params['user_name'].lower()
         password = request.params['password']
-        user = models.User.by_user_name(login)
+        user = models.User.by_user_name(user_name)
 
         if (user is not None and user.status == 1 and
-            user.check_password(password)):
-            headers = remember(request, login)
+                user.check_password(password)):
+            headers = remember(request, user_name)
             request.session.flash(
                 _(u"Welcome, ${user}!", mapping=dict(user=user.display_name)))
             user.last_login_date = datetime.now()
-            return HTTPFound(location=came_from, headers=headers)
-        LOG.debug("Failed login attempt %s" % user)
-        request.session.flash(_(u"Login failed."), 'error')
+            return exceptions.HTTPFound(location=came_from, headers=headers)
+        request.session.flash("error;" + _(u"Login failed."))
 
     if 'reset-password' in request.POST:
-        login = request.params['login']
-        user = models.User.by_user_name(login)
+        user_name = request.params['user_name']
+        user = models.User.by_user_name(user_name)
         if user is not None:
-            email_set_password(
-                user, request,
-                template_name='email-reset-password.mako')
+            security.email(user, request)
             request.session.flash(_(
+                "info;"
                 u"You should receive an email with a link to reset your "
-                u"password momentarily."), 'success')
+                u"password momentarily."))
         else:
-            request.session.flash(
-                _(u"That username or email is not known to us."), 'error')
+            request.session.flash("error;" + _(u"That username or email is not known to us."))
 
     return {
-        'url': request.application_url + '/@@login',
+        'url': request.route_url("login"),
         'came_from': came_from,
-        'login': login,
+        'user_name': user_name,
         'password': password,
         }
 
 
 @view_config(route_name='logout')
 def logout(context, request):
+    """
+    Logout
+    """
     headers = forget(request)
     request.session.flash(_(u"You have been logged out."))
     location = request.params.get('came_from', request.application_url)
-    return HTTPFound(location=location, headers=headers)
+    return exceptions.HTTPFound(location=location, headers=headers)
 
 
 class SetPasswordSchema(colander.MappingSchema):
@@ -83,14 +81,14 @@ class SetPasswordSchema(colander.MappingSchema):
         validator=colander.Length(min=5),
         widget=CheckedPasswordWidget(),
         )
-    token = colander.SchemaNode(
+    user_name = colander.SchemaNode(
         colander.String(),
         widget=HiddenWidget(),
         )
-    email = colander.SchemaNode(
+    security_code = colander.SchemaNode(
         colander.String(),
-        title=_(u'E-Mail'),
         widget=HiddenWidget(),
+        missing=None,
         )
     continue_to = colander.SchemaNode(
         colander.String(),
@@ -102,52 +100,143 @@ class SetPasswordSchema(colander.MappingSchema):
 @view_config(route_name="reset_password", renderer="edit.mako")
 def reset_password(context, request,
                  success_msg=_(u"You've reset your password successfully.")):
-    form = Form(SetPasswordSchema(), buttons=(Button('submit', _(u'Submit')),))
+    form = deform.Form(SetPasswordSchema(), buttons=(deform.Button('submit', _(u'Submit')),))
     rendered_form = None
 
     if 'submit' in request.POST:
         try:
             appstruct = form.validate(request.POST.items())
-        except ValidationFailure, e:
-            request.session.flash(_(u"There was an error."), 'error')
+        except deform.ValidationFailure, e:
+            request.session.flash("error;" + _(u"There was an error."))
             rendered_form = e.render()
         else:
-            token = appstruct['token']
-            email = appstruct['email']
-            user = _find_user(email)
-            if (user is not None and
-                validate_token(user, token) and
-                token == user.confirm_token):
-                password = appstruct['password']
-                user.password = get_principals().hash_password(password)
-                user.confirm_token = None
-                headers = remember(request, user.name)
-                user.last_login_date = datetime.now()
+            security_code = appstruct['security_code']
+            user_name = appstruct['user_name']
 
-                location = (appstruct['continue_to'] or
-                            resource_url(context, request))
-                request.session.flash(success_msg, 'success')
-                return HTTPFound(location=location, headers=headers)
+            user = models.User.by_user_name_and_security_code(user_name, security_code)
+
+            if user:
+                user.set_password(appstruct["password"])
+                headers = remember(request, user.user_name)
+
+                location = (appstruct['continue_to'] or request.route_url("user_account"))
+                request.session.flash("success;" + success_msg)
+                return exceptions.HTTPFound(location=location, headers=headers)
             else:
                 request.session.flash(
-                    _(u"Your password reset token may have expired."), 'error')
+                    _("error;" + u"Your password reset token may have expired."))
 
     if rendered_form is None:
-        rendered_form = form.render(request.params.items())
+        params = [("security_code", request.user.security_code),
+                ("user_name", request.user.user_name)] if request.user \
+                        else request.params.items()
+        rendered_form = form.render(params)
 
     return {"page_title": _(u"Reset your password - ${title}"),
-            "sidebar_data": prefs_menu(), "form": rendered_form}
+            "sidebar_data": users.prefs_menu(), "form": rendered_form}
 
 
-@view_config(context=HTTPForbidden, accept="text/html")
-@view_config(context=HTTPForbidden)
+class SignupSchema(colander.Schema):
+    user_name = colander.SchemaNode(
+            colander.String(),
+            title=_(u"Username"))
+    email = colander.SchemaNode(
+            colander.String(),
+            title=_(u"E-Mail"))
+    password = colander.SchemaNode(
+            colander.String(),
+            validator=colander.Length(min=5, max=100),
+            widget=CheckedPasswordWidget(length="20"),
+            title=_(u"Password"),
+            description=_(u"Enter password..."))
+
+    first_name = colander.SchemaNode(
+            colander.String(),
+            title=_(u"First Name"))
+    middle_name = colander.SchemaNode(
+            colander.String(),
+            missing='',
+            title=_(u"Middle Name"))
+    last_name = colander.SchemaNode(
+            colander.String(),
+            title=_(u"Last Name"))
+
+
+class SignupForm(h.AddFormView):
+    item_type = _("Signup")
+    buttons = (deform.Button("signup", _("Signup")),
+            deform.Button("cancel", _("Cancel")))
+
+    def schema_factory(self):
+        return SignupSchema()
+
+    @property
+    def cancel_url(self):
+        return self.request.route_url("index")
+
+    def signup_success(self, appstruct):
+        appstruct.pop('csrf_token', None)
+
+        appstruct["status"] = 0
+        user = models.User().from_dict(appstruct)
+        user.set_password(appstruct.pop("password"))
+        user.save()
+
+        security.email(user, self.request, route="account_activate",
+                template="signup.mako")
+
+        self.request.session.flash(_("Signup successful."
+            "You will receive a e-mail for further steps!"))
+        location = self.request.route_url("account_activate")
+        return exceptions.HTTPFound(location=location)
+
+
+@view_config(route_name="account_signup", renderer="account_signup.mako")
+def signup(context, request):
+    """
+    Signup form and mail re-send
+    """
+    return h.mk_form(SignupForm, context, request)
+
+
+@view_config(route_name="account_activate", renderer="account_activate.mako")
+def activate(context, request):
+    """
+    Account activation
+    """
+    try:
+        user_name = request.params["user_name"]
+        security_code = request.params["security_code"]
+    except KeyError:
+        raise exceptions.HTTPForbidden("Invalid security code or username")
+
+    user = models.User.by_user_name_and_security_code(user_name, security_code)
+
+    if user:
+        if user.status == 1:
+            msg = "warning;Account already activated!"
+        else:
+            user.status = 1
+            user.save()
+            msg = "warning;Account activated!"
+
+        request.session.flash(msg)
+        headers = remember(request, user_name)
+        return exceptions.HTTPFound(location=request.route_url("index"), headers=headers)
+    else:
+        raise exceptions.HTTPForbidden
+
+
+
+@view_config(context=exceptions.HTTPForbidden, accept="text/html")
+@view_config(context=exceptions.HTTPForbidden)
 def forbidden_redirect(context, request):
     if authenticated_userid(request):
         location = request.application_url + '/@@forbidden'
     else:
-        location = request.application_url + '/@@login?' + \
-            urlencode({'came_from': request.url})
-    return HTTPFound(location=location)
+        location = request.route_url("login", _query=dict(
+            came_from=urlencode({'came_from': request.url})))
+    return exceptions.HTTPFound(location=location)
 
 
 def forbidden_view(request):
@@ -156,6 +245,8 @@ def forbidden_view(request):
 
 def includeme(config):
     config.add_view(name='forbidden', renderer='forbidden.mako')
-    config.add_route("login", "/@@login")
-    config.add_route("logout", "/@@logout")
-    config.add_route("reset_password", "/@@reset_password")
+    config.add_route("login", "/user/login")
+    config.add_route("logout", "/user/logout")
+    config.add_route("reset_password", "/user/reset_password")
+    config.add_route("account_signup", "/user/signup")
+    config.add_route("account_activate", "/user/activate")
