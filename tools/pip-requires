@@ -1,7 +1,7 @@
 colander
 deform
 deform_bootstrap
-formencode
+FormEncode
 pyramid
 pyramid_beaker
 pyramid_deform
