@@ -241,8 +241,6 @@ def entity_delete(context, request):
 @view_config(route_name="entity_overview", permission="view",
             renderer="entity_overview.mako")
 def entity_overview(context, request):
-    deleted = request.params.get("deleted", False)
-
     search_opts = search.search_options(request)
     search_opts["filter_by"]["retailer"] = request.group
     entities = models.Entity.search(**search_opts)
