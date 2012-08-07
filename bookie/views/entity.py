@@ -11,7 +11,6 @@ from pyramid.view import view_config
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
 from . import helpers as h, search
-from .search import search_options
 
 
 
