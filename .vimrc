@@ -21,7 +21,7 @@ set wildmode=list:longest " make TAB behave like in a shell
 set autoread " reload file when changes happen in other editors
 set tags=./tags
 
-set mouse=a
+set mouse-=a
 set bs=2 " make backspace behave like normal again
 set wildignore+=*.pyc
 set wildignore+=*_build/*
@@ -171,4 +171,10 @@ set colorcolumn=80
 highlight ColorColumn ctermbg=233
 
 " source ~/.vim/vimrc/vimrc_python.vim
-" source ~/.vim/bundle/pydiction/vimrc_pydiction.vim
+" source ~/.vim/bundle/pydiction/python_pydiction.vim
+
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h set textwidth=79
+highlight BadWhitespace ctermbg=red guibg=red
+au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+au BufNewFile *.py,*.pyw,*.c,*.h set fileformat=unix
