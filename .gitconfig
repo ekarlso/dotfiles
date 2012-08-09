@@ -22,8 +22,8 @@
 	  history-view-vpane-position = 374
 	  main-window-view = HistoryView
 [user]
-	  name = Martin Brochhaus
-	  email = mbrochh@gmail.com
+	  name = Endre Karlson
+	  email = endre.karlson@gmail.com
 [http]
 	sslverify = false
 [mergetool "fugitive"]
