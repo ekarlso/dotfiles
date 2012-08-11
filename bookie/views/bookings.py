@@ -3,12 +3,14 @@ import re
 
 import colander
 import deform
+import deform_bootstrap.widget as db_widget
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.exceptions import Forbidden
 from pyramid.request import Request
 from pyramid.threadlocal import get_current_request
 from pyramid.view import view_config
-from sqlalchemy.orm import exc
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from .. import models
 from ..utils import _, camel_to_name, name_to_camel
@@ -42,26 +44,28 @@ def booking_links(request, obj=None):
 def customer_validate(node, value):
     request = get_current_request()
     try:
-        models.Customer.get_by(name=value, retailer=request.group)
-    except exc.NoResultFound:
+        models.Customer.get_by(id=value, retailer=request.group)
+    except sa_orm.exc.NoResultFound:
         raise colander.Invalid(node, "Invalid Customer")
 
 
-def entity_validate(node, value):
+def entities_validate(node, values):
     request = get_current_request()
     try:
-        models.Entity.get_by(name=value, retailer=request.group)
-    except exc.NoResultFound:
+        results = models.Entity.query.filter(
+                models.Entity.id.in_(list(values)),
+                models.Entity.retailer==request.group).all()
+        assert len(results) == len(values)
+    except sa_orm.exc.NoResultFound, AssertionError:
         raise colander.Invalid(node, "Invalid entity")
 
 
 def location_validate(node, value):
     request = get_current_request()
     try:
-        models.Location.get_by(name=value, retailer=request.group)
-    except exc.NoResultFound:
+        models.Location.get_by(id=value, retailer=request.group)
+    except sa_orm.exc.NoResultFound:
         raise colander.Invalid(node, "Invalid Location")
-
 
 
 def pre_render(request, schema):
@@ -70,48 +74,44 @@ def pre_render(request, schema):
     """
     entities = []
     for e in models.Entity.all_by(retailer=request.group):
-        entities.append(dict(label=str(e.name), value=str(e.name)))
-    schema["entity"].widget.values = entities
+        entities.append((e.id, e.name))
+    schema["entities"].widget.values = entities
 
-    schema["customer"].widget.values = [dict(label=c.name, value=c.name) \
+    schema["customer"].widget.values = [(c.id, c.name) \
             for c in models.Customer.all_by(retailer=request.group)]
 
     locations = models.Location.all_by(retailer=request.group)
-    location_data = [dict(label=l.name, value=l.name) for l in locations]
+    location_data = [(l.id, l.name) for l in locations]
     schema["start_location"].widget.values = location_data
     schema["end_location"].widget.values = location_data
     return schema
 
 
-def presave(obj, appstruct):
-    appstruct["entity"] = models.Entity.get_by(
-        name=appstruct["entity"], retailer=obj.request.group)
+def pre_save(obj, appstruct):
+    appstruct["entities"] = [{"id": i} for i in appstruct["entities"]]
 
-    appstruct["customer"] = models.Customer.get_by(
-        name=appstruct["customer"], retailer=obj.request.group)
-
-    appstruct["start_location"] = models.Location.by_name(
-            appstruct["start_location"], obj.request.group)
-    appstruct["end_location"] = models.Location.by_name(
-            appstruct["end_location"], obj.request.group)
-
+    for key in ["customer", "start_location", "end_location"]:
+        appstruct[key + "_id"] = appstruct.pop(key)
     return appstruct
+
+
+class Entities(colander.SequenceSchema):
+    entity = colander.SchemaNode(colander.String())
 
 
 class BookingSchema(colander.Schema):
     """
     A Schema for a booking
     """
-    entity = colander.SchemaNode(
-        colander.String(),
-        validator=entity_validate,
+    entities = Entities(
+        validator=entities_validate,
         title=_("Entity to book"),
-        widget=deform.widget.AutocompleteInputWidget())
+        widget=db_widget.ChosenMultipleWidget())
     customer = colander.SchemaNode(
         colander.String(),
         validator=customer_validate,
         title=_("Customer"),
-        widget=deform.widget.AutocompleteInputWidget())
+        widget=db_widget.ChosenSingleWidget())
     price = colander.SchemaNode(
         colander.Int(),
         title=_("Price"))
@@ -119,7 +119,7 @@ class BookingSchema(colander.Schema):
         colander.String(),
         validator=location_validate,
         title=_("Start location"),
-        widget=deform.widget.AutocompleteInputWidget())
+        widget=db_widget.ChosenSingleWidget())
     start_at = colander.SchemaNode(
         colander.DateTime(None),
         title=_("Starts At"))
@@ -127,7 +127,7 @@ class BookingSchema(colander.Schema):
         colander.String(),
         validator=location_validate,
         title=_("End location"),
-        widget=deform.widget.AutocompleteInputWidget())
+        widget=db_widget.ChosenSingleWidget())
     end_at = colander.SchemaNode(
         colander.DateTime(None),
         title=_("Ends time"))
@@ -150,9 +150,8 @@ class BookingAddForm(h.AddFormView):
 
     def add_booking_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        presave(self, appstruct)
-        obj = models.Booking(retailer=request.group).\
-                update(appstruct).save()
+        pre_save(self, appstruct)
+        obj = models.Booking().from_dict(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
         location = self.request.route_url(
@@ -167,6 +166,11 @@ class BookingForm(h.EditFormView):
         pre_render(self.request, schema)
         return schema
 
+    def before(self, form):
+        appstruct = self.context.to_dict()
+        appstruct["entities"] = [e.id for e in self.context.entities]
+        form.appstruct = appstruct
+
     @property
     def cancel_url(self):
         return self.request.route_url("booking_overview",
@@ -174,7 +178,7 @@ class BookingForm(h.EditFormView):
     success_url = cancel_url
 
     def save_success(self, appstruct):
-        presave(self, appstruct)
+        pre_save(self, appstruct)
         return super(BookingForm, self).save_success(appstruct)
 
 
@@ -206,18 +210,18 @@ def booking_overview(context, request):
 
     search_opts = search.search_options(request)
     search_opts["filter_by"]["retailer"] = request.group
-    bookings = models.Booking.search(**search_opts)
+    q = models.Booking.query.options(
+            sa_orm.joinedload("customer"),
+            sa_orm.joinedload("entities"))
+    bookings = models.Booking.search(query=q, **search_opts)
 
-    columns = ["id"] + models.Booking.exposed_attrs() + ["entity"]
+    columns = ["id", "entities_count"] + models.Booking.exposed_attrs()
     grid = h.PyramidGrid(bookings, columns, request=request,
             url=request.current_route_url)
 
-    grid.exclude_ordering = ("id")
+    grid.exclude_ordering = ("id", "customer", "start_location", "end_location",
+            "entities_count")
     grid.labels["id"] = ""
-
-    grid.column_formats["entity"] = lambda cn, i, item: h.column_link(
-        request, unicode(item.entity), "entity_view",
-        url_kw=item.entity.to_dict())
 
     grid.column_formats["id"] = lambda cn, i, item: h.column_link(
         request, "Manage", "booking_manage", url_kw=item.to_dict(),
