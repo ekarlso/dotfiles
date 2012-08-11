@@ -3,6 +3,8 @@
 VER=0.8.1
 VENV=$1
 
+VENV=$(cd $VENV; pwd)
+echo $VENV
 wget http://nodejs.org/dist/v$VER/node-v$VER.tar.gz
 tar zxf node-v$VER.tar.gz
 cd node-v$VER/
