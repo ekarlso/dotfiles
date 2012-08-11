@@ -101,7 +101,7 @@ class CarAddForm(h.AddFormView):
     @property
     def cancel_url(self):
         return self.request.route_url("entity_overview",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
 
     def add_car_success(self, appstruct):
         appstruct.pop('csrf_token', None)
@@ -110,7 +110,7 @@ class CarAddForm(h.AddFormView):
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=car.title)), "success")
         location = self.request.route_url("entity_view",
-                id=car.id, **get_nav_data(self.request))
+                id=car.id, **h.get_nav_data(self.request))
         return HTTPFound(location=location)
 
 
@@ -153,7 +153,7 @@ class CarBulkForm(CarAddForm):
             entity.save()
 
         location = self.request.route_url("entity_overview",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
         return HTTPFound(location=location)
 
 
@@ -164,7 +164,7 @@ class CarForm(h.EditFormView):
     @property
     def cancel_url(self):
         return self.request.route_url("entity_view",
-                **get_nav_data(self.request))
+                **h.get_nav_data(self.request))
     success_url = cancel_url
 
     def save_success(self, appstruct):
@@ -208,10 +208,8 @@ def entity_view(context, request):
             id=request.matchdict["id"],
             retailer=request.group)
 
-    ##b_latest = models.Booking.latest(entity=entity)
     b_grid_latest = h.PyramidGrid(
-        models.Booking.latest(filter_by={"entity": entity}),
-        models.Booking.exposed_attrs())
+        entity.bookings, models.Booking.exposed_attrs())
 
     return {
         "sidebar_data": entity_actions(request, entity),
