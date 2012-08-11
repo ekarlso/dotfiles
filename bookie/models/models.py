@@ -233,7 +233,7 @@ class MessageAssociation(Base):
     """
     A Mapping of pr user data towards the message
     """
-    __tablename__ = "messages_map"
+    __tablename__ = "message_associations"
 
     _status = Column("status", Integer, default=0)
     extra = Column(JSONType())
@@ -294,10 +294,10 @@ class Message(Base):
         return user in self.receivers
 
 
-# NOTE: Map categories >< entities
-category_entity_map = Table('category_entity_map', Base.metadata,
+category_entity_associations = Table(
+    'category_entity_assocations', Base.metadata,
     Column('category_id', Integer, ForeignKey('resources.resource_id')),
-    Column('entity_id', Unicode(36), ForeignKey('entity.id'))
+    Column('entity_id', Unicode(36), ForeignKey('entities.id'))
 )
 
 
@@ -305,7 +305,7 @@ class Category(Resource):
     """
     A entity category is owned by a retailer
     """
-    __tablename__ = "category"
+    __tablename__ = "resources_category"
     __expose_attrs__ = ["resource_name", "description"]
     __format_string__ = "{resource_name}"
     description = Column(UnicodeText)
@@ -314,18 +314,19 @@ class Category(Resource):
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
 
-    entities = relationship("Entity", secondary=category_entity_map,
+    entities = relationship("Entity", secondary=category_entity_associations,
                             backref="categories")
 
 
-category_metadata_table = Table('category_metadata_map', Base.metadata,
+category_metadata_associations = Table(
+    'category_metadata_assications', Base.metadata,
     Column('category_id', Integer, ForeignKey('resources.resource_id')),
-    Column('metadata_id', Unicode(36), ForeignKey('category_meta.id'))
+    Column('metadata_id', Unicode(36), ForeignKey('category_metadata.id'))
 )
 
 
 class CategoryMeta(Base):
-    __tablename__ = "category_meta"
+    __tablename__ = "category_metadata"
     __expose_attrs__ = ["name", "value"]
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     name = Column(Unicode(60), index=True, nullable=False)
@@ -336,7 +337,7 @@ class Entity(Base):
     """
     A Entity is a product / thing to be rented out to a customer
     """
-    __tablename__ = "entity"
+    __tablename__ = "entities"
     __expose_attrs__ = ["brand", "model", "produced", "identifier", "color"]
     __format_string__ = '{brand}: {model} - {produced} - {identifier}'
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
@@ -400,7 +401,7 @@ class EntityMetadata(Base):
     name = Column(Unicode(60), index=True, nullable=False)
     value = Column(UnicodeText, nullable=True)
 
-    entity_id = Column(Unicode(36), ForeignKey("entity.id"))
+    entity_id = Column(Unicode(36), ForeignKey("entities.id"))
     entity = relationship("Entity", backref=backref("metadata", lazy='dynamic'))
 
 
@@ -420,7 +421,7 @@ class Car(DrivableEntity):
 class Customer(Base):
     __expose_attrs__ = ["name", "organization_id", "contact", "email", "phone"]
     __format_string__ = "{name}"
-    __tablename__ = "customer"
+    __tablename__ = "customers"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     name = Column(Unicode(40))
     organization_id = Column(Unicode(60))
@@ -436,7 +437,7 @@ class Customer(Base):
 class Location(Base):
     __expose_attrs__ = ["city", "address", "postal_code"]
     __format_string__ = "{city}: {address}"
-    __tablename__ = "location"
+    __tablename__ = "locations"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
     address = Column(UnicodeText, nullable=False)
     city = Column(UnicodeText, nullable=False)
@@ -458,6 +459,12 @@ class Location(Base):
         return q.one()
 
 
+entity_booking_assocations = Table('entity_booking_assocations', Base.metadata,
+    Column('entity_id', Unicode(36), ForeignKey('entities.id')),
+    Column('bookings_id', Unicode(36), ForeignKey('bookings.id'))
+)
+
+
 class Booking(Base):
     __format_string__ = "{customer_name} - {start_at} > {end_at}"
     __expose_attrs__ = ["customer", "start_location", "start_at", "end_location", "end_at"]
@@ -472,7 +479,7 @@ class Booking(Base):
     start_location_id = Column(Unicode(36))
     start_location = relationship(
         "Location",
-        backref="bookings_start_here",
+        backref=backref("bookings_start_here", lazy="joined"),
         primaryjoin="Booking.start_location_id==Location.id",
         foreign_keys=[start_location_id])
 
@@ -483,24 +490,32 @@ class Booking(Base):
     end_location_id = Column(Unicode(36))
     end_location = relationship(
         "Location",
-        backref="bookings_end_here",
+        backref=backref("bookings_end_here", lazy="joined"),
         primaryjoin="Booking.end_location_id==Location.id",
         foreign_keys=[end_location_id])
 
-    customer_id = Column(Unicode(36), ForeignKey('customer.id'))
+    customer_id = Column(Unicode(36), ForeignKey('customers.id'))
     customer = relationship("Customer", backref="bookings")
 
-    entity_id = Column(Unicode(36), ForeignKey('entity.id'))
-    entity = relationship("Entity", backref="bookings")
+    entities = relationship("Entity", secondary=entity_booking_assocations,
+            backref="bookings")
+
+    @hybrid_property
+    def entities_string(self):
+        return ", ".join([e.display_name for e in self.entities])
+
+    @hybrid_property
+    def entities_count(self):
+        return len(self.entities)
 
     @classmethod
-    def _prepare_search(cls, filter_by={}, *args, **kw):
+    def _prepare_search(cls, filter_by={}, query=None, *args, **kw):
         """
         Search bookings
 
         :param retailer: Narrow this search down to a certain retailer
         """
-        query = cls.query
+        query = query or cls.query
 
         # NOTE:
         retailer = filter_by.pop("retailer", None)

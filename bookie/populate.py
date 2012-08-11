@@ -112,20 +112,20 @@ def populate_samples():
         outlander_2.save()
 
 
-        Booking(price=5, customer=customer, entity=focus_1,
+        Booking(price=5, customer=customer, entities=[focus_1],
             created_at=(datetime.now() - timedelta(5)),
             start_location=loc_stavanger, end_location=loc_bryne)
-        Booking(price=5, customer=customer, entity=focus_2,
+        Booking(price=5, customer=customer, entities=[focus_2],
             start_location=loc_bryne, end_location=loc_stavanger)
 
-        Booking(price=5, customer=customer, entity=s60_1,
+        Booking(price=5, customer=customer, entities=[s60_1],
             created_at=(datetime.now() - timedelta(2)),
             start_location=loc_bryne, end_location=loc_stavanger)
-        Booking(price=5, customer=customer, entity=s60_2,
+        Booking(price=5, customer=customer, entities=[s60_2],
             start_location=loc_stavanger, end_location=loc_bryne)
-        Booking(price=5, customer=customer, entity=outlander_1,
+        Booking(price=5, customer=customer, entities=[outlander_1],
             start_location=loc_stavanger, end_location=loc_bryne)
-        Booking(price=5, customer=customer, entity=outlander_2,
+        Booking(price=5, customer=customer, entities=[outlander_2],
             start_location=loc_stavanger, end_location=loc_bryne)
 
         # NOTE: Rents out Trucks and Bus
@@ -188,16 +188,16 @@ def populate_samples():
         entity_2.name = "Brand-B: Model-B - 2012 - ID-B"
         entity_2.color = "yellow"
 
-        Booking(price=5, customer=customer, entity=entity_1,
+        Booking(price=5, customer=customer, entities=[entity_1],
             created_at=(datetime.now() - timedelta(5)),
             start_location=loc_stavanger, end_location=loc_bryne)
-        Booking(price=5, customer=customer, entity=entity_1,
+        Booking(price=5, customer=customer, entities=[entity_1],
             start_location=loc_bryne, end_location=loc_stavanger)
 
-        Booking(price=5, customer=customer, entity=entity_2,
+        Booking(price=5, customer=customer, entities=[entity_2],
             created_at=(datetime.now() - timedelta(2)),
             start_location=loc_bryne, end_location=loc_stavanger)
-        Booking(price=5, customer=customer, entity=entity_2,
+        Booking(price=5, customer=customer, entities=[entity_2],
             start_location=loc_stavanger, end_location=loc_bryne)
 
 
