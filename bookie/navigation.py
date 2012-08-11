@@ -16,7 +16,9 @@ def nav_top(context, request):
         {"value": "Entity", "check": request.group,
             "route": "entity_overview", "url_kw": {"group": request.group}},
         {"value": "Customer", "check": request.group,
-            "route": "customer_overview", "url_kw": {"group": request.group}}]}
+            "route": "customer_overview", "url_kw": {"group": request.group}},
+        {"value": "Location", "check": request.group,
+            "route": "location_overview", "url_kw": {"group": request.group}}]}
     return "navigation", data
 
 
