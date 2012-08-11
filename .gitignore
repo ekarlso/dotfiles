@@ -24,4 +24,4 @@ ChangeLog
 *.key*
 *.*project
 .webassets-cache
-static/bootstrap.css
+bookie/static/bootstrap.css
