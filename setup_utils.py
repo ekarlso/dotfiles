@@ -140,12 +140,10 @@ def generate_authors():
                     new_authors_fh.write('\n' + old_authors_fh.read())
 
 _rst_template = """%(heading)s
+    :show-inheritance:
 %(underline)s
 
 .. automodule:: %(module)s
-  :members:
-  :undoc-members:
-  :show-inheritance:
 """
 
 
@@ -197,6 +195,10 @@ def get_cmdclass():
 
 """)
                     for module in module_list:
+                        try:
+                            __import__(module)
+                        except ImportError:
+                            continue
                         output_filename = os.path.join(source_dir,
                                                        "%s.rst" % module)
                         heading = "The :mod:`%s` Module" % module
