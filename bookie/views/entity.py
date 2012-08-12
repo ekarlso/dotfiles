@@ -74,10 +74,10 @@ def entity_links(request, obj=None):
     return [{"value": _("Navigation"), "children": links}]
 
 
-class EntitySchema(colander.Schema):
+class CarSchema(colander.Schema):
     brand = colander.SchemaNode(
         colander.String(),
-        eitle=_("Entity"))
+        eitle=_("Car"))
     model = colander.SchemaNode(
         colander.String(),
         title=_("Model"))
@@ -89,13 +89,13 @@ class EntitySchema(colander.Schema):
         title=_("Identifier"))
 
 
-class EntityAddForm(h.AddFormView):
-    item_type = u"Entity"
-    buttons = (deform.Button("add_entity", _("Add") + " " + _("Entity")),
+class CarAddForm(h.AddFormView):
+    item_type = u"Car"
+    buttons = (deform.Button("add_car", _("Add Car")),
                 deform.Button("cancel", _("Cancel")))
 
     def schema_factory(self):
-        schema = EntitySchema()
+        schema = CarSchema()
         return schema
 
     @property
@@ -103,18 +103,18 @@ class EntityAddForm(h.AddFormView):
         return self.request.route_url("entity_overview",
                 **h.get_nav_data(self.request))
 
-    def add_entity_success(self, appstruct):
+    def add_car_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        entity = models.Entity(retailer=self.request.group).\
+        car = models.Car(retailer=self.request.group).\
                 update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
-            mapping=dict(title=entity.title)), "success")
+            mapping=dict(title=car.title)), "success")
         location = self.request.route_url("entity_view",
-                id=entity.id, **h.get_nav_data(self.request))
+                id=car.id, **h.get_nav_data(self.request))
         return HTTPFound(location=location)
 
 
-class EntityRow(colander.TupleSchema):
+class Row(colander.TupleSchema):
     brand = colander.SchemaNode(colander.String())
     model = colander.SchemaNode(colander.String())
     produced = colander.SchemaNode(colander.Integer())
@@ -122,21 +122,21 @@ class EntityRow(colander.TupleSchema):
     metadata = colander.SchemaNode(colander.String(), missing={})
 
 
-class EntityRows(colander.SequenceSchema):
-    row = EntityRow()
+class Rows(colander.SequenceSchema):
+    row = Row()
 
 
-class EntityBulkSchema(colander.Schema):
-    csv = EntityRows(widget=deform.widget.TextAreaCSVWidget(rows=20, columns=100))
+class Schema(colander.Schema):
+    csv = Rows(widget=deform.widget.TextAreaCSVWidget(rows=20, columns=100))
 
 
 # TODO: Make it possible to choose / enter in Entity Type to load
-class EntityBulkForm(EntityAddForm):
+class CarBulkForm(CarAddForm):
     buttons = (deform.Button("bulk_load", _("Bulk add")),
             deform.Button("cancel", _("Cancel")))
 
     def schema_factory(self):
-        return EntityBulkSchema()
+        return Schema()
 
     def bulk_load_success(self, appstruct):
         appstruct.pop('csrf_token', None)
@@ -145,7 +145,7 @@ class EntityBulkForm(EntityAddForm):
             name = "%s: %s - %s - %s" % row[:4]
 
             entity = models.Entity(
-                    type="entity", retailer=self.request.group, name=name)
+                    type="car", retailer=self.request.group, name=name)
             # NOTE: Then the metadata using x.set_meta
             meta_data = [pair.split("=") for pair in row[4].split(":")]
             for k, v in meta_data:
@@ -157,9 +157,9 @@ class EntityBulkForm(EntityAddForm):
         return HTTPFound(location=location)
 
 
-class EntityForm(h.EditFormView):
+class CarForm(h.EditFormView):
     def schema_factory(self):
-        return EntitySchema()
+        return CarSchema()
 
     @property
     def cancel_url(self):
@@ -168,7 +168,7 @@ class EntityForm(h.EditFormView):
     success_url = cancel_url
 
     def save_success(self, appstruct):
-        return super(EntityForm, self).save_success(appstruct)
+        return super(CarForm, self).save_success(appstruct)
 
 
 
@@ -177,14 +177,14 @@ class EntityForm(h.EditFormView):
 def entity_add(context, request):
     type_ = request.GET.get("type")
 
-    return h.mk_form(EntityAddForm, context, request,
+    return h.mk_form(CarAddForm, context, request,
             extra={"sidebar_data": entity_links(request), "page_title": _("Add")})
 
 
 @view_config(route_name="entity_bulk_add", permission="view",
         renderer="add.mako")
 def entity_bulk_add(context, request):
-    form = h.mk_form(EntityBulkForm, context, request,
+    form = h.mk_form(CarBulkForm, context, request,
             extra={"sidebar_data": entity_links(request),
                 "page_title": _("Bulk add")})
     return form
@@ -197,7 +197,7 @@ def entity_manage(context, request):
             id=request.matchdict["id"],
             retailer=request.group)
 
-    return h.mk_form(EntityForm, obj, request,
+    return h.mk_form(CarForm, obj, request,
         extra=dict(sidebar_data=entity_actions(request, obj)))
 
 
