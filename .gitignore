@@ -9,7 +9,7 @@ dist/
 *.egg/
 .tox/
 run_tests.err.log
-doc/source/api
+docs/source/api
 AUTHORS
 ChangeLog
 *~
