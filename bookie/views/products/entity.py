@@ -8,9 +8,9 @@ from pyramid.exceptions import Forbidden
 from pyramid.request import Request
 from pyramid.view import view_config
 
-from .. import models
-from ..utils import _, camel_to_name, name_to_camel
-from . import helpers as h, search
+from bookie.models import models
+from bookie.utils import _, camel_to_name, name_to_camel
+from .. import helpers as h, search
 
 
 
@@ -53,7 +53,7 @@ def entity_actions(request, obj=None):
     actions = []
     actions.append(h.menu_item(_("View"), "entity_view", **data))
     actions.append(h.menu_item(_("Edit"), "entity_manage", **data))
-    actions.append(h.menu_item(_("Delete"), "entity_delete", **data))
+    #actions.append(h.menu_item(_("Delete"), "entity_delete", **data))
     actions.append(h.menu_item(_("Book me"), "booking_add",
                 _query=dict(came_from=request.url, entity=data["id"]), **data))
     links.append({"value": _("Actions"), "children": actions})
@@ -218,8 +218,8 @@ def entity_view(context, request):
         "b_grid_latest": b_grid_latest}
 
 
-@view_config(route_name="entity_delete", permission="delete",
-            renderer="delete.mako")
+#@view_config(route_name="entity_delete", permission="delete",
+#        renderer="delete.mako")
 def entity_delete(context, request):
     entity = models.Entity.get_by(
             id=request.matchdict["id"],
@@ -256,13 +256,3 @@ def entity_overview(context, request):
     return {
         "sidebar_data": entity_links(request),
         "entity_grid": grid}
-
-
-def includeme(config):
-    config.add_route("entity_add", "/g,{group}/entity/add")
-    config.add_route("entity_bulk_add", "/g,{group}/entity/bulk_add")
-    config.add_route("entity_manage", "/g,{group}/entity/{id}/manage")
-    config.add_route("entity_view", "/g,{group}/entity/{id}/view")
-    config.add_route("entity_delete", "/g,{group}/entity/{id}/delete")
-    config.add_route("entity_overview", "/g,{group}/entity")
-

@@ -11,9 +11,9 @@ from pyramid.exceptions import Forbidden
 from pyramid.request import Request
 from pyramid.view import view_config
 
-from .. import models
-from ..utils import _, camel_to_name, name_to_camel
-from . import helpers as h, search
+from bookie.models import models
+from bookie.utils import _, camel_to_name, name_to_camel
+from .. import helpers as h, search
 
 
 LOG = logging.getLogger(__name__)
@@ -30,8 +30,7 @@ def category_actions(obj, request):
     links = category_links(d)
     actions = []
     actions.append(h.menu_item(_("View"), "category_view", **d))
-    actions.append(h.menu_item(_("Edit"), "category_edit", **d))
-    actions.append(h.menu_item(_("Delete"), "category_delete", **d))
+    actions.append(h.menu_item(_("Edit"), "category_manage", **d))
     links.append({"value": _("Actions"), "children": actions})
     return links
 
@@ -89,40 +88,13 @@ def category_add(context, request):
         extra={"page_title": _("Add")})
 
 
-@view_config(route_name="category_edit", permission="edit",
+@view_config(route_name="category_manage", permission="edit",
             renderer="edit.mako")
-def category_edit(context, request):
+def category_manage(context, request):
     obj = models.Resource.query.filter_by(
         deleted=False, resource_id=request.matchdict["resource_id"]).one()
     return h.mk_form(CategoryEditForm, obj, request,
         extra=dict(sidebar_data=category_actions(obj, request)))
-
-
-@view_config(route_name="category_view", permission="view",
-            renderer="category_view.mako")
-def category_view(context, request):
-    deleted = request.params.get("deleted", False)
-    obj = models.Resource.get_by(
-        deleted=deleted,
-        resource_id=request.matchdict["resource_id"])
-    return {
-        "sidebar_data": category_actions(obj, request),
-        "sub_title": obj.title,
-        "obj": obj}
-
-
-@view_config(route_name="category_delete", permission="delete",
-            renderer="delete.mako")
-def category_delete(context, request):
-    obj = models.Category.query.filter_by(
-        deleted=False, resource_id=request.matchdict["resource_id"]).one()
-    if request.params.get("do") == "yes":
-        obj.delete()
-        request.session.flash(_("Delete successful"))
-        return HTTPFound(location=get_url("category_overview"))
-    return {
-        "sidebar_data": category_actions(obj, request),
-        "sub_title": obj.title}
 
 
 @view_config(route_name="category_overview", permission="view",
@@ -141,11 +113,3 @@ def category_overview(context, request):
         "sidebar_data": category_links(h.get_nav_data(request)),
         "sub_title": _("Category management"),
         "grid": grid}
-
-
-def includeme(config):
-    config.add_route("category_add", "/@{group}/category/add")
-    config.add_route("category_edit", "/@{group}/category/{resource_id}/edit")
-    config.add_route("category_view", "/@{group}/category/{resource_id}/view")
-    config.add_route("category_delete", "/@{group}/category/{resource_id}/delete")
-    config.add_route("category_overview", "/@{group}/category")
