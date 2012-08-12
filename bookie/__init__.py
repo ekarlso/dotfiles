@@ -56,7 +56,7 @@ def get_settings():
 
 
 def get_version():
-    return pkg_resources.require("BookieFrontend")[0].version
+    return pkg_resources.require("bookie")[0].version
 
 
 def beaker_session_factory(**settings):
