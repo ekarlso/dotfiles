@@ -251,7 +251,7 @@ class MessageAssociation(Base):
 
     @status.setter
     def status_set(self, value):
-        assert(value in STATUS.values(), True)
+        assert value in STATUS.values(), True
 
 
 class Message(Base):
@@ -389,10 +389,7 @@ class Entity(Base):
         return obj.save()
 
     def get_meta(self, name):
-        try:
-            return self.metadata.filter_by(name=name).one()
-        except exc.NoResultFound:
-            return None
+        return self.metadata.filter_by(name=name).first()
 
 
 class EntityMetadata(Base):
