@@ -484,11 +484,11 @@ class Booking(Base):
     entities = relationship("Entity", secondary=entity_booking_assocations,
             backref="bookings")
 
-    @hybrid_property
+    @property
     def entities_string(self):
         return ", ".join([e.display_name for e in self.entities])
 
-    @hybrid_property
+    @property
     def entities_count(self):
         return len(self.entities)
 
