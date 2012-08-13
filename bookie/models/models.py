@@ -22,7 +22,7 @@ from ziggurat_foundations.models import BaseModel, UserMixin, GroupMixin, \
 from ziggurat_foundations import ziggurat_model_init, models as zm
 
 from .. import redis, utils
-from .base import Base, DBSession
+from .base import Base, MetadataMixin, DBSession
 from .types import JSONType
 
 
@@ -305,7 +305,7 @@ class Category(Resource):
     """
     A entity category is owned by a retailer
     """
-    __tablename__ = "resources_category"
+    __tablename__ = "categories"
     __expose_attrs__ = ["resource_name", "description"]
     __format_string__ = "{resource_name}"
     description = Column(UnicodeText)
@@ -333,7 +333,7 @@ class CategoryMeta(Base):
     value = Column(UnicodeText, nullable=True)
 
 
-class Entity(Base):
+class Entity(Base, MetadataMixin):
     """
     A Entity is a product / thing to be rented out to a customer
     """
@@ -370,32 +370,19 @@ class Entity(Base):
         data = re.match(ENTITY, value).groupdict()
         self.update(data)
 
-    @hybrid_property
-    def color(self):
-        meta = self.get_meta("color")
-        return meta.value if meta else ""
+    def get_color(self):
+        return self.meta_by_key("color")
 
-    @color.setter
-    def color_set(self, value):
-        return self.set_meta("color", value)
+    def set_color(self, value):
+        return self.set_meta({"color": value})
 
-    def set_meta(self, name, value):
-        # NOTE: Get all metadata matching key
-        obj = self.get_meta(name)
-        if obj:
-            obj.name, obj.value = name, value
-        else:
-            obj = EntityMetadata(name=name, value=value, entity=self)
-        return obj.save()
-
-    def get_meta(self, name):
-        return self.metadata.filter_by(name=name).first()
+    color = property(get_color, set_color)
 
 
 class EntityMetadata(Base):
     __tablename__ = "entity_metadata"
     id = Column(Unicode(36), primary_key=True, default=utils.generate_uuid)
-    name = Column(Unicode(60), index=True, nullable=False)
+    key = Column(Unicode(60), index=True, nullable=False)
     value = Column(UnicodeText, nullable=True)
 
     entity_id = Column(Unicode(36), ForeignKey("entities.id"))

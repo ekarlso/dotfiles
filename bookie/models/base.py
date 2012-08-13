@@ -1,4 +1,5 @@
 from datetime import datetime
+import functools
 import logging
 
 from colanderalchemy import SQLAlchemyMapping
@@ -30,6 +31,60 @@ def get_prop_names(obj, exclude=[]):
             if isinstance(p, RelationshipProperty):
                 remote.append(p.key)
     return local, remote
+
+
+def get_remote(obj, key):
+    mapper = object_mapper(obj)
+    return mapper.get_property(key)
+
+
+def get_remote_cls(obj, key):
+    return get_remote(obj, key).mapper.class_
+
+
+class MetadataMixin(object):
+    """
+    Mixin to extend metadata management
+    """
+    __meta_attr__ = "metadata"
+
+    def set_meta(self, meta, cls=None):
+        """
+        Create or update metadata for an Entity
+
+        :param meta: Metadata to be set
+        """
+        meta_cls = get_remote_cls(self, self.meta_attr(cls=cls))
+        meta_current = self.meta_dict(cls=cls)
+
+        for key, value in meta.items():
+            values = {"entity_id": self.id, "key": key, "value": value}
+            if key in meta_current:
+                meta_ref = meta_current[key]
+            else:
+                meta_ref = meta_cls()
+            meta_ref.from_dict(values)
+            meta_ref.save()
+        return self
+
+    def meta_by_key(self, key, cls=None):
+        """
+        Get metadata based on key
+
+        :param key: The key to get
+        """
+        meta_ref = self.meta_dict(cls=cls).get(key, None)
+        return meta_ref.value if meta_ref else meta_ref
+
+    def meta_dict(self, cls=None):
+        """
+        Return metadata as a dict
+        """
+        meta_attr = getattr(self, self.meta_attr(cls=cls))
+        return dict([(m.key, m) for m in meta_attr])
+
+    def meta_attr(self, cls=None):
+        return cls or self.__meta_attr__
 
 
 class BaseModel(object):
@@ -247,7 +302,7 @@ class BaseModel(object):
         """
         return cls._prepare_search(*args, **kw).all()
 
-    # NOTE: Format helpers below here
+    # NOTE: Format / View helpers below here
     @classmethod
     def exposed_attrs(cls):
         """
@@ -304,7 +359,6 @@ class BaseModel(object):
         """
         return self.format_self()
 
-    # NOTE: Utility functions below
     @classmethod
     def get_schema(cls):
         """
@@ -312,6 +366,7 @@ class BaseModel(object):
         """
         return SQLAlchemyMapping(cls)
 
+    # NOTE: Utility functions below
     def to_dict(self, deep={}, exclude=[]):
         """
         Make a dict of the object
