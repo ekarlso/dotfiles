@@ -478,4 +478,4 @@ Base = declarative_base(cls=BaseModel)
 Base.query = DBSession.query_property()
 
 
-__all__ = ["DBSession", "Base"]
+__all__ = ["DBSession", "Base", "get_session"]

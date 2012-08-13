@@ -5,7 +5,6 @@ from pprint import pformat
 from pyramid.threadlocal import get_current_registry
 from sqlalchemy import create_engine, event
 
-#from .. import get_settings
 import bookie
 from .base import *
 from .models import *
@@ -51,6 +50,7 @@ def configure_db(settings=None, drop_all=False):
     for populate in settings['bookie.populators']:
         populate()
     return engine
+
 
 __all__ = ["register_models", "unregister_models", "configure_db", "models",
         "DBSession"]

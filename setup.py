@@ -137,6 +137,7 @@ setup(name='bookie',
       package_data=find_package_data(PACKAGE, only_in_packages=False),
       include_package_data=True,
       message_extractors  = { ".": [
+        ('**/docs/**', 'ignore', None),
         ('**/static/**', 'ignore', None),
         ('**.py',   'lingua_python', None ),
         ('**.pt',   'lingua_xml', None ),
@@ -155,6 +156,7 @@ setup(name='bookie',
       main = bookie:main
       [console_scripts]
       initialize_bookie_db = bookie.scripts.initializedb:main
+      bookie-db-shell = bookie.scripts.db_shell:main
       """
       )
 
