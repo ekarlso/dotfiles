@@ -96,13 +96,11 @@ class SQLAlchemyShell(InteractiveConsole):
 
 def main(argv=sys.argv):
     root_dir = None
-    if len(argv) > 1:
-        root_dir = argv[1]
+    if len(argv) > 2:
+        root_dir = argv[2]
     else:
         root_dir = detect_root_dir()
 
-    if len(argv) != 2:
-        usage(argv)
     config_uri = argv[1]
     setup_logging(config_uri)
     settings = get_appsettings(config_uri)
