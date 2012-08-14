@@ -225,7 +225,8 @@ class BaseModel(object):
             try:
                 order_col_attr = getattr(model, current_order_col)
             except AttributeError:
-                raise AtributeError("Invalid order column")
+                raise AttributeError("Invalid order column: %s" %
+                        current_order_col)
             query = query.order_by(order_dir_func(order_col_attr))
 
         # Add pagination
