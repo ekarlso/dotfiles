@@ -12,36 +12,28 @@ from pyramid.request import Request
 from pyramid.view import view_config
 
 from bookie.models import models
-from bookie.utils import _, camel_to_name, name_to_camel
+from bookie.utils import _
 from .. import helpers as h, search
+from . import get_links
 
 
 LOG = logging.getLogger(__name__)
 
 
 # TODO: Make these better?
-def category_actions(obj, request):
+def get_actions(request, obj=None):
     """
     Category actions - on a category page
     """
     # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
-    d = h.get_nav_data(request, extra={})
+    d = h.get_nav_data(request)
 
-    links = category_links(d)
     actions = []
-    actions.append(h.menu_item(_("View"), "category_view", **d))
     actions.append(h.menu_item(_("Edit"), "category_manage", **d))
+
+    links = get_links(request, obj)
     links.append({"value": _("Actions"), "children": actions})
     return links
-
-
-def category_links(data):
-    """
-    Return some navigation links
-    """
-    children = []
-    children.append(h.menu_item(_("Overview"), "category_overview", **data))
-    return [{"value": _("Navigation"), "children": children}]
 
 
 class CategorySchema(colander.Schema):
@@ -63,12 +55,19 @@ class CategoryAddForm(h.AddFormView):
         schema = CategorySchema()
         return schema
 
+    @property
+    def cancel_url(self):
+        return self.request.route_url("category_overview",
+                **h.get_nav_data(self.request))
+
     def add_category_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        obj = models.Category().from_dict(appstruct).save()
+        obj = models.Category(owner_group_id=self.request.group.id).\
+                from_dict(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
-        location = request.route_url("category_overview")
+        location = self.request.route_url("category_overview",
+                **h.get_nav_data(self.request))
         return HTTPFound(location=location)
 
 
@@ -76,25 +75,27 @@ class CategoryEditForm(h.EditFormView):
     @property
     def success_url(self):
         return self.request.url
+    cancel_url = success_url
 
     def schema_factory(self):
         return CategorySchema()
 
 
-@view_config(route_name="category_add", permission="add",
+@view_config(route_name="category_add", permission="view",
         renderer="add.mako")
 def category_add(context, request):
+
     return h.mk_form(CategoryAddForm, context, request,
-        extra={"page_title": _("Add")})
+            extra={"sidebar_data": get_links(request), "page_title": _("Add")})
 
 
-@view_config(route_name="category_manage", permission="edit",
+@view_config(route_name="category_manage", permission="view",
             renderer="edit.mako")
 def category_manage(context, request):
     obj = models.Resource.query.filter_by(
         deleted=False, resource_id=request.matchdict["resource_id"]).one()
     return h.mk_form(CategoryEditForm, obj, request,
-        extra=dict(sidebar_data=category_actions(obj, request)))
+            extra={"sidebar_data": get_actions(request, obj)})
 
 
 @view_config(route_name="category_overview", permission="view",
@@ -102,14 +103,16 @@ def category_manage(context, request):
 def category_overview(context, request):
     deleted = request.params.get("deleted", False)
     objects = models.Category.query.filter_by(deleted=deleted).\
-        filter(models.Resource.owner_group_name==request.group).all()
+        filter(models.Resource.owner_group_id==request.group.id).all()
 
-    grid = h.PyramidGrid(objects, models.Category.exposed_attrs())
+    columns = models.Category.exposed_attrs()
+    grid = h.PyramidGrid(objects, columns)
+
     grid.column_formats["resource_name"] = lambda cn, i, item: \
-        h.column_link(request, item["resource_name"], "category_view",
+        h.column_link(request, item["resource_name"], "category_manage",
                 url_kw=item.to_dict())
 
     return {
-        "sidebar_data": category_links(h.get_nav_data(request)),
+        "sidebar_data": get_links(request),
         "sub_title": _("Category management"),
         "grid": grid}

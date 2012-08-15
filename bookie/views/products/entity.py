@@ -11,6 +11,7 @@ from pyramid.view import view_config
 from bookie.models import models
 from bookie.utils import _, camel_to_name, name_to_camel
 from .. import helpers as h, search
+from . import get_links
 
 
 
@@ -42,36 +43,23 @@ def get_model(obj):
 
 
 # TODO: Make these better?
-def entity_actions(request, obj=None):
+def get_actions(request, obj=None):
     """
     Entity actions - on a entity page
     """
     # NOTE: Needs to pass in "type" here since it's not a part of the matchdict
     data = h.get_nav_data(request)
 
-    links = entity_links(request, obj)
     actions = []
     actions.append(h.menu_item(_("View"), "entity_view", **data))
     actions.append(h.menu_item(_("Edit"), "entity_manage", **data))
     #actions.append(h.menu_item(_("Delete"), "entity_delete", **data))
     actions.append(h.menu_item(_("Book me"), "booking_add",
                 _query=dict(came_from=request.url, entity=data["id"]), **data))
+
+    links = get_links(request, obj)
     links.append({"value": _("Actions"), "children": actions})
     return links
-
-
-def entity_links(request, obj=None):
-    """
-    Return some navigation links
-    """
-    data = h.get_nav_data(request)
-
-    links = []
-    links.append(h.menu_came_from(request))
-    links.append(h.menu_item(_("Overview"), "entity_overview", **data))
-    links.append(h.menu_item(_("Add"), "entity_add", **data))
-    links.append(h.menu_item(_("Bulk add"), "entity_bulk_add", **data))
-    return [{"value": _("Navigation"), "children": links}]
 
 
 class EntitySchema(colander.Schema):
@@ -175,17 +163,15 @@ class EntityForm(h.EditFormView):
 @view_config(route_name="entity_add", permission="view",
         renderer="add.mako")
 def entity_add(context, request):
-    type_ = request.GET.get("type")
-
     return h.mk_form(EntityAddForm, context, request,
-            extra={"sidebar_data": entity_links(request), "page_title": _("Add")})
+            extra={"sidebar_data": get_links(request), "page_title": _("Add")})
 
 
 @view_config(route_name="entity_bulk_add", permission="view",
         renderer="add.mako")
 def entity_bulk_add(context, request):
     form = h.mk_form(EntityBulkForm, context, request,
-            extra={"sidebar_data": entity_links(request),
+            extra={"sidebar_data": get_links(request),
                 "page_title": _("Bulk add")})
     return form
 
@@ -198,7 +184,7 @@ def entity_manage(context, request):
             retailer=request.group)
 
     return h.mk_form(EntityForm, obj, request,
-        extra=dict(sidebar_data=entity_actions(request, obj)))
+        extra=dict(sidebar_data=get_actions(request, obj)))
 
 
 @view_config(route_name="entity_view", permission="view",
@@ -212,7 +198,7 @@ def entity_view(context, request):
         entity.bookings, models.Booking.exposed_attrs())
 
     return {
-        "sidebar_data": entity_actions(request, entity),
+        "sidebar_data": get_actions(request, entity),
         "sub_title": entity.title,
         "entity": entity,
         "b_grid_latest": b_grid_latest}
@@ -231,7 +217,7 @@ def entity_delete(context, request):
         return HTTPFound(location=request.route_url(
             "entity_type_overview", type=entity.type))
     return {
-        "sidebar_data": entity_actions(request, obj),
+        "sidebar_data": get_actions(request, obj),
         "sub_title": entity.title}
 
 
@@ -254,5 +240,5 @@ def entity_overview(context, request):
         class_="btn btn-primary")
 
     return {
-        "sidebar_data": entity_links(request),
+        "sidebar_data": get_links(request),
         "entity_grid": grid}
