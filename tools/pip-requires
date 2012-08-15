@@ -24,3 +24,4 @@ waitress
 lingua
 https://bitbucket.org/ergo/ziggurat_foundations/get/ef7e2a84530b.zip#egg=ziggurat_foundations
 https://github.com/ekarlso/webhelpers_extra/zipball/master#egg=webhelpers_extra
+cornice
