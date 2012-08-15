@@ -33,15 +33,6 @@ def get_prop_names(obj, exclude=[]):
     return local, remote
 
 
-def get_remote(obj, key):
-    mapper = object_mapper(obj)
-    return mapper.get_property(key)
-
-
-def get_remote_cls(obj, key):
-    return get_remote(obj, key).mapper.class_
-
-
 class MetadataMixin(object):
     """
     Mixin to extend metadata management
@@ -54,7 +45,8 @@ class MetadataMixin(object):
 
         :param meta: Metadata to be set
         """
-        meta_cls = get_remote_cls(self, self.meta_attr(cls=cls))
+        meta_cls = object_mapper(self).get_property(self.meta_attr(cls)).\
+                mapper.class_
         meta_current = self.meta_dict(cls=cls)
 
         for key, value in meta.items():
@@ -157,7 +149,7 @@ class BaseModel(object):
         """
         Get one by filters
         """
-        return cls.query.filter_by(*args, **kw).one()
+        return cls.query.filter_by(*args, **kw).first()
 
     @classmethod
     def all_by(cls, *args, **kw):
@@ -172,12 +164,12 @@ class BaseModel(object):
         """
         Pagination helper borrowed from OpenStack Glance code
 
-        Pagination works by requiring a unique sort_key, specified by sort_keys.
-        (If sort_keys is not unique, then we risk looping through values.)
+        Pagination works by requiring a unique order_col, specified by order_cols.
+        (If order_cols is not unique, then we risk looping through values.)
         We use the last row in the previous page as the 'marker' for pagination.
         So we must return values that follow the passed marker in the order.
-        With a single-valued sort_key, this would be easy: sort_key > X.
-        With a compound-values sort_key, (k1, k2, k3) we must do this to repeat
+        With a single-valued order_cols, this would be easy: order_col > X.
+        With a compound-values order_col, (k1, k2, k3) we must do this to repeat
         the lexicographical ordering:
             (k1 > X1) or (k1 == X1 && k2 > X2)
             (k1 == X1 && k2 == X2 && k3 > X3)
@@ -191,17 +183,18 @@ class BaseModel(object):
         :param query: the query object to which we should add paging/sorting
         :param model: the ORM model class
         :param limit: maximum number of items to return
-        :param sort_keys: array of attributes by which results should be sorted
+        :param order_cols: array of attributes by which results should be sorted
         :param marker: the last item of the previous page; we returns the next
                 results after this value.
         :param sort_dir: direction in which results should be sorted (asc, desc)
-        :param sort_dirs: per-column array of sort_dirs, corresponding to sort_keys
+        :param sort_dirs: per-column array of sort_dirs, corresponding to order_cols
 
         :rtype: sqlalchemy.orm.query.Query
         :return: The query with sorting/pagination added.
         """
-        if 'id' not in order_cols:
-            LOG.warn(_('Id not in sort_keys; is sort_keys unique?'))
+        pk = [p.key for p in model.__mapper__.primary_key]
+        if not [i for i in pk if i in order_cols]:
+            raise ValueError("Problem with PrimaryKey uniqueness")
 
         assert(not (order_dir and order_dirs))
 
@@ -289,8 +282,9 @@ class BaseModel(object):
             marker_obj = cls.get_by(id=marker_id)
 
         # NOTE: Add pagination!!
+        pk = [p.key for p in cls.__mapper__.primary_key]
         query = cls.paginate_query(query, cls, limit,
-            [order_col, "created_at", "id"], marker=marker_obj,
+            [order_col, "created_at"] + pk, marker=marker_obj,
             order_dir=order_dir)
         return query
 
