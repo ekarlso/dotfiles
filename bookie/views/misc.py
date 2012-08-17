@@ -28,6 +28,8 @@ def possible_recipients(request):
         recipients["g:" + group.uuid] = group.group_name
 
         for user in group.users:
+            if user.id == request.user.id:
+                continue
             recipients["u:" + user.user_name] = user.display_name
     return recipients
 
@@ -44,9 +46,17 @@ def recipient_resolve(recipient):
     return string, type_
 
 
-def recipient_validate(node, value):
-    if not value in possible_recipients(get_current_request()):
-        raise colander.Invalid(node, "Invalid recipient %s" % value)
+def recipients_validate(node, values):
+    possibles = possible_recipients(get_current_request())
+    if not values:
+        raise colander.Invalid(node, _("No recipients"))
+
+    invalid = []
+    for value in values:
+        if not value in possibles:
+            invalid.append(value)
+    if invalid:
+        raise colander.Invalid(node, "Invalid recipient %s" % ", ".join(invalid))
 
 
 def message_actions(request, obj=None):
@@ -70,6 +80,7 @@ def message_links(request, obj=None):
         "url_kw": dict(_query=dict(show="sent"))})
     return [{"value": _("Navigation"), "children": links}]
 
+
 @view_config(route_name="contact", renderer="misc/contact.mako")
 def contact(context, request):
     return {"sidebar_data": {}}
@@ -82,14 +93,14 @@ def support(context, request):
 
 class Recipients(colander.SequenceSchema):
     string = colander.SchemaNode(
-            colander.String(),
-            validator=recipient_validate)
+            colander.String())
 
 
 class MessageSchema(colander.Schema):
     recipients = Recipients(
-            widget=db_widget.ChosenMultipleWidget(min_len=1, size=100),
-            title=_("Recipients"))
+            widget=db_widget.ChosenMultipleWidget(min_length=1, size=100),
+            title=_("Recipients"),
+            validator=recipients_validate)
     message = colander.SchemaNode(
             colander.String(),
             validator=colander.Length(max=300),
@@ -135,6 +146,9 @@ class MessageForm(helpers.AddFormView):
             for group in query:
                 for user in group.users:
                     user_ids.add(user.id)
+
+        if self.request.user.id in user_ids:
+            user_ids.remove(self.request.user.id)
 
         message = models.Message(
                 content=appstruct["message"],

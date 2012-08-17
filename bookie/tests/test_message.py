@@ -16,16 +16,26 @@ class TestMessage(UnitTestBase):
         return request
 
     def test_possible_recipients(self):
+        """
+        Test that we resolve recipients correctly...
+        """
         request = self.make()
         recipients = misc.possible_recipients(request)
-        self.assertEquals("u:" + request.user.user_name in recipients, True)
+
+        # NOTE: Username shouldn't be in recipients list
+        self.assertEquals("u:" + request.user.user_name in recipients, False)
+        self.assertEquals(request.user.user_name in recipients.values(), False)
+
+        # NOTE: Group should be in recipients
         self.assertEquals("g:" + request.user.groups[0].uuid in recipients, True)
-        self.assertEquals(request.user.user_name in recipients.values(), True)
         self.assertEquals(request.user.groups[0].group_name in recipients.values(), True)
 
     def test_recipient_resolve(self):
         """
         test that a recipient string resolves correctly.
+
+        calling recipient_resolve with "type:value" should
+        return ("type", "value").
         """
         self.assertEquals(misc.recipient_resolve("g:group"), ("group", "group"))
         self.assertEquals(misc.recipient_resolve("u:user"), ("user", "user"))
@@ -33,8 +43,14 @@ class TestMessage(UnitTestBase):
     def test_send_message(self):
         message = models.Message(content="random_content").save()
         user = models.User.by_id(1)
+
         assoc = models.MessageAssociation(user_id=user.id, message_id=message.id).save()
-        #assoc = models.MessageAssociation(status=0)
+        assoc.save()
+
+        # NOTE: This should be ok...
+        self.assertEquals(assoc.user_id, 1)
+        self.assertEquals(assoc.message_id, message.id)
+
 
 if __name__ == '__main__':
     unittest.main()
