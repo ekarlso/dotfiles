@@ -3,6 +3,7 @@ import pdb
 
 import colander
 import deform
+import deform_bootstrap.widget as db_widget
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.exceptions import Forbidden
 from pyramid.request import Request
@@ -62,6 +63,12 @@ def get_actions(request, obj=None):
     return links
 
 
+def populate_schema(request, schema):
+    schema["owner_location"].widget.values = [(l.id, l.name) \
+        for l in request.group.locations]
+    return schema
+
+
 class EntitySchema(colander.Schema):
     brand = colander.SchemaNode(
         colander.String(),
@@ -75,6 +82,10 @@ class EntitySchema(colander.Schema):
     identifier = colander.SchemaNode(
         colander.String(),
         title=_("Identifier"))
+    owner_location = colander.SchemaNode(
+        colander.String(),
+        title=_("Belongs to"),
+        widget=db_widget.ChosenSingleWidget())
 
 
 class EntityAddForm(h.AddFormView):
@@ -84,6 +95,7 @@ class EntityAddForm(h.AddFormView):
 
     def schema_factory(self):
         schema = EntitySchema()
+        populate_schema(self.request, schema)
         return schema
 
     @property
@@ -147,7 +159,9 @@ class EntityBulkForm(EntityAddForm):
 
 class EntityForm(h.EditFormView):
     def schema_factory(self):
-        return EntitySchema()
+        schema = EntitySchema()
+        populate_schema(self.request, schema)
+        return schema
 
     @property
     def cancel_url(self):

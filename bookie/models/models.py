@@ -358,6 +358,9 @@ class Entity(Base, MetadataMixin):
     # NOTE: Change to Int and ID
     retailer_id = Column(Integer, ForeignKey('groups.id'))
 
+    owner_location_id = Column(Unicode(36), ForeignKey('locations.id'))
+    owner_location = relationship("Location", backref="entities")
+
     @declared_attr
     def __mapper_args__(cls):
         name = unicode(utils.camel_to_name(cls.__name__))
