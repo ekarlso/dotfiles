@@ -41,7 +41,7 @@ def _pk(data):
     return "user_permissions" if "first_name" in data else "permissions"
 
 
-def _all_from_db(schema):
+def populate_schema(schema):
     """
     Get's all the available roles / groups and adds them to the schema
     """
@@ -53,7 +53,7 @@ def _all_from_db(schema):
     return schema
 
 
-def _mangle_appstruct(appstruct):
+def pre_save(appstruct):
     """
     Helper to convert data from dict data to SA data
     """
@@ -152,7 +152,7 @@ class UserAddForm(h.AddFormView):
 
     def schema_factory(self):
         schema = UserSchema()
-        _all_from_db(schema)
+        populate_schema(schema)
         schema.add(colander.SchemaNode(
             colander.Boolean(),
             name=u'send_email',
@@ -162,7 +162,7 @@ class UserAddForm(h.AddFormView):
 
     def add_user_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        _mangle_appstruct(appstruct)
+        pre_save(appstruct)
         appstruct['email'] = appstruct['email'] and appstruct['email'].lower()
         #location = self.request.url.split('?')[0] + '?' + urlencode(
         #    {'extra': name})
@@ -182,11 +182,11 @@ class GroupAddForm(h.AddFormView):
 
     def schema_factory(self):
         schema = GroupSchema()
-        _all_from_db(schema)
+        populate_schema(schema)
         return schema
 
     def add_group_success(self, appstruct):
-        _mangle_appstruct(appstruct)
+        pre_save(appstruct)
         models.Group().from_dict(appstruct).save()
         return HTTPFound(location=self.request.route_url("principals_manage"))
 
@@ -212,7 +212,7 @@ class UserEditForm(UserForm):
 
     def schema_factory(self):
         s = UserSchema()
-        _all_from_db(s)
+        populate_schema(s)
         del s["password"]
         return s
 
@@ -221,14 +221,14 @@ class UserEditForm(UserForm):
         return self.request.route_url("principals_manage")
 
     def save_success(self, appstruct):
-        _mangle_appstruct(appstruct)
+        pre_save(appstruct)
         return super(UserForm, self).save_success(appstruct)
 
 
 class GroupEditForm(UserEditForm):
     def schema_factory(self):
         s = GroupSchema()
-        _all_from_db(s)
+        populate_schema(s)
         return s
 
 

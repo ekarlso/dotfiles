@@ -68,7 +68,7 @@ def location_validate(node, value):
         raise colander.Invalid(node, "Invalid Location")
 
 
-def pre_render(request, schema):
+def populate_schema(request, schema):
     """
     Helper to populate the schema
     """
@@ -87,7 +87,7 @@ def pre_render(request, schema):
     return schema
 
 
-def pre_save(obj, appstruct):
+def pre_save(form_obj, appstruct):
     appstruct["entities"] = [{"id": i} for i in appstruct["entities"]]
 
     for key in ["customer", "start_location", "end_location"]:
@@ -140,7 +140,7 @@ class BookingAddForm(h.AddFormView):
 
     def schema_factory(self):
         schema = BookingSchema()
-        pre_render(self.request, schema)
+        populate_schema(self.request, schema)
         return schema
 
     @property
@@ -163,7 +163,7 @@ class BookingAddForm(h.AddFormView):
 class BookingForm(h.EditFormView):
     def schema_factory(self):
         schema = BookingSchema()
-        pre_render(self.request, schema)
+        populate_schema(self.request, schema)
         return schema
 
     def before(self, form):
