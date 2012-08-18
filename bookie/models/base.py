@@ -257,8 +257,23 @@ class BaseModel(object):
 
         return query
 
+    @staticmethod
+    def _filter(model, filters=[], filter_by={}, query=None):
+        """
+        Apply filters and return a query.
+
+        :param model: The model to use.
+        :param filters: Filter expressions
+        :param filter_by: Filter by something.
+        :param query: use the given query
+        """
+        query = query or model.query
+        query = query.filter(*filters)
+        query = query.filter_by(**filter_by)
+        return query
+
     @classmethod
-    def _prepare_search(cls, filters=[], filter_by={}, marker_id=None,
+    def _search(cls, filters=[], filter_by={}, marker_id=None,
             limit=10, order_col="created_at", order_dir="desc", query=None):
         """
         A Search helper method
@@ -272,10 +287,8 @@ class BaseModel(object):
 
         :key query: Override query
         """
-        query = query or cls.query
-
-        query = query.filter(*filters)
-        query = query.filter_by(**filter_by)
+        query = cls._filter(cls, filters=filters, filter_by=filter_by,
+                query=query)
 
         marker_obj = None
         if marker_id is not None:
@@ -291,11 +304,11 @@ class BaseModel(object):
     @classmethod
     def search(cls, *args, **kw):
         """
-        Helper for searching, get it?
+        Helper for searching, used for pagination etc
 
-        See _prepare_search keywords
+        See _search keywords
         """
-        return cls._prepare_search(*args, **kw).all()
+        return cls._search(*args, **kw).all()
 
     # NOTE: Format / View helpers below here
     @classmethod

@@ -493,7 +493,7 @@ class Booking(Base):
         return len(self.entities)
 
     @classmethod
-    def _prepare_search(cls, filter_by={}, query=None, *args, **kw):
+    def _search(cls, filter_by={}, query=None, *args, **kw):
         """
         Search bookings
 
@@ -510,7 +510,7 @@ class Booking(Base):
             query = query.filter_by(customer_id=Customer.id).\
                         join(Customer).filter(Customer.retailer==retailer)
 
-        query = super(Booking, cls)._prepare_search(*args, filter_by=filter_by, query=query, **kw)
+        query = super(Booking, cls)._search(*args, filter_by=filter_by, query=query, **kw)
         return query
 
     @classmethod
