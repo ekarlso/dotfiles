@@ -143,6 +143,14 @@ class Resource(Base, ResourceMixin):
         name = unicode(utils.camel_to_name(cls.__name__))
         return {"polymorphic_on": "resource_type", "polymorphic_identity": name}
 
+    @classmethod
+    def get_root_nodes(cls, *args, **kw):
+        """
+        Returns all nodes that doesn't have a parent on the class.
+        """
+        query = cls._filter(cls, **kw)
+        return [node for node in query.all() if not node.parent]
+
 
 class UserGroup(Base, UserGroupMixin):
     """
