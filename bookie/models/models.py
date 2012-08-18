@@ -382,10 +382,10 @@ class Entity(Base, MetadataMixin):
         self.update(data)
 
     def get_color(self):
-        return self.meta_by_key("color")
+        return self.meta_get("color")
 
     def set_color(self, value):
-        return self.set_meta({"color": value})
+        return self.meta_set({"color": value})
 
     color = property(get_color, set_color)
 

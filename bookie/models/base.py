@@ -35,11 +35,11 @@ def get_prop_names(obj, exclude=[]):
 
 class MetadataMixin(object):
     """
-    Mixin to extend metadata management
+    Mixin to extend a class with attributes / info in a related table
     """
     __meta_attr__ = "metadata"
 
-    def set_meta(self, meta, cls=None):
+    def meta_set(self, meta, cls=None):
         """
         Create or update metadata for an Entity
 
@@ -59,7 +59,7 @@ class MetadataMixin(object):
             meta_ref.save()
         return self
 
-    def meta_by_key(self, key, cls=None):
+    def meta_get(self, key, cls=None):
         """
         Get metadata based on key
 
@@ -67,6 +67,9 @@ class MetadataMixin(object):
         """
         meta_ref = self.meta_dict(cls=cls).get(key, None)
         return meta_ref.value if meta_ref else meta_ref
+
+    def meta_delete(self, key):
+        meta = self.meta_get(key).delete()
 
     def meta_dict(self, cls=None):
         """
@@ -76,6 +79,9 @@ class MetadataMixin(object):
         return dict([(m.key, m) for m in meta_attr])
 
     def meta_attr(self, cls=None):
+        """
+        This returns the attribute which other methods act upon
+        """
         return cls or self.__meta_attr__
 
 
