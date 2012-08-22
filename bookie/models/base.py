@@ -151,18 +151,18 @@ class BaseModel(object):
 
     # NOTE: Search alike stuff below here
     @classmethod
-    def get_by(cls, *args, **kw):
+    def get_by(cls, **kw):
         """
         Get one by filters
         """
-        return cls.query.filter_by(*args, **kw).first()
+        return cls._filter(cls, **kw).first()
 
     @classmethod
-    def all_by(cls, *args, **kw):
+    def all_by(cls, **kw):
         """
         Get all by filters
         """
-        return cls.query.filter_by(*args, **kw).all()
+        return cls._filter(cls, **kw).all()
 
     @staticmethod
     def paginate_query(query, model, limit, order_cols, marker=None,
