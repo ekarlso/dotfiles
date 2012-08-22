@@ -5,7 +5,7 @@ from pyramid import httpexceptions as exception
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.security import unauthenticated_userid, Authenticated, Allow
-from sqlalchemy.orm import exc
+from sqlalchemy import orm
 
 from . import message, models
 
@@ -39,20 +39,28 @@ def get_user(request):
     """
     user = unauthenticated_userid(request)
     if user:
-        return models.User.by_user_name(user)
+        return models.User.query.options(
+                orm.joinedload("current_account"),
+                orm.joinedload("groups")).\
+            filter_by(user_name=user).one()
 
 
 def get_account(request):
     """
-    Return the current account from the url
+    Return the current account from the url or current_account or accounts[0]
+    if only 1 account
     """
-    account = request.params.get("account", None) if request.params else None
-    if account:
-        filter_by = {"id": int(account)} if account.isdigit() else {"group_name": g}
-        return models.Account.query.filter_by(**filter_by).\
-            filter(models.UserGroup.user_id==request.user.id).first()
-    if not account and request.user.current_account:
-        return request.user.current_account
+    id_ = request.params.get("account", None) if request.params else None
+
+    user = request.user
+    if user:
+        if id_:
+            return user.get_group(id_)
+        else:
+            if request.user.current_account:
+                return request.user.current_account
+            elif len(request.user.accounts) == 1:
+                return request.user.accounts[0]
 
 
 def reset():
@@ -90,8 +98,6 @@ class RootFactory(object):
         self.__acl__ = [(Allow, Authenticated, u'view'), ]
         #general page factory - append custom non resource permissions
         if request.user:
-            if request.account and not request.user.has_group(request.account.id):
-                raise exception.HTTPNotFound
             for principal, perm_name in request.user.permissions:
                 self.__acl__.append((Allow, principal, perm_name,))
 
