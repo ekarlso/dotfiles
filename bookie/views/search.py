@@ -31,6 +31,7 @@ def search_options(obj):
     into Model code and verifies them
     """
     params = obj.params.copy() if isinstance(obj, Request) else obj
+    params.pop("account", None)
     filter_by, opts = _construct(params)
     opts["filter_by"] = filter_by
     return opts
