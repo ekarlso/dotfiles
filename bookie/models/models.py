@@ -92,16 +92,16 @@ class Group(Base, GroupMixin):
         self._group_type = value
 
 
-class Retailer(Group):
-    __tablename__ = "groups_retailer"
+class Account(Group):
+    __tablename__ = "groups_account"
 
     organization_id = Column(Unicode(40))
     id = Column(Integer, ForeignKey("groups.id",
                         onupdate='CASCADE', ondelete='CASCADE'),
                         primary_key=True)
 
-    customers = relationship("Customer", backref="retailer")
-    entities = relationship("Entity", backref="retailer")
+    customers = relationship("Customer", backref="account")
+    entities = relationship("Entity", backref="account")
 
     def __repr__(self):
         return self.group_name
@@ -167,8 +167,8 @@ class User(Base, UserMixin):
     middle_name = Column(UnicodeText, default=u'')
     last_name = Column(UnicodeText, default=u'')
 
-    current_group = relationship("Group", uselist=False)
-    current_group_id = Column(Integer, ForeignKey("groups.id"))
+    current_account = relationship("Group", uselist=False)
+    current_account_id = Column(Integer, ForeignKey("groups.id"))
 
     message_associations = relationship("MessageAssociation", backref=backref("user", lazy="joined"))
 
@@ -177,6 +177,10 @@ class User(Base, UserMixin):
 
     @hybrid_property
     def display_name(self):
+        """
+        Returns the display_name for a user
+        full_name: user_name
+        """
         if not re.search("^(\s+|)$", self.full_name):
             name = self.full_name + ": " + self.user_name
         else:
@@ -185,21 +189,36 @@ class User(Base, UserMixin):
 
     @hybrid_property
     def full_name(self):
+        """
+        Returns the full name of a user as a hybrid property so it becomes
+        filterable by SQLAlchemy
+        """
         return self.first_name + " " + self.middle_name + " " + self.last_name
 
     @property
-    def retailers(self):
-        return [g for g in self.groups if g.group_type == "retailer"]
+    def accounts(self):
+        """
+        Get a users accounts
+        """
+        return [g for g in self.groups if g.group_type == "account"]
 
-    def is_current_group(self, group):
-        return group.id == self.current_group_id \
-                if self.current_group_id else False
+    def is_current_account(self, group):
+        """
+        Returns a bool if the given id is the current id set in the database
+        """
+        return group.id == self.current_account_id \
+                if self.current_account_id else False
 
-    def has_group(self, id_, group_type="retailer"):
+    def get_group(self, gid, group_type="account"):
+        """
+        Get a group that's linked to the user
+
+        :param gid: The Group ID to get
+        :param group_type: The type of Group to get
+        """
         count = self.groups_dynamic.filter_by(
-                id=id_, group_type=group_type).count()
+                id=gid, group_type=group_type).count()
         return True and count == 1 or False
-
 
 
 class UserPermission(Base, UserPermissionMixin):
@@ -311,7 +330,7 @@ category_entity_associations = Table(
 
 class Category(Resource):
     """
-    A entity category is owned by a retailer
+    A entity category is owned by a account
     """
     __tablename__ = "categories"
     __expose_attrs__ = ["resource_name", "description"]
@@ -356,7 +375,7 @@ class Entity(Base, MetadataMixin):
     identifier = Column(Unicode(100))
 
     # NOTE: Change to Int and ID
-    retailer_id = Column(Integer, ForeignKey('groups.id'))
+    account_id = Column(Integer, ForeignKey('groups.id'))
 
     owner_location_id = Column(Unicode(36), ForeignKey('locations.id'))
     owner_location = relationship("Location", backref="entities")
@@ -425,7 +444,7 @@ class Customer(Base):
     phone = Column(Unicode(40))
 
     # NOTE: Change to Int and ID
-    retailer_id = Column(Integer, ForeignKey('groups.id',
+    account_id = Column(Integer, ForeignKey('groups.id',
                     onupdate="CASCADE", ondelete="CASCADE"))
 
 
@@ -439,18 +458,18 @@ class Location(Base):
     postal_code = Column(Integer, nullable=False)
 
     # NOTE: Change to Int and ID
-    retailer_id = Column(Integer, ForeignKey("groups.id"))
-    retailer = relationship("Group", backref="locations")
+    account_id = Column(Integer, ForeignKey("groups.id"))
+    account = relationship("Group", backref="locations")
 
     @hybrid_property
     def name(self):
         return self.city + ": " + self.address
 
     @classmethod
-    def by_name(cls, name, retailer=None):
+    def by_name(cls, name, account=None):
         q = cls.query.filter(cls.name==name)
-        if retailer:
-            q = q.filter_by(retailer=retailer)
+        if account:
+            q = q.filter_by(account=account)
         return q.one()
 
 
@@ -508,18 +527,18 @@ class Booking(Base):
         """
         Search bookings
 
-        :param retailer: Narrow this search down to a certain retailer
+        :param account: Narrow this search down to a certain account
         """
         query = query or cls.query
 
         # NOTE:
-        retailer = filter_by.pop("retailer", None)
-        if retailer:
+        account = filter_by.pop("account", None)
+        if account:
             # NOTE: Booking is linked to a Customer which is linked to a
-            #       Retailer group
-            # TODO: Change to Customer.retailer_id
+            #       Account group
+            # TODO: Change to Customer.account_id
             query = query.filter_by(customer_id=Customer.id).\
-                        join(Customer).filter(Customer.retailer==retailer)
+                        join(Customer).filter(Customer.account==account)
 
         query = super(Booking, cls)._search(*args, filter_by=filter_by, query=query, **kw)
         return query
