@@ -42,18 +42,17 @@ def get_user(request):
         return models.User.by_user_name(user)
 
 
-def get_group(request):
+def get_account(request):
     """
-    Return the current working group
+    Return the current account from the url
     """
-    g = request.matchdict.get("group", None) if request.matchdict else None
-    if g:
-        filter_by = {"id": int(g)} if g.isdigit() else {"group_name": g}
-        try:
-            return models.Group.query.filter_by(**filter_by).\
-                    filter(models.UserGroup.user_id==request.user.id).one()
-        except exc.NoResultFound:
-            raise exception.HTTPNotFound
+    account = request.params.get("account", None) if request.params else None
+    if account:
+        filter_by = {"id": int(account)} if account.isdigit() else {"group_name": g}
+        return models.Account.query.filter_by(**filter_by).\
+            filter(models.UserGroup.user_id==request.user.id).first()
+    if not account and request.user.current_account:
+        return request.user.current_account
 
 
 def reset():
@@ -91,7 +90,7 @@ class RootFactory(object):
         self.__acl__ = [(Allow, Authenticated, u'view'), ]
         #general page factory - append custom non resource permissions
         if request.user:
-            if request.group and not request.user.has_group(request.group.id):
+            if request.account and not request.user.has_group(request.account.id):
                 raise exception.HTTPNotFound
             for principal, perm_name in request.user.permissions:
                 self.__acl__.append((Allow, principal, perm_name,))
@@ -111,7 +110,7 @@ def includeme(config):
         config.set_authorization_policy(authorization_policy)
     config.set_session_factory(session_factory)
 
-    config.set_request_property(get_group, 'group', reify=True)
+    config.set_request_property(get_account, 'account', reify=True)
     config.set_request_property(get_user, 'user', reify=True)
 
 
