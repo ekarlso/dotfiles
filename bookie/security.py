@@ -50,7 +50,7 @@ def get_account(request):
     Return the current account from the url or current_account or accounts[0]
     if only 1 account
     """
-    id_ = request.params.get("account", None) if request.params else None
+    id_ = request.matchdict.get("account", None) if request.params else None
 
     user = request.user
     if user:
