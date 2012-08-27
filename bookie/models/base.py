@@ -2,7 +2,6 @@ from datetime import datetime
 import functools
 import logging
 
-from colanderalchemy import SQLAlchemyMapping
 import sqlalchemy as sqla
 import sqlalchemy.orm
 from sqlalchemy import Column, Boolean, DateTime
@@ -372,13 +371,6 @@ class BaseModel(object):
         Does the same as self.title()
         """
         return self.format_self()
-
-    @classmethod
-    def get_schema(cls):
-        """
-        If using ColandarAlchemy this will wrap a mapping around me
-        """
-        return SQLAlchemyMapping(cls)
 
     # NOTE: Utility functions below
     def to_dict(self, deep={}, exclude=[]):
