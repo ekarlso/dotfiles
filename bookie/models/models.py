@@ -35,7 +35,9 @@ SECURITY_PERMISSIONS = [
     ("admin", {"title": "Admin", "description": "Admin privileges"})
 ]
 
+
 PERMISSIONS = SECURITY_PERMISSIONS
+
 
 STATUS = {
     0: "unread",
@@ -216,9 +218,12 @@ class User(Base, UserMixin):
         :param gid: The Group ID to get
         :param group_type: The type of Group to get
         """
-        count = self.groups_dynamic.filter_by(
-                id=gid, group_type=group_type).count()
-        return True and count == 1 or False
+        by = dict(group_type=group_type)
+        if (type(gid) in (str, unicode) and gid.isdigit()) or type(gid) == int:
+            by["id"] = gid
+        else:
+            by["uuid"] = gid
+        return self.groups_dynamic.filter_by(**by).first()
 
 
 class UserPermission(Base, UserPermissionMixin):
