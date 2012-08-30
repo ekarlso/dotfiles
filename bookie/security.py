@@ -50,17 +50,11 @@ def get_account(request):
     Return the current account from the url or current_account or accounts[0]
     if only 1 account
     """
-    id_ = request.matchdict.get("account", None) if request.params else None
+    id_ = request.matchdict.get("account", None) if request.matchdict else None
 
     user = request.user
-    if user:
-        if id_:
-            return user.get_group(id_)
-        else:
-            if request.user.current_account:
-                return request.user.current_account
-            elif len(request.user.accounts) == 1:
-                return request.user.accounts[0]
+    if user and id_:
+        return user.get_group(id_)
 
 
 def reset():
