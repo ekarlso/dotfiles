@@ -1,6 +1,6 @@
 alembic
 colander
-ColanderAlchemy
+https://github.com/kvesteri/colander-alchemy/zipball/master#egg=colander_alchemy
 cssmin
 decorator
 deform

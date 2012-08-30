@@ -2,6 +2,8 @@ from datetime import datetime
 import functools
 import logging
 
+from colander_alchemy import ColanderAlchemyMixin, remove_nulls
+from colander import required
 import sqlalchemy as sqla
 import sqlalchemy.orm
 from sqlalchemy import Column, Boolean, DateTime
@@ -84,7 +86,31 @@ class MetadataMixin(object):
         return cls or self.__meta_attr__
 
 
-class BaseModel(object):
+class SerializerMixin(ColanderAlchemyMixin):
+    """
+    An override to help with object serialization
+    """
+    @classmethod
+    def schema(cls, include=None, exclude=["deleted"],
+            missing=required, assign_defaults=True):
+        """
+        Override of the original method to include pk and not include deleted
+        """
+        generator = cls.__schema_generator__(cls, missing, assign_defaults,
+                include_primary_keys=True)
+        return generator.create(include, exclude)
+
+    def serialize(self, *args, **kw):
+        """
+        Serialize this object using the schema from self.schema()
+
+        Args and keywords are the ones taken by schema()
+        """
+        obj = self.schema(*args, **kw).serialize(self)
+        return remove_nulls(obj)
+
+
+class BaseModel(SerializerMixin):
     """
     Base class to make ones life working with models and python easier
     """
