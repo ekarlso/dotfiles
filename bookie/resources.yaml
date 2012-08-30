@@ -15,3 +15,8 @@ js:
     - js/jquery-ui-1.8.20.custom.min.js
     - bootstrap/docs/assets/js/bootstrap.min.js
     - jquery_chosen/chosen.jquery.min.js
+    - js/angular-http-auth.js
+    - js/app.js
+    - js/directives.js
+    - js/filters.js
+    - js/services.js

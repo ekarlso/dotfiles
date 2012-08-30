@@ -1,6 +1,6 @@
 alembic
 colander
-https://github.com/kvesteri/colander-alchemy/zipball/master#egg=colander_alchemy
+cornice
 cssmin
 decorator
 deform
@@ -24,4 +24,6 @@ waitress
 lingua
 https://bitbucket.org/ergo/ziggurat_foundations/get/ef7e2a84530b.zip#egg=ziggurat_foundations
 https://github.com/ekarlso/webhelpers_extra/zipball/master#egg=webhelpers_extra
-cornice
+wtforms
+-e git+https://github.com/kvesteri/wtforms-alchemy.git#egg=wtforms_alchemy
+-e git+https://github.com/kvesteri/wtforms-json.git#egg=wtforms_json

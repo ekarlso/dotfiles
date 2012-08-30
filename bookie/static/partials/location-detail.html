@@ -1,0 +1,25 @@
+<div ng-controller="LocationDetailCtrl">
+    <h3>Location: {{location.city}} {{location.postal_code}} - {{location.address}}</h3>
+    <form name="location_form" class="form well">
+    <div class="control-group">
+        <label for="location" class="control-label"><strong>City</strong></label>
+        <div class="controls">
+            <input required ng-model="location.city" placeholder="City" name="location" type="text" class="input-small">
+            <input required ng-model="location.postal_code" placeholder="Postal code" name="location" type="text" class="input-small">
+        </div>
+    </div>
+    <div class="control-group">
+        <label for="address" class="control-label">
+            <strong>Address</strong>
+        </label>
+        <div class="controls">
+            <input required ng-model="location.address" placeholder="Address" name="address" type="text" class="input-small">
+        </div>
+    </div>
+    <div class="control-group">
+        <button ng-click="update(account)" class="btn btn-success">Submit</button>
+        <button ng-click="back()" class="btn">Cancel</button>
+    </div>
+</form>
+<pre>form = {{location | json}}</pre>
+</div>

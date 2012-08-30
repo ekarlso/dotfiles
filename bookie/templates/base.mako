@@ -1,9 +1,21 @@
 <%inherit file="base-bare.mako"/>
 
 <%block name="navbar_local">
-    % if request.user:
-        ${api.get_nav("drop_companies")}
-    % endif
+% if request.user:
+    <div ng-controller="AccountCtrl">
+        <div class="btn-group pull-right">
+            <a class="btn" ng-href="#{{account.uuid}}/home">Account: {{account.group_name}}</a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li ng-repeat="a in accounts">
+                    <a href="" ng-click="update(a)">Switch to: {{a.group_name}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+% endif
 </%block>
 
 <%doc>A overridable left_wrapper that always provides a sidebar if sidebar_tree is available</%doc>

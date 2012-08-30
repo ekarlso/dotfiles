@@ -1,0 +1,26 @@
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Produced</th>
+            <th>Identifier</th>
+            <th>Color</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="entity in entities">
+            <td>
+                <a class="btn btn-info" ng-href="!#/{{params.accountId}}/entity/{{entity.id}}">Details</a>
+            </td>
+            <td>{{entity.brand}}</td>
+            <td>{{entity.model}}</td>
+            <td>{{entity.produced}}</td>
+            <td>{{entity.identifier}}</td>
+            <td>{{entity.color}}</td>
+        </tr>
+        </tr>
+        </tr>
+    </tbody>
+</table>

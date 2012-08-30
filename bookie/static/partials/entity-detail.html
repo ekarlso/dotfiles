@@ -1,0 +1,28 @@
+<div ng-controller="EntityDetailCtrl">
+    <form name="entity_form" class="form form-horizontal">
+        <strong>Entity details</strong>
+        <fieldset class="control-group">
+            <label class="control-label"><strong>Brand<strong></label>
+            <div class="controls">
+                <input required ng-model="entity.brand" placeholder="Brand" type="text" class="input-small"/>
+            </div>
+            <label class="control-label"><strong>Model</strong></label>
+            <div class="controls">
+                <input required ng-model="entity.model" placeholder="Model" type="text" class="input-small"/>
+            </div>
+            <label class="control-label"><strong>Produced</strong></label>
+            <div class="controls">
+                <input required ng-model="entity.produced" placeholder="Produced" type="text" class="input-small"/>
+            </div>
+            <label class="control-label"><strong>Identifer / Serial</strong></label>
+            <div class="controls">
+                <input required ng-model="entity.identifier" placeholder="Identifier" type="text" class="input-small"/>
+            </div>
+        </fieldset>
+        <fieldset class="form-actions">
+            <button ng-click="update()" class="btn btn-success">Submit</button>
+            <button ng-click="back()" class="btn">Cancel</button>
+        </fieldset>
+    </form>
+    <pre>Form debug:<br/>{{entity | json}}</pre>
+</div>

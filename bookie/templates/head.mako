@@ -11,22 +11,14 @@
     <link rel="stylesheet" type="text/css" href="${url}" />
 % endfor
 
-<!-- 3rd party -->
-${api.css_link([
-    "deform:static/css/jquery-ui-timepicker-addon.css"
-])|n}
+<script type="text/javascript" src="http://code.angularjs.org/1.0.1/angular-1.0.1.min.js"></script>
+<script type="text/javascript" src="http://cdn.jsdelivr.net/angularjs/1.0.1/angular-resource-1.0.1.min.js"></script>
+<script type="text/javascript" src="http://cdn.jsdelivr.net/angularjs/1.0.1/angular-bootstrap-1.0.1.min.js"></script>
 
 % for script in environment["js"].urls():
     <script type="text/javascript" src="${script}"></script>
 % endfor
 
-
-${api.script_link([
-    "deform:static/scripts/jquery-ui-timepicker-addon.js",
-    "deform:static/scripts/jquery.form.js",
-    "deform:static/scripts/deform.js",
-    "deform_bootstrap:static/deform_bootstrap.js"
-])|n}
 
 
 <!--more tal:omit-tag="" metal:define-slot="head-more"></more-->

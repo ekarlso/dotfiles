@@ -16,9 +16,9 @@ def mako_renderer(tname, **kw):
     return template.render(_=tra, **kw)
 
 
-@view_config(route_name="index", renderer="index.mako")
+@view_config(route_name="index", renderer="angular.mako")
 def index(request):
-    return {"page_title": "Welcome to Bookie!"}
+    return {}
 
 
 def includeme(config):
@@ -28,4 +28,4 @@ def includeme(config):
 
     #Form.set_default_renderer(mako_renderer)
 
-    config.add_route("index", "/")
+    config.add_route("index", "!")
