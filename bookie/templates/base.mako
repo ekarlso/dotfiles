@@ -10,7 +10,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li ng-repeat="a in accounts">
-                    <a href="" ng-click="update(a)">Switch to: {{a.group_name}}</a>
+                <a href="" ng-click="setAccount(a)">Switch to: {{a.group_name}}</a>
                 </li>
             </ul>
         </div>

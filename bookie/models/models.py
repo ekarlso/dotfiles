@@ -169,8 +169,8 @@ class User(Base, UserMixin):
     middle_name = Column(UnicodeText, default=u'')
     last_name = Column(UnicodeText, default=u'')
 
-    current_account = relationship("Group", uselist=False)
-    current_account_id = Column(Integer, ForeignKey("groups.id"))
+    default_account = relationship("Group", uselist=False)
+    default_account_id = Column(Integer, ForeignKey("groups.id"))
 
     message_associations = relationship("MessageAssociation", backref=backref("user", lazy="joined"))
 

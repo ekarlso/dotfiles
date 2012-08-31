@@ -1,0 +1,21 @@
+<div class="row-fluid">
+    <div class="span6">
+        <strong>Current account:</strong>{{default.group_name || "None"}}
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody ng-controller="AccountCtrl">
+                <tr ng-repeat="acc in accounts | filter:isCurrent">
+                    <td>
+                        <a href="" ng-click="setDefault(acc)" class="btn btn-success">Set as default</a>
+                    </td>
+                    <td>{{acc.group_name}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -40,7 +40,7 @@ def get_user(request):
     user = unauthenticated_userid(request)
     if user:
         return models.User.query.options(
-                orm.joinedload("current_account"),
+                orm.joinedload("default_account"),
                 orm.joinedload("groups")).\
             filter_by(user_name=user).one()
 

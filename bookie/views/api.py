@@ -79,23 +79,38 @@ def require_account(request):
                 "Missing account in request or default not set")
 
 
-@resource(collection_path="/user/account", path="/user/account/{id}",
-        permission="view")
-class AccountAPI(APIBase):
+@resource(path="/user/account", permission="view")
+class UserAccountAPI(APIBase):
     entity = m.Account
 
     def get_id(self):
         return self.request.user.get_group(self.id_)
 
-    def collection_get(self):
+    def get(self):
         """
         This gives you a users accounts
         """
         user = self.request.user
-        collection = user.accounts
         # NOTE: If current is not set and the user has only 1 account we switch
         # to it
-        return self.render_collection(collection)
+        default = user.default_account.serialize() if user.default_account else None
+        return {
+                "accounts": self.render_collection(user.accounts),
+                "default": default}
+
+    def post(self):
+        try:
+            id_ = self.request.json["accountId"]
+        except KeyError:
+            raise exceptions.HTTPForbidden
+
+        group = self.request.user.get_group(id_)
+        if not group:
+            raise exceptions.HTTPForbidden
+
+        self.request.user.default_account_id = group.id
+        self.request.user.save()
+        return self.get()
 
 
 @resource(collection_path="/{account}/category", path="/{account}/category/{id}",

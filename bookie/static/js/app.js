@@ -5,6 +5,7 @@ var app = angular.module("bookie", ["bookieServices"]);
 
 app.config(['$routeProvider', function($routeProvider) {
         $routeProvider.
+            when('/accounts', {templateUrl: 'static/partials/user_accounts.html', controller: AccountCtrl}).
             when('/:accountId/home', {templateUrl: 'static/partials/account.html'}).
             when('/:accountId/settings', {templateUrl: 'static/partials/account_settings.html'}).
             when('/:accountId/location', {templateUrl: 'static/partials/location.html',  controller: LocationCtrl}).
@@ -16,12 +17,7 @@ app.config(['$routeProvider', function($routeProvider) {
 
 
 /* Add utility stuff to rootScope - www.deansofer.com */
-app.run(["$rootScope", "$routeParams", "$location", function($rootScope, $routeParams, $location) {
-    /**
-    * Easy access to route params
-    */
-    $rootScope.params = $routeParams;
-
+app.run(["$rootScope", "$routeParams", function($rootScope, $routeParams) {
     /**
     * Wrapper for angular.isArray, isObject, etc checks for use in the view
     *
@@ -59,11 +55,14 @@ app.run(["$rootScope", "$routeParams", "$location", function($rootScope, $routeP
 	    alert(text);
     };
 
-    $rootScope.location = $location;
-
     $rootScope.back = function() {
         history.back();
     };
+
+    /**
+    * Easy access to route params
+    */
+    $rootScope.params = $routeParams;
 }]);
 
 
@@ -83,25 +82,18 @@ function EntityDetailCtrl($scope, Entity) {
     $scope.entity = Entity.get($scope.params)
 }
 
-function AccountCtrl($scope, Account) {
-    /* Update available accounts */
-    $scope.update_accounts = function(cb) {
-        $scope.accounts = Account.query(cb);
-    }
+function AccountCtrl($scope, AccountState) {
+    $scope.setAccount = AccountState.setAccount;
+    $scope.setDefault = AccountState.setDefault;
 
-    /* First call of update_account also sets the account if no account */
-    $scope.update_accounts(function(accounts) {
-        angular.forEach(accounts, function(a) {
-            if (!$scope.account && a.uuid === $scope.params.accountId) {
-                $scope.account = a
-            }
-        })
-    });
+    $scope.isCurrent = function(account) {
+        var d = $scope.default;
 
-    /* Change the current account, done on click */
-    $scope.update = function(account) {
-        $scope.account = account;
-        $scope.location.path(account.uuid + "/home");
+        if (d && account.uuid === d.uuid) {
+            return;
+        } else {
+            return account;
+        }
     }
 };
 

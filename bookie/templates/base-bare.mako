@@ -18,9 +18,9 @@
                 </a>
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li><a href="!#/{{params.accountId}}/home">Home</a></li>
-                        <li><a href="!#/{{params.accountId}}/entity">Entity</a></li>
-                        <li><a href="!#/{{params.accountId}}/settings">Settings</a></li>
+                        <li><a href="!#/{{account.uuid}}/home">Home</a></li>
+                        <li><a href="!#/{{account.uuid}}/entity">Entity</a></li>
+                        <li><a href="!#/{{account.uuid}}/settings">Settings</a></li>
                     </ul>
                 </div>
             </div>
