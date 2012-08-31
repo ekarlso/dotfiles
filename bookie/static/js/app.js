@@ -85,11 +85,18 @@ function EntityDetailCtrl($scope, Entity) {
 
 function AccountCtrl($scope, Account) {
     /* Update available accounts */
-    $scope.update_accounts = function() {
-        $scope.accounts = Account.query();
+    $scope.update_accounts = function(cb) {
+        $scope.accounts = Account.query(cb);
     }
 
-    $scope.update_accounts();
+    /* First call of update_account also sets the account if no account */
+    $scope.update_accounts(function(accounts) {
+        angular.forEach(accounts, function(a) {
+            if (!$scope.account && a.uuid === $scope.params.accountId) {
+                $scope.account = a
+            }
+        })
+    });
 
     /* Change the current account, done on click */
     $scope.update = function(account) {
