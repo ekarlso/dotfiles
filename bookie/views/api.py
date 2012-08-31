@@ -107,13 +107,19 @@ class CategoryAPI(APIBase):
         obj = self.entity.get_by(
                 resource_id=self.id_,
                 owner_group_id=self.request.account.id)
-        return obj.to_dict()
+        return obj.serialize()
 
     def collection_get(self):
         query = m.Category.query.filter(
                 m.Resource.owner_group_id==self.request.account.id)
         collection = m.Category.search(query=query)
-        return [row.to_dict(exclude=["updated_at"]) for row in collection]
+        return [row.serialize() for row in collection]
+
+
+@resource(collection_path="/{account}/booking", path="/{account}/booking/{id}",
+        permission="view", validators=require_account)
+class BookingAPI(APIBase):
+    entity = m.Booking
 
 
 @resource(collection_path="/{account}/customer", path="/{accounet}/customer/{id}",
@@ -132,6 +138,11 @@ class EntityAPI(APIBase):
         permission="view", validators=require_account)
 class LocationAPI(APIBase):
     entity = m.Location
+
+
+@resource(collection_path="/user/message", path="/user/message/{id}", permission="view")
+class MessagesAPI(APIBase):
+    entity = m.Message
 
 
 @view_config(route_name="category_tree", permission="view", renderer="simple_json")
