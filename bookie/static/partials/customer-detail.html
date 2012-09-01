@@ -1,0 +1,39 @@
+<div class="span4">
+    <h3>Customer: {{object.name}}</h3>
+    <form name="detail_form" class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label"><strong>Name</strong></label>
+            <div class="controls">
+                <input required ng-model="object.name" placeholder="Name" type="text" class="input-small" size="50"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><strong>Organization ID</strong></label>
+            <div class="controls">
+                <input required ng-model="object.organization_id" placeholder="Organization ID" type="text" class="input-small" size="40">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><strong>Contact</strong></label>
+            <div class="controls">
+                <input required ng-model="object.contact" placeholder="Contact" type="text" class="input-small">
+            </div>
+        </div>
+         <div class="control-group">
+            <label class="control-label"><strong>E-mail</strong></label>
+            <div class="controls">
+                <input required ng-model="object.email" placeholder="E-mail" type="text" class="input-small">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><strong>Phone</strong></label>
+            <div class="controls">
+                <input required ng-model="object.phone" placeholder="Phone" type="text" class="input-small">
+            </div>
+        </div>
+        <div class="control-group">
+            <save></save> <cancel></cancel>
+        </div>
+    </form>
+<pre>form = {{object | json}}</pre>
+</div>

@@ -1,17 +1,26 @@
 'use strict';
 
+
 /* App Module */
-var app = angular.module("bookie", ["bookieServices"]);
+var app = angular.module("bookie", ["bookie.services", "bookie.directives"]);
 
 app.config(['$routeProvider', function($routeProvider) {
         $routeProvider.
+            when('/', {templateUrl: "static/partials/index.html", controller: MainCtrl}).
+            when('/about', {templateUrl: 'static/partials/about.html', controller: AccountCtrl}).
             when('/accounts', {templateUrl: 'static/partials/user_accounts.html', controller: AccountCtrl}).
             when('/:accountId/home', {templateUrl: 'static/partials/account.html'}).
             when('/:accountId/settings', {templateUrl: 'static/partials/account_settings.html'}).
+            when('/:accountId/booking', {templateUrl: 'static/partials/booking.html', controller: BookingCtrl}).
+            when('/:accountId/booking/:id', {templateUrl: 'static/partials/booking-detail.html', controller: BookingDetailCtrl}).
+            when('/:accountId/category', {templateUrl: 'static/partials/category.html',  controller: CategoryCtrl}).
+            when('/:accountId/category/:id', {templateUrl: 'static/partials/category-detail.html', controller: CategoryDetailCtrl}).
+            when('/:accountId/customer', {templateUrl: 'static/partials/customer.html',  controller: CustomerCtrl}).
+            when('/:accountId/customer/:id', {templateUrl: 'static/partials/customer-detail.html', controller: CustomerDetailCtrl}).
+            when('/:accountId/entity', {templateUrl: 'static/partials/entity.html', controller: EntityCtrl}).
+            when('/:accountId/entity/:id', {templateUrl: 'static/partials/entity-detail.html', controller: EntityDetailCtrl}).
             when('/:accountId/location', {templateUrl: 'static/partials/location.html',  controller: LocationCtrl}).
             when('/:accountId/location/:id', {templateUrl: 'static/partials/location-detail.html', controller: LocationDetailCtrl}).
-            when('/:accountId/entity', {templateUrl: 'static/partials/entity.html',  controller: EntityCtrl}).
-            when('/:accountId/entity/:id', {templateUrl: 'static/partials/entity-detail.html', controller: EntityDetailCtrl}).
         otherwise({redirectTo: "/"});
 }]);
 
@@ -66,26 +75,76 @@ app.run(["$rootScope", "$routeParams", function($rootScope, $routeParams) {
 }]);
 
 
-function LocationCtrl($scope, Location) {
-    $scope.locations = Location.query($scope.params);
+function MainCtrl($scope) {
 }
 
-function LocationDetailCtrl($scope, Location) {
-    $scope.location = Location.get($scope.params)
+
+function BookingCtrl($scope, Booking) {
+    $scope.service = Booking;
+    $scope.objects = $scope.service.query($scope.params);
+}
+
+
+function BookingDetailCtrl($scope, Booking) {
+    $scope.service = Booking;
+    $scope.object = $scope.service.get($scope.params)
+}
+
+
+function CustomerCtrl($scope, Customer) {
+    $scope.service = Customer;
+    $scope.objects = $scope.service.query($scope.params);
+
+    $scope.addObject = function() {
+        $scope.tpl = "static/partials/add.html";
+    }
+}
+
+function CustomerDetailCtrl($scope, Customer) {
+    $scope.service = Customer;
+    $scope.object = $scope.service.get($scope.params)
+}
+
+function CategoryCtrl($scope, Category) {
+    $scope.service = Category;
+    $scope.objects = $scope.service.query($scope.params);
+}
+
+function CategoryDetailCtrl($scope, Category) {
+    $scope.service = Category;
+    $scope.object = $scope.service.get($scope.params)
 }
 
 function EntityCtrl($scope, Entity) {
-    $scope.entities = Entity.query($scope.params);
+    $scope.service = Entity;
+    $scope.objects = $scope.service.query($scope.params);
+
+    $scope.tpl = "static/partials/entity-detail.html"
 }
 
 function EntityDetailCtrl($scope, Entity) {
-    $scope.entity = Entity.get($scope.params)
+    $scope.service = Entity;
+    $scope.object = $scope.service.get($scope.params)
+}
+
+
+function LocationCtrl($scope, Location) {
+    $scope.service = Location;
+    $scope.objects = $scope.service.query($scope.params);
+}
+
+function LocationDetailCtrl($scope, Location) {
+    $scope.service = Location;
+    $scope.object = $scope.service.get($scope.params)
 }
 
 function AccountCtrl($scope, AccountState) {
     $scope.setAccount = AccountState.setAccount;
     $scope.setDefault = AccountState.setDefault;
 
+    /*
+     * Filter out the current account from the overview
+    */
     $scope.isCurrent = function(account) {
         var d = $scope.default;
 

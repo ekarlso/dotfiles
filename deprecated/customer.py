@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
 
 
 """
-Manage Customers for Retailers
+Manage Customers for Accounts
 """
 
 
@@ -75,7 +75,7 @@ class CustomerAddForm(h.AddFormView):
 
     def add_customer_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        obj = models.Customer(retailer=self.request.group).\
+        obj = models.Customer(account=self.request.account).\
             update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
@@ -107,7 +107,7 @@ def customer_add(context, request):
 
 @view_config(route_name="customer_manage", permission="view", renderer="customer_manage.mako")
 def customer_manage(context, request):
-    obj = models.Customer.get_by(id=request.matchdict["id"], retailer=request.group)
+    obj = models.Customer.get_by(id=request.matchdict["id"], account=request.account)
 
     form = h.mk_form(CustomerForm, obj, request)
     if request.is_response(form):
@@ -121,7 +121,7 @@ def customer_manage(context, request):
 def customer_overview(context, request):
 
     search_opts = search.search_options(request)
-    search_opts["filter_by"]["retailer"] = request.group
+    search_opts["filter_by"]["account"] = request.account
     customers = models.Customer.search(**search_opts)
 
     columns = ["id"] + models.Customer.exposed_attrs()

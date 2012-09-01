@@ -1,7 +1,6 @@
-<div ng-hide="template">
 <objects-menu></objects-menu>
 
-<table class="table table-condensed table-hover">
+<table class="table table-condensed">
     <thead>
         <tr>
             <th></th>
@@ -13,10 +12,10 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="object in objects">
+        <tr ng-repeat="object in objects" ui-jq2="tooltip" title="Updated {{object.updated_at}}">
             <td>
                 <delete></delete>
-                <edit url="#/{{params.accountId}}/entity/{{object.id}}"></edit>
+                <edit url="#/{{params.accountId}}/booking/{{object.id}}"></edit>
             </td>
             <td>{{object.brand}}</td>
             <td>{{object.model}}</td>
@@ -28,6 +27,3 @@
         </tr>
     </tbody>
 </table>
-</div>
-
-<ng-show="template" ng-include src="template"></ng-show>

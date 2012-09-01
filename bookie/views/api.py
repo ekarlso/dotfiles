@@ -33,13 +33,16 @@ class APIBase(object):
         """
         return hasattr(self.entity, "account")
 
-    def filter(self):
+    def filter(self, deleted=False):
         """
         Adds filters
         """
         filters = []
         if self.is_owned:
             filters.append(self.entity.account == self.request.account)
+
+        if not deleted:
+            filters.append(self.entity.deleted==False)
         return self.entity.query.filter(*filters)
 
     def get_id(self):
@@ -47,30 +50,40 @@ class APIBase(object):
         Help support using both integer id's and uuid
         """
         query = self.filter()
-        return self.entity.get_by(query=query, filter_by=dict(id=self.id_))
 
-    @view(permission="view")
-    def get(self):
-        obj = self.get_id()
+        pk = self.entity.get_pk()
+        if len(pk) != 1:
+            raise RuntimeError("Couldn't get pk automatically")
+
+        obj = query.filter_by(**{pk[0]: self.id_}).first()
         if not obj:
             raise exceptions.HTTPNotFound
+        return obj
+
+    def get(self):
+        obj = self.get_id()
         return obj.serialize()
 
-    @view(permission="view")
+    def post(self):
+        obj = self.get_id()
+        obj.from_dict(self.request.json)
+        return obj.serialize()
+
+    def delete(self):
+        obj = self.get_id()
+        obj.delete()
+        return {"status": "ok"}
+
     def collection_get(self):
         opts = search_options(self.request)
         query = self.filter()
         collection = self.entity.search(query=query, **opts)
         return self.render_collection(collection)
 
-    def post(self):
-        import ipdb
-        ipdb.set_trace()
-
-    def delete(self):
-        obj = self.entity.get_by(id=self.id_, account=self.request.account)
-        obj.delete()
-        return {}
+    def collection_post(self):
+        obj = self.entity().from_dict(self.request.json)
+        obj.account_id = self.request.account.id
+        return obj.save().serialize()
 
 
 def require_account(request):
@@ -118,17 +131,20 @@ class UserAccountAPI(APIBase):
 class CategoryAPI(APIBase):
     entity = m.Category
 
-    def get(self):
-        obj = self.entity.get_by(
+    def get_id(self):
+        obj = self.entity.query.filter_by(
                 resource_id=self.id_,
-                owner_group_id=self.request.account.id)
-        return obj.serialize()
+                owner_group_id=self.request.account.id).first()
+        return obj
 
     def collection_get(self):
         query = m.Category.query.filter(
                 m.Resource.owner_group_id==self.request.account.id)
         collection = m.Category.search(query=query)
         return [row.serialize() for row in collection]
+
+    def collection_post(self):
+        return {}
 
 
 @resource(collection_path="/{account}/booking", path="/{account}/booking/{id}",
@@ -137,7 +153,7 @@ class BookingAPI(APIBase):
     entity = m.Booking
 
 
-@resource(collection_path="/{account}/customer", path="/{accounet}/customer/{id}",
+@resource(collection_path="/{account}/customer", path="/{account}/customer/{id}",
         permission="view", validators=[require_account])
 class CustomerAPI(APIBase):
     entity = m.Customer

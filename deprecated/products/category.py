@@ -62,7 +62,7 @@ class CategoryAddForm(h.AddFormView):
 
     def add_category_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        obj = models.Category(owner_group_id=self.request.group.id).\
+        obj = models.Category(owner_group_id=self.request.account.id).\
                 from_dict(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=obj.title)), "success")
@@ -103,7 +103,7 @@ def category_manage(context, request):
 def category_overview(context, request):
     deleted = request.params.get("deleted", False)
     objects = models.Category.query.filter_by(deleted=deleted).\
-        filter(models.Resource.owner_group_id==request.group.id).all()
+        filter(models.Resource.owner_group_id==request.account.id).all()
 
     columns = models.Category.exposed_attrs()
     grid = h.PyramidGrid(objects, columns)

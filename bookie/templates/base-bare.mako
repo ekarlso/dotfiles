@@ -18,10 +18,19 @@
                 </a>
                 <div class="nav-collapse">
                     <ul class="nav">
+                        <!-- Navbar start -->
                         <li><a href="!#/{{account.uuid}}/home">Home</a></li>
                         <li><a href="!#/{{account.uuid}}/entity">Entity</a></li>
-                        <li><a href="!#/{{account.uuid}}/settings">Settings</a></li>
+                        <li class="dropdown">
+                            <a ng-nref="" class="dropdown-toggle" data-toggle="dropdown">Settings<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a ng-href="#{{account.uuid}}/category">Category</a></li>
+                                <li><a ng-href="#{{account.uuid}}/location">Location</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#/about">About</a></li>
                     </ul>
+                    <!-- Navbar end -->
                 </div>
             </div>
             </%block>

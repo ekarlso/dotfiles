@@ -44,7 +44,7 @@ def booking_links(request, obj=None):
 def customer_validate(node, value):
     request = get_current_request()
     try:
-        models.Customer.get_by(id=value, retailer=request.group)
+        models.Customer.get_by(id=value, account=request.account)
     except sa_orm.exc.NoResultFound:
         raise colander.Invalid(node, "Invalid Customer")
 
@@ -54,7 +54,7 @@ def entities_validate(node, values):
     try:
         results = models.Entity.query.filter(
                 models.Entity.id.in_(list(values)),
-                models.Entity.retailer==request.group).all()
+                models.Entity.account==request.account).all()
         assert len(results) == len(values)
     except sa_orm.exc.NoResultFound, AssertionError:
         raise colander.Invalid(node, "Invalid entity")
@@ -63,7 +63,7 @@ def entities_validate(node, values):
 def location_validate(node, value):
     request = get_current_request()
     try:
-        models.Location.get_by(id=value, retailer=request.group)
+        models.Location.get_by(id=value, account=request.account)
     except sa_orm.exc.NoResultFound:
         raise colander.Invalid(node, "Invalid Location")
 
@@ -73,14 +73,14 @@ def populate_schema(request, schema):
     Helper to populate the schema
     """
     entities = []
-    for e in models.Entity.all_by(retailer=request.group):
+    for e in models.Entity.all_by(account=request.account):
         entities.append((e.id, e.name))
     schema["entities"].widget.values = entities
 
     schema["customer"].widget.values = [(c.id, c.name) \
-            for c in models.Customer.all_by(retailer=request.group)]
+            for c in models.Customer.all_by(account=request.account)]
 
-    locations = models.Location.all_by(retailer=request.group)
+    locations = models.Location.all_by(account=request.account)
     location_data = [(l.id, l.name) for l in locations]
     schema["start_location"].widget.values = location_data
     schema["end_location"].widget.values = location_data
@@ -209,7 +209,7 @@ def booking_overview(context, request):
     deleted = request.params.get("deleted", False)
 
     search_opts = search.search_options(request)
-    search_opts["filter_by"]["retailer"] = request.group
+    search_opts["filter_by"]["account"] = request.account
     q = models.Booking.query.options(
             sa_orm.joinedload("customer"),
             sa_orm.joinedload("entities"))

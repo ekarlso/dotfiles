@@ -5,11 +5,11 @@
     <thead>
         <tr>
             <th></th>
-            <th>Brand</th>
-            <th>Model</th>
-            <th>Produced</th>
-            <th>Identifier</th>
-            <th>Color</th>
+            <th>Name</th>
+            <th>Organization ID</th>
+            <th>Contact</th>
+            <th>E-mail</th>
+            <th>Phone nr</th>
         </tr>
     </thead>
     <tbody>
@@ -18,11 +18,11 @@
                 <delete></delete>
                 <edit url="#/{{params.accountId}}/entity/{{object.id}}"></edit>
             </td>
-            <td>{{object.brand}}</td>
-            <td>{{object.model}}</td>
-            <td>{{object.produced}}</td>
-            <td>{{object.identifier}}</td>
-            <td>{{object.color}}</td>
+            <td>{{object.name}}</td>
+            <td>{{object.organization_id}}
+            <td>{{object.contact}}</td>
+            <td>{{object.email}}</td>
+            <td>{{object.phone}}</td>
         </tr>
         </tr>
         </tr>

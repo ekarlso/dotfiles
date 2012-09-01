@@ -58,7 +58,7 @@ class LocationAddForm(h.AddFormView):
 
     def add_location_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        obj = models.Location(retailer=self.request.group).\
+        obj = models.Location(retailer=self.request.account).\
                 update(appstruct).save()
         self.request.session.flash(_(u"${name} added.",
             mapping=dict(name=obj.name)), "success")
@@ -93,7 +93,7 @@ class LocationForm(h.EditFormView):
 def location_manage(context, request):
     obj = models.Location.get_by(
             id=request.matchdict["id"],
-            retailer=request.group)
+            retailer=request.account)
 
     form = h.mk_form(LocationForm, obj, request)
     if request.is_response(form):
@@ -105,7 +105,7 @@ def location_manage(context, request):
 @view_config(route_name="location_overview", renderer="grid.mako")
 def location_overview(context, request):
     search_opts = search.search_options(request)
-    search_opts["filter_by"]["retailer"] = request.group
+    search_opts["filter_by"]["retailer"] = request.account
     objects = models.Location.search(**search_opts)
 
     columns = ["id"] + models.Location.exposed_attrs()

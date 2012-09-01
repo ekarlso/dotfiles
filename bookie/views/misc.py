@@ -140,7 +140,7 @@ class MessageForm(helpers.AddFormView):
         # actually are groups...
         if len(groups) != 0:
             # NOTE: Use joinedload to not use multiple queries.
-            query = models.Retailer.query.options(
+            query = models.Account.query.options(
                     sqlalchemy.orm.joinedload("users"))
             query = query.filter(models.Group.uuid.in_(groups))
             for group in query:

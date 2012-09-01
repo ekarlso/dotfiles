@@ -16,7 +16,7 @@ def mako_renderer(tname, **kw):
     return template.render(_=tra, **kw)
 
 
-@view_config(route_name="index", renderer="angular.mako")
+@view_config(route_name="index", permission="view", renderer="angular.mako")
 def index(request):
     return {}
 

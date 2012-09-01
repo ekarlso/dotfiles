@@ -18,9 +18,9 @@ from . import helpers as h, search, users
 def sidebar_links(request):
     d = h.get_nav_data(request)
     links = []
-    links.append({"value": "Dashboard", "route": "retailer_home",
+    links.append({"value": "Dashboard", "route": "account_home",
         "url_kw": d})
-    links.append({"value": "Settings", "route": "retailer_settings",
+    links.append({"value": "Settings", "route": "account_settings",
         "url_kw": d})
     return [{"value": "Navigation", "children": links}]
 
@@ -33,7 +33,7 @@ def quick_links(request):
     links.append({"value": _("New Entity"), "icon": "plus",
         "route": "entity_add", "url_kw": d})
     links.append({"value": _("Invite User"), "icon": "plus",
-        "route": "retailer_invite_user", "url_kw": d})
+        "route": "account_invite_user", "url_kw": d})
     return {"children": links}
 
 
@@ -65,27 +65,27 @@ class InviteForm(h.AddFormView):
 
     def add_invite_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        return HTTPFound(location=request.route("retailer_home",
-            group=request.group))
+        return HTTPFound(location=request.route("account_home",
+            group=request.account))
 
 
-@view_config(route_name="retailer_home", permission="view",
-            renderer="retailer_home.mako")
+@view_config(route_name="account_home", permission="view",
+            renderer="angular.mako")
 def home(context, request):
     return {"sidebar_data": sidebar_links(request), "nav_quick": quick_links(request)}
 
 
-@view_config(route_name="retailer_settings", permission="admin",
-            renderer="retailer_settings.mako")
+@view_config(route_name="account_settings", permission="admin",
+            renderer="account_settings.mako")
 def settings(context, request):
     return {"sidebar_data": sidebar_links(request)}
 
 
-@view_config(route_name="retailer_invite_user", permission="admin",
-            renderer="retailer_invite.mako")
+@view_config(route_name="account_invite_user", permission="admin",
+            renderer="account_invite.mako")
 def invite(context, request):
     """
-    Ivite a User to join this retailer.
+    Ivite a User to join this account.
     Simply give membership if the user is already registered.
     """
     form = h.mk_form(InviteForm, context, request)
@@ -93,6 +93,6 @@ def invite(context, request):
 
 
 def includeme(config):
-    config.add_route("retailer_home", "/g,{group}")
-    config.add_route("retailer_invite_user", "/g,{group}/user/invite")
-    config.add_route("retailer_settings", "/g,{group}/settings")
+    config.add_route("account_home", "/g,{group}")
+    config.add_route("account_invite_user", "/g,{group}/user/invite")
+    config.add_route("account_settings", "/g,{group}/settings")

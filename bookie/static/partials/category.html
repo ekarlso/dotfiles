@@ -5,19 +5,20 @@
     <thead>
         <tr>
             <th></th>
-            <th>Postal Code</th>
-            <th>City</th>
-            <th>Address</th>
+            <th>Name</th>
+            <th>Description</th>
         </tr>
     </thead>
     <tbody>
         <tr ng-repeat="object in objects">
             <td>
                 <delete></delete>
-                <edit url="#/{{params.accountId}}/location/{{object.id}}"></edit>
-            <td>{{object.postal_code}}</td>
-            <td>{{object.city}}</td>
-            <td>{{object.address}}</td>
+                <edit url="#/{{params.accountId}}/category/{{object.resource_id}}"></edit>
+            </td>
+            <td>{{object.resource_name}}</td>
+            <td>{{object.description}}</td>
+        </tr>
+        </tr>
         </tr>
     </tbody>
 </table>

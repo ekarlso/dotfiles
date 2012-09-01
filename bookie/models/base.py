@@ -2,8 +2,7 @@ from datetime import datetime
 import functools
 import logging
 
-from colander_alchemy import ColanderAlchemyMixin, remove_nulls
-from colander import required
+from bourne import BourneMixin
 import sqlalchemy as sqla
 import sqlalchemy.orm
 from sqlalchemy import Column, Boolean, DateTime
@@ -86,31 +85,7 @@ class MetadataMixin(object):
         return cls or self.__meta_attr__
 
 
-class SerializerMixin(ColanderAlchemyMixin):
-    """
-    An override to help with object serialization
-    """
-    @classmethod
-    def schema(cls, include=None, exclude=["deleted"],
-            missing=required, assign_defaults=True):
-        """
-        Override of the original method to include pk and not include deleted
-        """
-        generator = cls.__schema_generator__(cls, missing, assign_defaults,
-                include_primary_keys=True)
-        return generator.create(include, exclude)
-
-    def serialize(self, *args, **kw):
-        """
-        Serialize this object using the schema from self.schema()
-
-        Args and keywords are the ones taken by schema()
-        """
-        obj = self.schema(*args, **kw).serialize(self)
-        return remove_nulls(obj)
-
-
-class BaseModel(SerializerMixin):
+class BaseModel(BourneMixin):
     """
     Base class to make ones life working with models and python easier
     """
@@ -399,6 +374,13 @@ class BaseModel(SerializerMixin):
         return self.format_self()
 
     # NOTE: Utility functions below
+    @classmethod
+    def get_pk(cls):
+        """
+        Get the primary key here
+        """
+        return [p.key for p in cls.__mapper__.primary_key]
+
     def to_dict(self, deep={}, exclude=[]):
         """
         Make a dict of the object
@@ -504,6 +486,15 @@ class BaseModel(SerializerMixin):
                 raise Exception("cannot create non surrogate without pk")
         record.from_dict(data)
         return record
+
+    def attributes(self):
+        attrs = self.__table__.c.keys()
+        for i in ["deleted", "deleted_at"]:
+            if i in attrs:
+                attrs.remove(i)
+        return attrs
+
+    serialize = BourneMixin.as_json_dict
 
 
 Base = declarative_base(cls=BaseModel)

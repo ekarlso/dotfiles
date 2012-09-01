@@ -93,6 +93,9 @@ class Group(Base, GroupMixin):
     def group_type_set(self, value):
         self._group_type = value
 
+    def attributes(self):
+        return ["group_name", "uuid", "id"]
+
 
 class Account(Group):
     __tablename__ = "groups_account"
@@ -152,6 +155,9 @@ class Resource(Base, ResourceMixin):
         """
         query = cls._filter(cls, **kw)
         return [node for node in query.all() if not node.parent]
+
+    def attributes(self):
+        return Base.attributes(self) + ["resource_name"]
 
 
 class UserGroup(Base, UserGroupMixin):

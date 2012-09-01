@@ -1,7 +1,36 @@
 'use strict';
 
 /* Services */
-var services = angular.module("bookieServices", ["ngResource"]);
+var services = angular.module("bookie.services", ["ngResource"]);
+
+services.factory("Booking", function($resource) {
+    return $resource("/:accountId/booking/:id", {}, {
+        query: {
+            method: "GET",
+            isArray: true
+        }
+    });
+})
+
+services.factory("Customer", function($resource, $routeParams) {
+    return $resource("/:accountId/customer/:id", {}, {
+        query: {
+            method: "GET",
+            isArray: true
+        }
+    });
+});
+
+
+services.factory("Category", function($resource, $routeParams) {
+    return $resource("/:accountId/category/:id", {}, {
+        query: {
+            method: "GET",
+            isArray: true
+        }
+    });
+});
+
 
 services.factory("Entity", function($resource, $routeParams) {
     return $resource("/:accountId/entity/:id", {}, {
@@ -59,13 +88,13 @@ services.service("AccountState", function($rootScope, $location, Account) {
                 root.account = data.default
             }
 
-            if (root.params.accountId) {
-                angular.forEach(data.accounts, function(a) {
-                    if (a.uuid == root.params.accountId) {
-                        root.account = a;
-                    }
-                });
-            }
+        }
+        if (root.params.accountId) {
+            angular.forEach(data.accounts, function(a) {
+                if (a.uuid == root.params.accountId) {
+                    root.account = a;
+                }
+            });
         }
 
         root.accounts = data.accounts;
@@ -80,7 +109,7 @@ services.service("AccountState", function($rootScope, $location, Account) {
 
     this.setAccount = function(account) {
         root.account = account;
-        $location.path("#" + account.uuid + "/home")
+        $location.path("/" + account.uuid + "/home")
     }
 
     this.setDefault = function(account) {

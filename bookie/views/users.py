@@ -292,7 +292,7 @@ def user_tenant_set(context, request):
     id_ = group_from_request(request)
 
     def redirect(group):
-        location = request.route_url("retailer_home", group=group)
+        location = request.route_url("account_home", group=group)
         return HTTPFound(location=location)
 
     # NOTE: Check for tenant
@@ -302,13 +302,13 @@ def user_tenant_set(context, request):
         # NOTE: Ok, so if there's a group and it's valid let's update in redis
         # and forward
         if request.user.has_group(id_):
-            request.user.current_group_id = id_
+            request.user.current_account_id = id_
             request.user.save()
             return redirect(id_)
         else:
             raise HTTPForbidden
     else:
-        id_ = request.group or request.user.current_group
+        id_ = request.account or request.user.current_account
         if tenant:
             return redirect(id_)
         else:
@@ -318,7 +318,7 @@ def user_tenant_set(context, request):
 @view_config(route_name="user_tenants", permission="view",
         renderer="user_tenants_overview.mako")
 def user_tenants(context, request):
-    grid = h.PyramidGrid(request.user.retailers,
+    grid = h.PyramidGrid(request.user.accounts,
         ["group_name", "group_type"])
     return {"grid": grid}
 

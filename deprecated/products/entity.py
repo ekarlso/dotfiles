@@ -65,7 +65,7 @@ def get_actions(request, obj=None):
 
 def populate_schema(request, schema):
     schema["owner_location"].widget.values = [(l.id, l.name) \
-        for l in request.group.locations]
+        for l in request.account.locations]
     return schema
 
 
@@ -105,7 +105,7 @@ class EntityAddForm(h.AddFormView):
 
     def add_entity_success(self, appstruct):
         appstruct.pop('csrf_token', None)
-        entity = models.Entity(retailer=self.request.group).\
+        entity = models.Entity(account=self.request.account).\
                 update(appstruct).save()
         self.request.session.flash(_(u"${title} added.",
             mapping=dict(title=entity.title)), "success")
@@ -145,7 +145,7 @@ class EntityBulkForm(EntityAddForm):
             name = "%s: %s - %s - %s" % row[:4]
 
             entity = models.Entity(
-                    type="entity", retailer=self.request.group, name=name)
+                    type="entity", account=self.request.account, name=name)
             # NOTE: Then the metadata using x.set_meta
             meta_data = [pair.split("=") for pair in row[4].split(":")]
             for k, v in meta_data:
@@ -195,7 +195,7 @@ def entity_bulk_add(context, request):
 def entity_manage(context, request):
     obj = models.Entity.get_by(
             id=request.matchdict["id"],
-            retailer=request.group)
+            account=request.account)
 
     return h.mk_form(EntityForm, obj, request,
         extra=dict(sidebar_data=get_actions(request, obj)))
@@ -206,7 +206,7 @@ def entity_manage(context, request):
 def entity_view(context, request):
     entity = models.Entity.get_by(
             id=request.matchdict["id"],
-            retailer=request.group)
+            account=request.account)
 
     b_grid_latest = h.PyramidGrid(
         entity.bookings, models.Booking.exposed_attrs())
@@ -223,7 +223,7 @@ def entity_view(context, request):
 def entity_delete(context, request):
     entity = models.Entity.get_by(
             id=request.matchdict["id"],
-            retailer=request.group).one()
+            account=request.account).one()
 
     if request.params.get("do") == "yes":
         entity.delete()
@@ -239,7 +239,7 @@ def entity_delete(context, request):
             renderer="entity_overview.mako")
 def entity_overview(context, request):
     search_opts = search.search_options(request)
-    search_opts["filter_by"]["retailer"] = request.group
+    search_opts["filter_by"]["account"] = request.account
     entities = models.Entity.search(**search_opts)
 
     columns = ["id"] + models.Entity.exposed_attrs()
