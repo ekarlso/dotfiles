@@ -12,13 +12,12 @@
 % endfor
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/base/jquery-ui.css">
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
 
-<script type="text/javascript" src="http://code.angularjs.org/1.0.1/angular-1.0.1.min.js"></script>
-<script type="text/javascript" src="http://cdn.jsdelivr.net/angularjs/1.0.1/angular-resource-1.0.1.min.js"></script>
-<script type="text/javascript" src="http://cdn.jsdelivr.net/angularjs/1.0.1/angular-bootstrap-1.0.1.min.js"></script>
-<script type="text/javascript" src="http://raw.github.com/angular-ui/angular-ui/master/build/angular-ui.js"></script>
+<script type="text/javascript" src="http://code.angularjs.org/1.0.2/angular.min.js"></script>
+<script type="text/javascript" src="http://code.angularjs.org/1.0.2/angular-resource.min.js"></script>
+<script type="text/javascript" src="http://code.angularjs.org/1.0.2/angular-bootstrap.min.js"></script>
 
 % for script in environment["js"].urls():
     <script type="text/javascript" src="${script}"></script>

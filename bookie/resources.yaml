@@ -12,6 +12,7 @@ js:
     - bootstrap/docs/assets/js/bootstrap.min.js
     - jquery_chosen/chosen.jquery.min.js
     - js/angular-http-auth.js
+    - js/angular-ui.js
     - js/app.js
     - js/directives.js
     - js/filters.js
