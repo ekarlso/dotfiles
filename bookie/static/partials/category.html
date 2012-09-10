@@ -13,7 +13,7 @@
         <tr ng-repeat="object in objects">
             <td>
                 <delete></delete>
-                <edit url="#/{{params.accountId}}/category/{{object.resource_id}}"></edit>
+                <edit url="/{{params.accountId}}/category/{{object.resource_id}}"></edit>
             </td>
             <td>{{object.resource_name}}</td>
             <td>{{object.description}}</td>

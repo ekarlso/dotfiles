@@ -52,32 +52,56 @@ directives.directive("delete", function() {
         replace: true,
         template: '<button class="btn btn-mini btn-danger" ng-click="crudDelete()"><i class="icon-remove icon-white"></i> {{text}}</button>',
         link: function(scope, element, attrs, controller) {
+            /*
+             * Inline overview: delete object and refresh objects
+             * Inline edit (Same path as overview typically):
+             *      delete, unset template
+             *
+             * Outline: delete the object and go back
+             */
             if (!scope.crudDelete) {
-                scope.crudDelete = function() {
+                scope.crudDelete = function(object) {
                     /* Fire off a delete and as a callback we update objects */
                     scope.service.delete({accountId: scope.account.uuid, id: scope.object.id}, function() {
-                        /* If we have objects refresh them */
                         scope.text = attrs.text || "";
                         scope.$parent.objects = scope.service.query(scope.params);
                     });
-                }
-            };
+                };
+            }
         }
     };
 });
 
 /* Helper to create a edit button */
-directives.directive("edit", function() {
+directives.directive("edit", ["$location", function($location) {
     return {
         restrict: "E",
         replace:  true,
         scope: { url: '@' },
-        template: '<a class="btn btn-mini btn-info" ng-href="{{url}}"><i class="icon-edit"></i> {{text}}</a>',
+        template: '<button class="btn btn-mini btn-info" ng-click="crudEdit()" ng-href="{{url}}"><i class="icon-edit"></i> {{text}}</a>',
         link: function(scope, element, attrs) {
             scope.text = attrs.text || "";
+            /* Inline: We change object to the given object in args and set
+             * template.
+             *
+             * Outline: If we're passed a URL then the next controller handles
+             * the getting of the object, we simple use $location.path() to
+             * change the location.
+             */
+            if (!scope.crudEdit) {
+                scope.crudEdit = function(object) {
+                    if (scope.url) {
+                        $location.path(scope.url);
+                        return;
+                    } else {
+                        scope.$parent.object = object;
+                        scope.$parent.template = scope.tpl;
+                    }
+                };
+            }
         }
     };
-});
+}]);
 
 /* Save the object and return to the previous page */
 directives.directive("save", function() {
@@ -86,12 +110,17 @@ directives.directive("save", function() {
         replace: true,
         template: '<button class="btn btn-success" ng-click="crudSave()"><i class="icon-ok"></i> Save</a>',
         link: function(scope, element, attrs) {
+            /* Inline: Undef Update objects using scope.params as argument and
+             * undef template
+             *
+             * Outline: Go back
+             */
             if (!scope.crudSave) {
                 scope.crudSave = function() {
                     scope.object.$save(scope.params, function() {
                         if (scope.$parent.template) {
+                            scope.$parent.objects = scope.service.query(scope.params)
                             scope.$parent.template = undefined;
-                            scope.objects = scope.service.query(scope.params)
                         } else {
                             scope.back();
                         }
@@ -109,6 +138,10 @@ directives.directive("cancel", function() {
         replace: true,
         template: '<button class="btn" ng-click="crudCancel()"><i class="icon-remove"></i> Cancel</button>',
         link: function(scope, element, attrs) {
+            /* Inline: Undef template
+             *
+             * Outline: Go back()
+             */
             if (!scope.crudCancel) {
                 scope.crudCancel = function() {
                     if (scope.$parent.template) {
@@ -121,4 +154,3 @@ directives.directive("cancel", function() {
         }
     };
 });
-
