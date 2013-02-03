@@ -167,13 +167,12 @@ au InsertLeave * match ExtraWhitespace /\s\+$/
 set t_Co=256
 color wombat256mod
 
-set colorcolumn=80
 highlight ColorColumn ctermbg=233
 
 " source ~/.vim/vimrc/vimrc_python.vim
 " source ~/.vim/bundle/pydiction/python_pydiction.vim
 
-au BufRead,BufNewFile *.py,*.pyw,*.c,*.h set textwidth=79
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h set textwidth=79|set colorcolumn=80
 highlight BadWhitespace ctermbg=red guibg=red
 au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
